@@ -42,22 +42,27 @@ class MainActivity : ComponentActivity() {
 fun CounterScreen(modifier: Modifier = Modifier) {
     var count by remember { mutableStateOf(0) }
 
-    Spacer(modifier = Modifier.height(16.dp))
+    Column(
+        modifier = Modifier
+            .fillMaxSize()  // Fill the available space
+            .height(16.dp),
+        verticalArrangement = Arrangement.Center,  // Center the content vertically
+        horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally  // Center the content horizontally
+    ) {
+        Text(text = "$count", fontSize = 150.sp)  // The counter
 
-    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)){
-        Button(onClick = { count = if (count == 0) 0 else count - 1 }) {
-            Text("Decrement")
-        }
-        Button(onClick = { count += 1 }) {
-            Text("Increment")
-        }
-    }
+        Spacer(modifier = Modifier.height(32.dp))  // Add some space between the counter and the buttons
 
-    Column {
-        Text(text = "$count", fontSize = 150.sp)
+        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            Button(onClick = { count = if (count == 0) 0 else count - 1 }) {
+                Text("Decrement")
+            }
+            Button(onClick = { count += 1 }) {
+                Text("Increment")
+            }
+        }
     }
 }
-
 @Preview
 @Composable
 fun CounterScreenPreview() {
