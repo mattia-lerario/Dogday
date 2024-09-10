@@ -1,23 +1,36 @@
 package com.example.dogday
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.rememberCameraPositionState
 
+@SuppressLint("UnrememberedMutableState")
 @Composable
 fun MapScreen(navController: NavHostController) {
-    Column(
+    // Coordinates for the test pin (for example, somewhere in Oslo, Norway)
+    val testLocation = LatLng(59.911491, 10.757933)
+
+    // Camera position state to control the map's initial position
+    val cameraPositionState = rememberCameraPositionState {
+        position = com.google.android.gms.maps.model.CameraPosition.fromLatLngZoom(testLocation, 12f)
+    }
+
+    // Google Map Composable
+    GoogleMap(
         modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        cameraPositionState = cameraPositionState
     ) {
-        Text(text = "Finn turer nær deg", style = MaterialTheme.typography.bodyLarge)
-        // Add more content as per your third screen
+        // Adding a marker (test pin) to the map
+        Marker(
+            state = com.google.maps.android.compose.MarkerState(position = testLocation),
+            title = "Test Pin",
+            snippet = "This is a test pin in Oslo, Norway"
+        )
     }
 }
