@@ -9,6 +9,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.logEvent
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
@@ -45,14 +47,26 @@ fun LoginScreen(navController: NavController) {
 
         Button(
             onClick = {
-                Firebase.auth.signInWithEmailAndPassword(email, password)
-                    .addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            navController.navigate("home") // Navigate to Home Screen
-                        } else {
-                            loginError = task.exception?.localizedMessage
+                // Check if email or password are empty before attempting login
+                if (email.isNotBlank() && password.isNotBlank()) {
+                    Firebase.auth.signInWithEmailAndPassword(email, password)
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                // Navigate to Home Screen on successful login
+                                navController.navigate("home")
+
+                                // Log the login event in Firebase Analytics
+                                val analytics = Firebase.analytics
+                                analytics.logEvent("login") {
+                                    param("method", "email")
+                                }
+                            } else {
+                                loginError = task.exception?.localizedMessage
+                            }
                         }
-                    }
+                } else {
+                    loginError = "Email and password must not be empty"
+                }
             },
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -77,4 +91,3 @@ fun LoginScreen(navController: NavController) {
         }
     }
 }
-
