@@ -1,29 +1,35 @@
-
-
-package com.example.myapptest01
+package com.example.dogday
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.myapptest01.HomeScreen
-import com.example.myapptest01.LoginScreen
-import com.example.myapptest01.MapScreen
-
+import com.example.dogday.LoginScreen // Import the composable function
+import com.example.dogday.RegisterScreen // Import the composable function
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Firebase services
+        val analytics = Firebase.analytics
+        val auth = Firebase.auth
+
         setContent {
             MainApp()
         }
@@ -37,20 +43,20 @@ fun MainApp() {
         bottomBar = {
             BottomNavigationBar(navController = navController)
         }
-    ) {
-        NavigationHost(navController = navController)
+    ) { paddingValues ->
+        NavigationHost(navController = navController, modifier = Modifier.padding(paddingValues))
     }
 }
 
 @Composable
-fun NavigationHost(navController: NavHostController) {
-    NavHost(navController, startDestination = "login") {
-        composable("login") { LoginScreen(navController) }
+fun NavigationHost(navController: NavHostController, modifier: Modifier) {
+    NavHost(navController = navController, startDestination = "login", modifier = modifier) {
+        composable("login") { LoginScreen(navController) }   // Use LoginScreen here
         composable("home") { HomeScreen(navController) }
         composable("map") { MapScreen(navController) }
+        composable("register") { RegisterScreen(navController) } // Use RegisterScreen here
     }
 }
-
 
 @Composable
 fun BottomNavigationBar(navController: NavHostController) {
@@ -60,21 +66,37 @@ fun BottomNavigationBar(navController: NavHostController) {
             icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
             label = { Text("Home") },
             selected = currentDestination == "home",
-            onClick = { navController.navigate("home") }
+            onClick = {
+                if (currentDestination != "home") {
+                    navController.navigate("home")
+                }
+            }
         )
         NavigationBarItem(
-            icon = { Icon(Icons.Default.Search, contentDescription = "Search") },
-            label = { Text("Saved") },
+            icon = { Icon(Icons.Default.Search, contentDescription = "Map") },
+            label = { Text("Map") },
             selected = currentDestination == "map",
-            onClick = { navController.navigate("map") }
+            onClick = {
+                if (currentDestination != "map") {
+                    navController.navigate("map")
+                }
+            }
         )
         NavigationBarItem(
-            icon = { Icon(Icons.Default.Settings, contentDescription = "Settings") },
-            label = { Text("Settings") },
+            icon = { Icon(Icons.Default.Settings, contentDescription = "Login") },
+            label = { Text("Login") },
             selected = currentDestination == "login",
-            onClick = { navController.navigate("login") }
+            onClick = {
+                if (currentDestination != "login") {
+                    navController.navigate("login")
+                }
+            }
         )
     }
 }
 
-
+@Preview(showBackground = true)
+@Composable
+fun DefaultPreview() {
+    MainApp()
+}

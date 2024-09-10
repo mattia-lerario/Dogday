@@ -1,4 +1,4 @@
-package com.example.myapptest01
+package com.example.dogday
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

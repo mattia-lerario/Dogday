@@ -1,14 +1,17 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    id("com.google.gms.google-services")
+
+
 }
 
 android {
-    namespace = "com.example.myapptest01"
+    namespace = "com.example.dogday"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.myapptest01"
+        applicationId = "com.example.dogday"
         minSdk = 26
         targetSdk = 34
         versionCode = 1
@@ -55,6 +58,12 @@ android {
 }
 
 dependencies {
+    // Firebase Platform BOM for managing versions
+    implementation(platform("com.google.firebase:firebase-bom:33.2.0"))
+
+    // Firebase dependencies
+    implementation("com.google.firebase:firebase-analytics-ktx")
+    implementation("com.google.firebase:firebase-auth-ktx")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -66,8 +75,8 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.navigation.runtime.ktx)
-    implementation("com.google.maps.android:maps-compose:6.1.0")
-    implementation("com.google.android.gms:play-services-maps:18.1.0")
+    implementation("com.google.maps.android:maps-compose:6.1.2")
+    implementation("com.google.android.gms:play-services-maps:19.0.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
