@@ -1,19 +1,24 @@
 pluginManagement {
     repositories {
-        google()
+        google {
+            content {
+                includeGroupByRegex("com\\.android.*")
+                includeGroupByRegex("com\\.google.*")
+                includeGroupByRegex("androidx.*")
+            }
+        }
         mavenCentral()
         gradlePluginPortal()
-
     }
 }
-
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
-        google()  // Required for Firebase and Android libraries
+        google()
         mavenCentral()
     }
 }
 
-rootProject.name = "Android-Test-01"
+rootProject.name = "My App test 01"
 include(":app")
+ 
