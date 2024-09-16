@@ -52,8 +52,8 @@ fun MainApp() {
 fun NavigationHost(navController: NavHostController, modifier: Modifier) {
     NavHost(navController = navController, startDestination = "login", modifier = modifier) {
         composable("login") { LoginScreen(navController) }   // Use LoginScreen here
-        composable("home") { HomeScreen(navController) }
-        composable("map") { MapScreen(navController) }
+        composable("home") { HomeScreen(navController) } //Home Screen of the application
+        composable("map") { MapScreen(navController) } // Map Screen
         composable("register") { RegisterScreen(navController) } // Use RegisterScreen here
     }
 }
