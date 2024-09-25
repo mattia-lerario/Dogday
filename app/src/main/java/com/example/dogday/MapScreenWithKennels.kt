@@ -44,19 +44,22 @@ fun MapScreenWithKennels(navController: NavHostController) {
             onSuccess = { fetchedKennels ->
                 kennels = fetchedKennels
                 mapView?.getMapAsync { map ->
-                    // Set the custom info window adapter
-                    map.setInfoWindowAdapter(CustomMapMarker(LayoutInflater.from(context)))
+                    // Pass the map instance to CustomMapMarker
+                    map.setInfoWindowAdapter(CustomMapMarker(LayoutInflater.from(context),map))
 
-                    // Update the map with the fetched kennel markers
+                    // Add markers to the map
                     kennels.forEach { kennel ->
-                        val kennelLocation = LatLng(kennel.coordinates.latitude, kennel.coordinates.longitude)
+                        val kennelLocation = LatLng(
+                            kennel.coordinates.latitude,
+                            kennel.coordinates.longitude
+                        )
                         val marker = map.addMarker(
                             MarkerOptions()
                                 .position(kennelLocation)
                                 .title(kennel.name)
-                                .snippet("${kennel.address}, Contact: ${kennel.contactInfo}")
+                                .snippet("${kennel.address}\nContact: ${kennel.contactInfo}")
                         )
-                        // Set kennel data as the tag for the marker
+                        // Associate the Kennel object with the marker
                         marker?.tag = kennel
                     }
                 }
@@ -104,4 +107,5 @@ fun MapScreenWithKennels(navController: NavHostController) {
         modifier = Modifier.fillMaxSize()
     )
 }
+
 

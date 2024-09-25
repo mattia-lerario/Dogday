@@ -2,31 +2,32 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="8dp">
 
     <!-- Title of the kennel -->
     <TextView
         android:id="@+id/info_window_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@android:color/white"
+        android:textColor="#000000"
         android:textStyle="bold"
-        android:textSize="16sp"
-        android:padding="8dp" />
+        android:textSize="16sp" />
 
     <!-- Kennel image -->
     <ImageView
         android:id="@+id/info_window_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/placeholder_image" />
+        android:layout_width="200dp"
+        android:layout_height="150dp"
+        android:scaleType="centerCrop"
+        android:src="@android:drawable/ic_menu_gallery" />
 
     <!-- Address and contact info -->
     <TextView
         android:id="@+id/info_window_snippet"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@android:color/white"
+        android:textColor="#000000"
         android:textSize="14sp"
-        android:padding="8dp" />
+        android:paddingTop="4dp" />
 </LinearLayout>

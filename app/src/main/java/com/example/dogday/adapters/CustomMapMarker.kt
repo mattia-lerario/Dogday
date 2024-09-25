@@ -1,5 +1,8 @@
 package com.example.dogday.adapters
 
+import coil.ImageLoader
+import coil.request.ImageRequest
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
@@ -9,10 +12,13 @@ import com.example.dogday.models.Kennel
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.Marker
 
-class CustomMapMarker(private val inflater: LayoutInflater) : GoogleMap.InfoWindowAdapter {
+class CustomMapMarker(
+    private val inflater: LayoutInflater,
+    private val map: GoogleMap
+) : GoogleMap.InfoWindowAdapter {
 
     override fun getInfoWindow(marker: Marker): View? {
-        // We don't want to change the whole window, just the content
+        // Use default frame for the info window
         return null
     }
 
@@ -20,19 +26,45 @@ class CustomMapMarker(private val inflater: LayoutInflater) : GoogleMap.InfoWind
         // Inflate the custom info window layout
         val view = inflater.inflate(R.layout.custom_info_window, null)
 
-        // Get the title, image, and snippet from the marker
-        val title = view.findViewById<TextView>(R.id.info_window_title)
-        val snippet = view.findViewById<TextView>(R.id.info_window_snippet)
+        // Reference views in the layout
+        val titleTextView = view.findViewById<TextView>(R.id.info_window_title)
+        val snippetTextView = view.findViewById<TextView>(R.id.info_window_snippet)
         val imageView = view.findViewById<ImageView>(R.id.info_window_image)
 
-        // Get the Kennel data (using marker's tag)
-        val kennel = marker?.tag as? Kennel
-        title.text = kennel?.name
-        snippet.text = "${kennel?.address}, Contact: ${kennel?.contactInfo}"
+        // Get the Kennel object from the marker's tag
+        val kennel = marker.tag as? Kennel
 
-        // Optionally load an image from a URL (you can use a library like Coil or Glide)
-        imageView.setImageResource(R.drawable.placeholder_image) // Placeholder image
+        if (kennel != null) {
+            titleTextView.text = kennel.name
+            snippetTextView.text = "${kennel.address}\nContact: ${kennel.contactInfo}"
+
+            // Load the image using Coil
+            val imageLoader = ImageLoader(inflater.context)
+            val request = ImageRequest.Builder(inflater.context)
+                .data(kennel.imageUrl)
+                .target(
+                    onStart = {
+                        imageView.setImageResource(android.R.drawable.ic_menu_gallery)
+                    },
+                    onSuccess = { result ->
+                        imageView.setImageDrawable(result)
+                        // Refresh the info window
+                        marker.showInfoWindow()
+                    },
+                    onError = {
+                        imageView.setImageResource(android.R.drawable.ic_menu_report_image)
+                    }
+                )
+                .build()
+            imageLoader.enqueue(request)
+        } else {
+            // Handle case where kennel data is not available
+            titleTextView.text = marker.title ?: ""
+            snippetTextView.text = marker.snippet ?: ""
+            imageView.setImageResource(android.R.drawable.ic_menu_gallery)
+        }
 
         return view
     }
 }
+
