@@ -6,6 +6,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.ktx.Firebase
 
 @Composable
 fun NewUserScreen(navController: NavController) {
@@ -48,9 +51,27 @@ fun NewUserScreen(navController: NavController) {
             if (name.isNotEmpty() && phoneNumber.isNotEmpty()) {
                 val user = User(uid, email, name, phoneNumber)
                 firestoreInteractions.addUser(user)
+                val uid = Firebase.auth.currentUser?.uid
+                if (uid != null) {
+                    val firestore = FirebaseFirestore.getInstance()
+                    firestore.collection("ddcollection").document(uid).get()
+                        .addOnSuccessListener { document ->
+                            if (document.exists()) {
+                                val user = document.toObject(User::class.java)
+                                if (user != null) {
+                                    // Check if the dogs map is empty
+                                    if (user.dogs.isEmpty()) {
+                                        navController.navigate("addDogScreen")
+                                    } else {
+                                        navController.navigate("home")
+                                    }
+                                }
+                            }
+                        }
+                }
             }
         }) {
-            Text("Save User")
+            Text("Save information")
         }
     }
 }

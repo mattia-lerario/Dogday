@@ -64,11 +64,10 @@ fun NavigationHost(navController: NavHostController, modifier: Modifier) {
         composable("home") { HomeScreen(navController) }      // Home Screen of the application
         composable("map") { MapScreen(navController) }        // Map Screen
         composable("register") { RegisterScreen(navController) } // Use RegisterScreen here
+        composable("newUser") {NewUserScreen(navController)} // No need to pass uid and email
+        composable("addDogScreen") { AddDogScreen(navController) }
 
-        // Simplified NewUserScreen navigation
-        composable("newUser") {
-            NewUserScreen(navController) // No need to pass uid and email
-        }
+
     }
 }
 

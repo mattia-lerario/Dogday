@@ -12,6 +12,7 @@ import androidx.navigation.NavController
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.analytics.logEvent
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 
 @Composable
@@ -47,15 +48,26 @@ fun LoginScreen(navController: NavController) {
 
         Button(
             onClick = {
-                // Check if email or password are empty before attempting login
                 if (email.isNotBlank() && password.isNotBlank()) {
                     Firebase.auth.signInWithEmailAndPassword(email, password)
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {
-                                // Navigate to Home Screen on successful login
-                                navController.navigate("newUser")
+                                val uid = Firebase.auth.currentUser?.uid
+                                if (uid != null) {
+                                    val firestore = FirebaseFirestore.getInstance()
+                                    firestore.collection("ddcollection").document(uid).get()
+                                        .addOnSuccessListener { document ->
+                                            if (document.exists()) {
+                                                val dogsMap = document.get("dogs") as? Map<*, *>
+                                                if (dogsMap == null || dogsMap.isEmpty()) {
+                                                    navController.navigate("addDogScreen")
+                                                } else {
+                                                    navController.navigate("home")
+                                                }
+                                            }
+                                        }
+                                }
 
-                                // Log the login event in Firebase Analytics
                                 val analytics = Firebase.analytics
                                 analytics.logEvent("login") {
                                     param("method", "email")
