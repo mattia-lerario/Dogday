@@ -22,9 +22,16 @@ import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.FirebaseApp
+
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        FirebaseApp.initializeApp(this)
 
         // Firebase services
         val analytics = Firebase.analytics
@@ -50,13 +57,21 @@ fun MainApp() {
 
 @Composable
 fun NavigationHost(navController: NavHostController, modifier: Modifier) {
+    val firestoreInteractions = FirestoreInteractions()
+
     NavHost(navController = navController, startDestination = "login", modifier = modifier) {
         composable("login") { LoginScreen(navController) }   // Use LoginScreen here
-        composable("home") { HomeScreen(navController) } //Home Screen of the application
-        composable("map") { MapScreen(navController) } // Map Screen
+        composable("home") { HomeScreen(navController) }      // Home Screen of the application
+        composable("map") { MapScreen(navController) }        // Map Screen
         composable("register") { RegisterScreen(navController) } // Use RegisterScreen here
+
+        // Simplified NewUserScreen navigation
+        composable("newUser") {
+            NewUserScreen(navController) // No need to pass uid and email
+        }
     }
 }
+
 
 @Composable
 fun BottomNavigationBar(navController: NavHostController) {

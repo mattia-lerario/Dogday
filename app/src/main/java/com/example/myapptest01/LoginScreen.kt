@@ -53,7 +53,7 @@ fun LoginScreen(navController: NavController) {
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {
                                 // Navigate to Home Screen on successful login
-                                navController.navigate("home")
+                                navController.navigate("newUser")
 
                                 // Log the login event in Firebase Analytics
                                 val analytics = Firebase.analytics

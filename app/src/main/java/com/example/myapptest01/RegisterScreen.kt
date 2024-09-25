@@ -61,7 +61,10 @@ fun RegisterScreen(navController: NavController) {
                 Firebase.auth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
-                            navController.navigate("home") // Navigate to Home Screen
+                            val uid = Firebase.auth.currentUser?.uid ?: ""
+                            UserSession.uid = uid
+                            UserSession.email = email
+                            navController.navigate("newUser")
                         } else {
                             registerError = task.exception?.localizedMessage
                         }
