@@ -18,6 +18,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.dogday.LoginScreen // Import the composable function
 import com.example.dogday.RegisterScreen // Import the composable function
+import com.example.dogday.ui.screens.MapScreenWithKennels
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -62,7 +63,7 @@ fun NavigationHost(navController: NavHostController, modifier: Modifier) {
     NavHost(navController = navController, startDestination = "login", modifier = modifier) {
         composable("login") { LoginScreen(navController) }   // Use LoginScreen here
         composable("home") { HomeScreen(navController) }      // Home Screen of the application
-        composable("map") { MapScreen(navController) }        // Map Screen
+        composable("map") { MapScreenWithKennels(navController) }        // Map Screen
         composable("register") { RegisterScreen(navController) } // Use RegisterScreen here
         composable("newUser") {NewUserScreen(navController)} // No need to pass uid and email
         composable("addDogScreen") { AddDogScreen(navController) }

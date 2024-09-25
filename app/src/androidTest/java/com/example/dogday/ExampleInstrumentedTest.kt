@@ -1,4 +1,4 @@
-package com.example.myapptest01
+package com.example.dogday
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

@@ -28,4 +28,5 @@ class FirestoreInteractions {
             Log.w("Firestore", "Error adding dog", e)
         }
     }
+
 }
