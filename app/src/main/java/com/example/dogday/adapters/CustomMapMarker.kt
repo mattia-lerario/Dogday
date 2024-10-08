@@ -1,13 +1,13 @@
 package com.example.dogday.adapters
 
-import coil.ImageLoader
-import coil.request.ImageRequest
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import coil.ImageLoader
+import coil.request.ImageRequest
 import com.example.dogday.R
+import com.example.dogday.models.HikeData
 import com.example.dogday.models.Kennel
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.Marker
@@ -31,40 +31,49 @@ class CustomMapMarker(
         val snippetTextView = view.findViewById<TextView>(R.id.info_window_snippet)
         val imageView = view.findViewById<ImageView>(R.id.info_window_image)
 
-        // Get the Kennel object from the marker's tag
-        val kennel = marker.tag as? Kennel
+        // Handle different types of data objects (Kennel or HikeData)
+        when (val data = marker.tag) {
+            is Kennel -> {
+                // Populate view with Kennel data
+                titleTextView.text = data.name
+                snippetTextView.text = "${data.address}\nContact: ${data.contactInfo}"
 
-        if (kennel != null) {
-            titleTextView.text = kennel.name
-            snippetTextView.text = "${kennel.address}\nContact: ${kennel.contactInfo}"
+                // Load image for Kennel using Coil
+                val imageLoader = ImageLoader(inflater.context)
+                val request = ImageRequest.Builder(inflater.context)
+                    .data(data.imageUrl)
+                    .target(
+                        onStart = {
+                            imageView.setImageResource(android.R.drawable.ic_menu_gallery)
+                        },
+                        onSuccess = { result ->
+                            imageView.setImageDrawable(result)
+                            // Refresh the info window
+                            marker.showInfoWindow()
+                        },
+                        onError = {
+                            imageView.setImageResource(android.R.drawable.ic_menu_report_image)
+                        }
+                    )
+                    .build()
+                imageLoader.enqueue(request)
+            }
+            is HikeData -> {
+                // Populate view with HikeData data
+                titleTextView.text = data.name
+                snippetTextView.text = data.description
 
-            // Load the image using Coil
-            val imageLoader = ImageLoader(inflater.context)
-            val request = ImageRequest.Builder(inflater.context)
-                .data(kennel.imageUrl)
-                .target(
-                    onStart = {
-                        imageView.setImageResource(android.R.drawable.ic_menu_gallery)
-                    },
-                    onSuccess = { result ->
-                        imageView.setImageDrawable(result)
-                        // Refresh the info window
-                        marker.showInfoWindow()
-                    },
-                    onError = {
-                        imageView.setImageResource(android.R.drawable.ic_menu_report_image)
-                    }
-                )
-                .build()
-            imageLoader.enqueue(request)
-        } else {
-            // Handle case where kennel data is not available
-            titleTextView.text = marker.title ?: ""
-            snippetTextView.text = marker.snippet ?: ""
-            imageView.setImageResource(android.R.drawable.ic_menu_gallery)
+                // HikeData doesn't necessarily have images, so you can handle that accordingly
+                imageView.setImageResource(android.R.drawable.ic_menu_gallery) // Placeholder image for hikes
+            }
+            else -> {
+                // Handle case where neither Kennel nor HikeData is available
+                titleTextView.text = marker.title ?: ""
+                snippetTextView.text = marker.snippet ?: ""
+                imageView.setImageResource(android.R.drawable.ic_menu_gallery)
+            }
         }
 
         return view
     }
 }
-

@@ -1,4 +1,4 @@
-package com.example.dogday
+package com.example.dogday.screens
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -8,24 +8,23 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.dogday.LoginScreen // Import the composable function
-import com.example.dogday.RegisterScreen // Import the composable function
-import com.example.dogday.ui.screens.MapScreenWithKennels
+import androidx.navigation.compose.rememberNavController
+import com.example.dogday.FirestoreInteractions
+import com.google.firebase.FirebaseApp
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.FirebaseApp
 
 
 class MainActivity : ComponentActivity() {
@@ -63,9 +62,9 @@ fun NavigationHost(navController: NavHostController, modifier: Modifier) {
     NavHost(navController = navController, startDestination = "login", modifier = modifier) {
         composable("login") { LoginScreen(navController) }   // Use LoginScreen here
         composable("home") { HomeScreen(navController) }      // Home Screen of the application
-        composable("map") { MapScreenWithKennels(navController) }        // Map Screen
+        composable("map") { MapScreen(navController) }        // Map Screen
         composable("register") { RegisterScreen(navController) } // Use RegisterScreen here
-        composable("newUser") {NewUserScreen(navController)} // No need to pass uid and email
+        composable("newUser") { NewUserScreen(navController) } // No need to pass uid and email
         composable("addDogScreen") { AddDogScreen(navController) }
 
 

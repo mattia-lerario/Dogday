@@ -1,6 +1,6 @@
 // RegisterScreen.kt
 
-package com.example.dogday
+package com.example.dogday.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.dogday.UserSession
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 

@@ -1,17 +1,26 @@
-package com.example.dogday
+package com.example.dogday.screens
 
-
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.dogday.Dog
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -32,7 +41,6 @@ fun HomeScreen(navController: NavHostController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-
         Button(onClick = { navController.navigate("map") }) {
             Text("Se anbefalinger")
         }
@@ -50,14 +58,14 @@ fun DogsList() {
             firestore.collection("ddcollection").document(uid).get()
                 .addOnSuccessListener { document ->
                     if (document.exists()) {
-                        val dogsMap = document.get("dogs") as? Map<String, Map<String, Any>>
-
+                        val dogsMap = document.get("dogs") as? Map<*, *>
 
                         if (dogsMap != null) {
                             val dogs = dogsMap.values.mapNotNull { dogData ->
-                                val dogId = dogData["dogId"] as? String
-                                val name = dogData["name"] as? String
-                                val breed = dogData["breed"] as? String
+                                val dogInfo = dogData as? Map<*, *>
+                                val dogId = dogInfo?.get("dogId") as? String
+                                val name = dogInfo?.get("name") as? String
+                                val breed = dogInfo?.get("breed") as? String
 
                                 if (dogId != null && name != null && breed != null) {
                                     Dog(
@@ -87,7 +95,6 @@ fun DogsList() {
                 Text(text = "Dog: ${dog.name}")
                 Text(text = "Breed: ${dog.breed}")
                 Spacer(modifier = Modifier.height(16.dp))
-
             }
         }
     } else {

@@ -1,6 +1,6 @@
 // LoginScreen.kt
 
-package com.example.dogday
+package com.example.dogday.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
