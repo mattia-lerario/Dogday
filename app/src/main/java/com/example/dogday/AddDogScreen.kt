@@ -29,7 +29,7 @@ fun AddDogScreen(navController: NavController) {
 
     var showDatePicker by remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState()
-    val dogBirthday = datePickerState.selectedDateMillis ?: 0L
+    var dogBirthday by remember { mutableStateOf(datePickerState.selectedDateMillis ?: 0L) }
 
 
     val firestoreInteractions = FirestoreInteractions()
@@ -91,24 +91,67 @@ fun AddDogScreen(navController: NavController) {
             )
 
             if (showDatePicker) {
-                Popup(onDismissRequest = { showDatePicker = false},
-                    alignment = Alignment.TopStart
-                ){
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .offset(y = 64.dp)
-                            .shadow(elevation = 4.dp)
-                            .background(MaterialTheme.colorScheme.surface)
-                            .padding(16.dp)
-                    ){
-                        DatePicker(
-                            state = datePickerState,
-                            showModeToggle = false
-                        )
+                DatePickerDialog(
+                    onDismissRequest = { showDatePicker = false },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            dogBirthday = datePickerState.selectedDateMillis ?: 0L
+                            showDatePicker = false
+                        }) {
+                            Text("OK")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showDatePicker = false }) {
+                            Text("Cancel")
+                        }
                     }
+                ) {
+                    DatePicker(state = datePickerState)
                 }
             }
+
+            //if (showDatePicker) {
+                //Popup(
+                    //onDismissRequest = { showDatePicker = false},
+                    //alignment = Alignment.TopStart
+                //){
+                   // Box(
+                        //modifier = Modifier
+                            //.fillMaxWidth()
+                            //.offset(y = 64.dp)
+                            //.shadow(elevation = 4.dp)
+                            //.background(MaterialTheme.colorScheme.surface)
+                            //.padding(16.dp)
+                   // ){
+                        //Column {
+                            //DatePicker(
+                                //state = datePickerState,
+                                //showModeToggle = false
+                            //)
+
+                            //Spacer(modifier = Modifier.height(8.dp))
+
+                            //Row(
+                                //modifier = Modifier.fillMaxWidth(),
+                                //horizontalArrangement = Arrangement.End
+                            //) {
+                                //TextButton(onClick = {
+                                    //dogBirthday = datePickerState.selectedDateMillis ?: 0L
+                                    //showDatePicker = false
+                                //}) {
+                                    //Text("Ok")
+                                //}
+                                //TextButton(onClick = { showDatePicker = false}) {
+                                    //Text("Cancel")
+                                //}
+                            //}
+
+
+                        //}
+                    //}
+                //}
+            //}
         }
 
         Spacer(modifier = Modifier.height(8.dp))
