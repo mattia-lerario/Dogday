@@ -24,7 +24,7 @@ fun LoginScreen(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(18.dp),
+            .padding(16.dp),
         verticalArrangement = Arrangement.Center
     ) {
         TextField(
