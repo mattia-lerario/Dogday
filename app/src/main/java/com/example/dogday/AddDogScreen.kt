@@ -1,22 +1,36 @@
 
 package com.example.dogday
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Popup
 import androidx.navigation.NavController
 import com.example.dogday.models.Dog
 import com.google.firebase.auth.FirebaseAuth
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddDogScreen(navController: NavController) {
     var dogName by remember { mutableStateOf("") }
     var dogNickName by remember { mutableStateOf("") }
-    var dogBirthday by remember { mutableStateOf("") }
     var dogBreed by remember { mutableStateOf("") }
     var dogBreeder by remember { mutableStateOf("") }
+
+    var showDatePicker by remember { mutableStateOf(false) }
+    val datePickerState = rememberDatePickerState()
+    val dogBirthday = datePickerState.selectedDateMillis ?: 0L
+
 
     val firestoreInteractions = FirestoreInteractions()
 
@@ -55,12 +69,47 @@ fun AddDogScreen(navController: NavController) {
             modifier = Modifier.fillMaxWidth()
         )
 
-        TextField(
-            value = dogBirthday,
-            onValueChange = { dogBirthday = it },
-            label = { Text("Your Dog's Birthday") },
+        Box(
             modifier = Modifier.fillMaxWidth()
-        )
+        ) {
+            OutlinedTextField(
+                value = convertMillisToDate(dogBirthday),
+                onValueChange = { },
+                label = { Text("Dog's Birthday") },
+                readOnly = true,
+                trailingIcon = {
+                    IconButton(onClick = { showDatePicker = !showDatePicker }) {
+                        Icon(
+                            imageVector = Icons.Default.DateRange,
+                            contentDescription = "Select date"
+                        )
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(64.dp)
+            )
+
+            if (showDatePicker) {
+                Popup(onDismissRequest = { showDatePicker = false},
+                    alignment = Alignment.TopStart
+                ){
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .offset(y = 64.dp)
+                            .shadow(elevation = 4.dp)
+                            .background(MaterialTheme.colorScheme.surface)
+                            .padding(16.dp)
+                    ){
+                        DatePicker(
+                            state = datePickerState,
+                            showModeToggle = false
+                        )
+                    }
+                }
+            }
+        }
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -98,4 +147,9 @@ fun AddDogScreen(navController: NavController) {
             Text("Add Dog")
         }
     }
+}
+
+fun convertMillisToDate(millis: Long): String {
+    val formatter = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
+    return formatter.format(Date(millis))
 }

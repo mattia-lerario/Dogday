@@ -75,6 +75,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics) // Corrected from libs.androidx.ui.graphics
     implementation(libs.androidx.ui.tooling.preview) // Corrected from libs.androidx.ui.tooling.preview
     implementation(libs.androidx.material3)
+    implementation("androidx.compose.material3:material3:1.1.0")
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation("com.google.maps.android:maps-compose:6.1.2")
