@@ -60,9 +60,9 @@ fun LoginScreen(navController: NavController) {
                                             if (document.exists()) {
                                                 val dogsMap = document.get("dogs") as? Map<*, *>
                                                 if (dogsMap == null || dogsMap.isEmpty()) {
-                                                    navController.navigate("addDogScreen")
+                                                    navController.navigate(route = DogScreen.AddDog.name)
                                                 } else {
-                                                    navController.navigate("home")
+                                                    navController.navigate(route = DogScreen.Home.name)
                                                 }
                                             }
                                         }
@@ -88,7 +88,7 @@ fun LoginScreen(navController: NavController) {
         Spacer(modifier = Modifier.height(8.dp))
 
         Button(
-            onClick = { navController.navigate("register") },
+            onClick = { navController.navigate(route = DogScreen.Register.name) },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Don't have an account? Register")

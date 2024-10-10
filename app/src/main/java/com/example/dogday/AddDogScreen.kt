@@ -53,7 +53,7 @@ fun AddDogScreen(navController: NavController) {
                     val dog = Dog(name = dogName, breed = dogBreed)
                     firestoreInteractions.addDogToUser(uid, dog)
 
-                    navController.navigate("home")
+                    navController.navigate(route = DogScreen.Home.name)
                 } else {
                     // Handle error: user UID is null
                 }
