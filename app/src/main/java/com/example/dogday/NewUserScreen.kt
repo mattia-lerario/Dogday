@@ -1,6 +1,8 @@
 package com.example.dogday
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -10,13 +12,20 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewUserScreen(navController: NavController) {
     val email = UserSession.email ?: ""
     val uid = UserSession.uid ?: ""
 
-    var name by remember { mutableStateOf("") }
+    var firstName by remember { mutableStateOf("") }
+    var lastName by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
+
+    var showDatePicker by remember { mutableStateOf(false) }
+    val datePickerState = rememberDatePickerState()
+    var birthday by remember { mutableStateOf(datePickerState.selectedDateMillis ?: 0L) }
+
     val firestoreInteractions = FirestoreInteractions()
 
     Column(
@@ -30,9 +39,18 @@ fun NewUserScreen(navController: NavController) {
         Spacer(modifier = Modifier.height(16.dp))
 
         TextField(
-            value = name,
-            onValueChange = { name = it },
-            label = { Text("Name") },
+            value = firstName,
+            onValueChange = { firstName = it },
+            label = { Text("First Name") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        TextField(
+            value = lastName,
+            onValueChange = { lastName = it },
+            label = { Text("Last Name") },
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -45,11 +63,62 @@ fun NewUserScreen(navController: NavController) {
             modifier = Modifier.fillMaxWidth()
         )
 
+        Box(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            OutlinedTextField(
+                value = convertMillisToDate(birthday),
+                onValueChange = { },
+                label = { Text("Your Birthday") },
+                readOnly = true,
+                trailingIcon = {
+                    IconButton(onClick = { showDatePicker = !showDatePicker }) {
+                        Icon(
+                            imageVector = Icons.Default.DateRange,
+                            contentDescription = "Select date"
+                        )
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(64.dp)
+            )
+
+            if (showDatePicker) {
+                DatePickerDialog(
+                    onDismissRequest = { showDatePicker = false },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            birthday = datePickerState.selectedDateMillis ?: 0L
+                            showDatePicker = false
+                        }) {
+                            Text("OK")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showDatePicker = false }) {
+                            Text("Cancel")
+                        }
+                    }
+                ) {
+                    DatePicker(state = datePickerState)
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(onClick = {
-            if (name.isNotEmpty() && phoneNumber.isNotEmpty()) {
-                val user = User(uid, email, name, phoneNumber)
+            if (firstName.isNotEmpty() && phoneNumber.isNotEmpty()) {
+                val user = User(
+                    uid,
+                    email,
+                    firstName,
+                    lastName,
+                    phoneNumber,
+                    birthday)
                 firestoreInteractions.addUser(user)
                 val uid = Firebase.auth.currentUser?.uid
                 if (uid != null) {

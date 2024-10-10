@@ -5,7 +5,9 @@ import com.example.dogday.models.Dog
 data class User(
     val uid: String = "",
     val email: String = "",
-    val name: String = "",
+    val firstName: String = "",
+    val lastName: String = "",
     val phoneNumber: String = "",
+    val birthday: Long,
     val dogs: Map<String, Dog> = emptyMap()
 )
