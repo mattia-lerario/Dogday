@@ -19,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.dogday.FirestoreInteractions
 import com.example.dogday.R
 import com.example.dogday.User
@@ -254,9 +255,10 @@ fun OwnerLabel() {
     }
 }
 
-// Preview-funksjon for OwnerLabel
 @Preview(showBackground = true)
 @Composable
-fun PreviewOwnerLabel() {
-    OwnerLabel()
+fun PreviewNewUserScreen() {
+    // Bruker en falsk navController for preview
+    val navController = rememberNavController()
+    NewUserScreen(navController)
 }
