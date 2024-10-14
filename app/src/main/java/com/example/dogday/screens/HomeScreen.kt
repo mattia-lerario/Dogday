@@ -2,8 +2,11 @@ package com.example.dogday.screens
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,8 +15,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -31,29 +40,42 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.dogday.R
 import com.example.dogday.models.Dog
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 @Composable
 fun HomeScreen(navController: NavHostController) {
+
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
+
     ) {
+
         Text(text = "Dine hunder", style = MaterialTheme.typography.bodyLarge)
 
         DogsList(navController = navController)
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(5.dp))
+        CalendarHome()
+        Spacer(modifier = Modifier.height(5.dp))
+
+        HikeCard(navController = navController)
 
         Text(text = "Finn Din Neste Tur", style = MaterialTheme.typography.bodyLarge)
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(5.dp))
 
         Button(onClick = { navController.navigate("map") }) {
             Text("Se anbefalinger")
@@ -117,7 +139,7 @@ fun DogsList(navController: NavHostController) {
             }
         }
     } else {
-        Text(text = "You haven't added any dogs yet.")
+        Text(text = "Ingen hund ennå?")
     }
 }
 
@@ -131,11 +153,12 @@ fun DogListCard(navController: NavHostController, dog: Dog){
             .fillMaxWidth()
             .padding(10.dp)) {
         Row(modifier = Modifier.padding(10.dp)) {
-            Column(modifier = Modifier.weight(1f)
-                .padding(10.dp)) {
-                Text(text = "${dog.name}",
+            Column(modifier = Modifier
+                .weight(1f)
+                .padding(5.dp)) {
+                Text(text = "${dog.name}", style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(0.dp))
-                Text(text = "${dog.breed}")
+                //Text(text = "${dog.breed}")
             }
 
             Image(
@@ -152,4 +175,157 @@ fun DogListCard(navController: NavHostController, dog: Dog){
         }
 
     }
+}
+
+@Composable
+fun HikeCard(navController: NavHostController){
+    Card(elevation = CardDefaults.cardElevation(
+        defaultElevation = 6.dp),
+        onClick = { navController.navigate(DogScreen.Map.name)},
+        border = BorderStroke(1.dp, Color.Black),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(10.dp)) {
+        Row(modifier = Modifier.padding(10.dp)) {
+            Column(modifier = Modifier
+                .weight(1f)
+                .padding(10.dp)) {
+                Text(text = "Ut på tur?", style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(0.dp))
+                Text(text = "Mer tekst")
+            }
+
+            Image(
+                painter = painterResource(id = R.drawable.dog_cartoon),
+                contentDescription = "Dog",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(100.dp)
+                    .clip(CircleShape)
+                    .padding(0.dp)
+            )
+
+
+        }
+
+    }
+}
+
+
+
+
+fun getDaysOfMonth(year: Int, month: Int): List<String> {
+    val calendar = Calendar.getInstance().apply {
+        set(Calendar.YEAR, year)
+        set(Calendar.MONTH, month)
+        set(Calendar.DAY_OF_MONTH, 1)
+        firstDayOfWeek = Calendar.MONDAY
+    }
+
+    val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+    val days = mutableListOf<String>()
+
+
+    val firstDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK) - Calendar.MONDAY
+
+
+    repeat(firstDayOfWeek) {
+        days.add("")
+    }
+
+
+    for (day in 1..daysInMonth) {
+        days.add(day.toString())
+    }
+
+    return days
+}
+
+
+@Composable
+fun CalendarHome() {
+    val calendar = Calendar.getInstance()
+    val currentYear = calendar.get(Calendar.YEAR)
+    val currentMonth = calendar.get(Calendar.MONTH)
+
+
+    val daysOfMonth = getDaysOfMonth(currentYear, currentMonth)
+
+
+    val monthFormatter = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
+    val formattedMonth = monthFormatter.format(calendar.time)
+
+
+    val weekDays = listOf("Man", "Tir", "Ons", "Tor", "Fre", "Lør", "Søn")
+
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFD95A3C))
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+
+            Text(
+                text = formattedMonth.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() },
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceAround
+            ) {
+                weekDays.forEach { day ->
+                    Text(
+                        text = day,
+                        style = MaterialTheme.typography.bodyMedium,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(7),
+                modifier = Modifier.fillMaxWidth(),
+                contentPadding = PaddingValues(4.dp)
+            ) {
+                items(daysOfMonth) { day ->
+                    Box(
+                        modifier = Modifier
+                            .size(40.dp)
+                            .padding(4.dp)
+                            .background(
+                                if (day.isNotEmpty()) MaterialTheme.colorScheme.primaryContainer else Color.Transparent,
+                                shape = RoundedCornerShape(8.dp)
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = day,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = if (day.isNotEmpty()) MaterialTheme.colorScheme.onPrimary else Color.Transparent
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+
+
+
+@Preview
+@Composable
+fun PreCalender(){
+    CalendarHome()
 }

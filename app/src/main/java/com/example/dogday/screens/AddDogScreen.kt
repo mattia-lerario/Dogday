@@ -58,6 +58,7 @@ fun AddDogScreen(navController: NavController) {
             .padding(16.dp),
         verticalArrangement = Arrangement.Center
     ) {
+        //TODO: Sjekke om det finnes en hund eller ikke. If/else.
         Text("Looks like you haven't added your dogs, lets add one!", style = MaterialTheme.typography.titleLarge)
 
         Spacer(modifier = Modifier.height(16.dp))

@@ -4,7 +4,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
@@ -27,8 +30,10 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -151,65 +156,81 @@ fun DogAppBar(
     navigateUp: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(
+                bottomStart = 16. dp, bottomEnd = 16.dp))
+    ) {
+        TopAppBar(
+            title = { Text(stringResource(currentScreen.title)) },
 
-    TopAppBar(
-        title = { Text(stringResource(currentScreen.title)) },
+            colors = TopAppBarDefaults.mediumTopAppBarColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer
 
-        //colors = ButtonDefaults.buttonColors(containerColor = ButtonColorLight),
-        colors = TopAppBarDefaults.mediumTopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-
-        ),
-        modifier = modifier,
-        navigationIcon = {
-            if (canNavigateBack) {
-                IconButton(onClick = navigateUp) {
-                    Icon(
-                        imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = "Tilbake"
-                    )
+            ),
+            modifier = modifier,
+            navigationIcon = {
+                if (canNavigateBack) {
+                    IconButton(onClick = navigateUp) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "Tilbake"
+                        )
+                    }
                 }
             }
-        }
-    )
+        )
+    }
 }
 
 
 
 @Composable
-fun BottomNavigationBar(navController: NavHostController) {
+fun BottomNavigationBar(navController: NavHostController, ) {
     val currentDestination = navController.currentDestination?.route
-    NavigationBar {
-        NavigationBarItem(
-            icon = { Icon(Icons.Default.Home, contentDescription = "Hjem") },
-            label = { Text("Hjem") },
-            selected = currentDestination == "home",
-            onClick = {
-                if (currentDestination != "home") {
-                    navController.navigate("home")
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(10.dp)
+            .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp,
+                bottomStart = 16. dp, bottomEnd = 16.dp))
+    ) {
+
+        NavigationBar(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+        ) {
+            NavigationBarItem(
+                icon = { Icon(Icons.Default.Home, contentDescription = "Hjem") },
+                label = { Text("Hjem") },
+                selected = currentDestination == "home",
+                onClick = {
+                    if (currentDestination != "home") {
+                        navController.navigate("home")
+                    }
                 }
-            }
-        )
-        NavigationBarItem(
-            icon = { Icon(Icons.Default.Search, contentDescription = DogScreen.Map.name) },
-            label = { Text(text = "Kart") },
-            selected = currentDestination == DogScreen.Map.name,
-            onClick = {
-                if (currentDestination != DogScreen.Map.name) {
-                    navController.navigate(route = DogScreen.Map.name)
+            )
+            NavigationBarItem(
+                icon = { Icon(Icons.Default.Search, contentDescription = DogScreen.Map.name) },
+                label = { Text(text = "Kart") },
+                selected = currentDestination == DogScreen.Map.name,
+                onClick = {
+                    if (currentDestination != DogScreen.Map.name) {
+                        navController.navigate(route = DogScreen.Map.name)
+                    }
                 }
-            }
-        )
-        NavigationBarItem(
-            icon = { Icon(Icons.Default.Settings, contentDescription = "Innstillinger") },
-            label = { Text("Innstillinger") },
-            selected = currentDestination == DogScreen.SettingsScreen.name,
-            onClick = {
-                if (currentDestination != DogScreen.SettingsScreen.name) {
-                    navController.navigate(route = DogScreen.SettingsScreen.name)
+            )
+            NavigationBarItem(
+                icon = { Icon(Icons.Default.Settings, contentDescription = "Innstillinger") },
+                label = { Text("Innstillinger") },
+                selected = currentDestination == DogScreen.SettingsScreen.name,
+                onClick = {
+                    if (currentDestination != DogScreen.SettingsScreen.name) {
+                        navController.navigate(route = DogScreen.SettingsScreen.name)
+                    }
                 }
-            }
-        )
+            )
+        }
     }
 }
 
