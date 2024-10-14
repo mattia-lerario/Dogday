@@ -66,6 +66,8 @@ fun NavigationHost(navController: NavHostController, modifier: Modifier) {
         composable("register") { RegisterScreen(navController) } // Use RegisterScreen here
         composable("newUser") { NewUserScreen(navController) } // No need to pass uid and email
         composable("addDogScreen") { AddDogScreen(navController) }
+        composable("dogQueryScreen") { DogQueryScreen(navController) }
+
 
 
     }

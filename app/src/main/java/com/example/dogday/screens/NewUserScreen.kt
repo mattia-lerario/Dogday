@@ -129,18 +129,7 @@ fun NewUserScreen(navController: NavController) {
             shape = MaterialTheme.shapes.small
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text("Do you have a dog?")
-            Spacer(modifier = Modifier.width(8.dp))
-            Switch(
-                checked = hasDog,
-                onCheckedChange = { hasDog = it }
-            )
-        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -209,11 +198,8 @@ fun NewUserScreen(navController: NavController) {
                             if (document.exists()) {
                                 val user = document.toObject(User::class.java)
                                 if (user != null) {
-                                    if (hasDog) {
-                                        navController.navigate("addDogScreen")
-                                    } else {
-                                        navController.navigate("home")
-                                    }
+                                        navController.navigate("dogQueryScreen")
+
                                 }
                             }
                         }
