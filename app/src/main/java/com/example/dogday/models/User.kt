@@ -8,6 +8,8 @@ data class User(
     val firstName: String = "",
     val lastName: String = "",
     val phoneNumber: String = "",
-    val birthday: Long,
-    val dogs: Map<String, Dog> = emptyMap()
-)
+    val birthday: Long = 0L,
+    val dogs: Map<String, Dog> = emptyMap() // Assuming dogs is a map of Dog objects
+) {
+    // No-argument constructor is automatically generated because of default values
+}
