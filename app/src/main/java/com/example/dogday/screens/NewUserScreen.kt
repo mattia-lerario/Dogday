@@ -51,7 +51,8 @@ fun NewUserScreen(navController: NavController) {
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(
             modifier = Modifier.fillMaxWidth(),
@@ -64,7 +65,7 @@ fun NewUserScreen(navController: NavController) {
                 Image(
                     painter = painterResource(R.drawable.dogday_logo),
                     contentDescription = "DogDay Logo",
-                    modifier = Modifier.size(200.dp),
+                    modifier = Modifier.size(300.dp),
                     contentScale = ContentScale.Fit
                 )
 
@@ -72,22 +73,25 @@ fun NewUserScreen(navController: NavController) {
             }
         }
 
+        Spacer(modifier = Modifier.height(8.dp))
+
         Text(
             text = "Tell us more about you!",
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Bold, // Gjør teksten bold
             modifier = Modifier
                 .padding(bottom = 24.dp)
                 .align(Alignment.CenterHorizontally)
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(10.dp))
 
         TextField(
             value = firstName,
             onValueChange = { firstName = it },
             label = { Text("First Name", color = Color.Black) },
             modifier = Modifier
-                .fillMaxWidth()
+                .widthIn(max = 500.dp)
                 .padding(horizontal = 8.dp),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = InputBackgroundLight,
@@ -105,7 +109,7 @@ fun NewUserScreen(navController: NavController) {
             onValueChange = { lastName = it },
             label = { Text("Last Name") },
             modifier = Modifier
-                .fillMaxWidth()
+                .widthIn(max = 500.dp)
                 .padding(horizontal = 8.dp),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = InputBackgroundLight,
@@ -123,7 +127,7 @@ fun NewUserScreen(navController: NavController) {
             onValueChange = { phoneNumber = it },
             label = { Text("Phone Number") },
             modifier = Modifier
-                .fillMaxWidth()
+                .widthIn(max = 500.dp)
                 .padding(horizontal = 8.dp),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = InputBackgroundLight,
@@ -137,7 +141,8 @@ fun NewUserScreen(navController: NavController) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Box(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center
         ) {
             OutlinedTextField(
                 value = convertMillisToDate(birthday),
@@ -153,7 +158,8 @@ fun NewUserScreen(navController: NavController) {
                     }
                 },
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .widthIn(max = 500.dp)
+                    .fillMaxWidth(0.8f)
                     .height(64.dp)
             )
 
@@ -231,7 +237,7 @@ fun NewUserScreen(navController: NavController) {
 fun OwnerLabel() {
     Box(
         modifier = Modifier
-            .size(width = 150.dp, height = 100.dp), // Juster høyden til ønsket størrelse
+            .size(width = 150.dp, height = 70.dp), // Juster høyden til ønsket størrelse
         contentAlignment = Alignment.Center
     ) {
         // Tegner en fylt form med avrundede hjørner
@@ -245,20 +251,35 @@ fun OwnerLabel() {
 
         // Legger til teksten "The owner" over formen
         Text(
-            text = "The owner",
+            text = "The Owner",
             color = Color.White,
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Bold, // Setter teksten til fet
-            fontSize = 20.sp, // Juster størrelsen etter behov
+            fontSize = 25.sp, // Juster størrelsen etter behov
             modifier = Modifier.align(Alignment.Center)
         )
     }
 }
 
-@Preview(showBackground = true)
+//@Preview(showBackground = true)
+//@Composable
+//fun PreviewOwnerLabel() {
+    //OwnerLabel()
+//}
+
+@Preview
 @Composable
-fun PreviewNewUserScreen() {
-    // Bruker en falsk navController for preview
-    val navController = rememberNavController()
-    NewUserScreen(navController)
+fun PreviewLogo() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center // Sentraliserer logoen i preview
+    ) {
+        Image(
+            painter = painterResource(R.drawable.dogday_logo),
+            contentDescription = "DogDay Logo",
+            modifier = Modifier.size(200.dp), // Juster størrelsen etter behov
+            contentScale = ContentScale.Fit
+        )
+    }
 }
+
