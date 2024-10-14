@@ -63,7 +63,6 @@ fun DogListCard(navController: NavHostController, dog: Dog){
                 Text(text = "${dog.name}",
                     modifier = Modifier.padding(0.dp))
                 Text(text = "${dog.breed}")
-
             }
 
             Image(

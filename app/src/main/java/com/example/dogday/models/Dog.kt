@@ -12,7 +12,7 @@ data class Dog(
 
 data class VetLog(
     val dog: Dog,
-    val vet_name: String,
-    val date: Date,
+    val vetName: String?,
+    val date: String?,
     val notes: String,
 )

@@ -7,5 +7,6 @@
     <string name="addDog">Legg til hund!</string>
     <string name="addVetLog">Legg til notater fra dyrlegebesøk</string>
     <string name="DogDetail">Detaljer om hund</string>
+    <string name="settings">Innstillinger</string>
 
 </resources>

@@ -1,6 +1,7 @@
 package com.example.dogday
 
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
@@ -28,6 +29,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,12 +46,88 @@ import com.google.firebase.firestore.FirebaseFirestore
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+
+
+//Forsøk på å lagre data fra Firebase i en viewModel
+
+class DogViewModel : ViewModel() {
+    private val _dog = MutableStateFlow<Dog?>(null)  // Holder én enkelt hund
+    val dog: StateFlow<Dog?> get() = _dog
+
+    fun fetchDogById(dogIdx: String) {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid
+
+        if (uid != null) {
+            val firestore = FirebaseFirestore.getInstance()
+            firestore.collection("ddcollection").document(uid).get()
+                .addOnSuccessListener { document ->
+                    if (document.exists()) {
+                        val dogsMap = document.get("dogs") as? Map<String, Map<String, Any>>
+
+
+                        if (dogsMap != null) {
+                            val dogs = dogsMap.values.mapNotNull { dogData ->
+                                val dogId = dogData["dogId"] as? String
+                                val name = dogData["name"] as? String
+                                val breed = dogData["breed"] as? String
+
+                                if (dogId != null && name != null && breed != null && dogIdx == dogId ) {
+                                    val fetchedDog = Dog(
+                                        dogId = dogId,
+                                        name = name,
+                                        breed = breed
+                                    )
+                                    _dog.value = fetchedDog
+                                } else {
+                                    _dog.value = null
+                                }
+                            }
+                        }
+                    } else {
+                        println("Document does not exist")
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    println("Error fetching document: ${exception.message}")
+                }
+        }
+    }
+
+    fun addVetLog(dogIdx: String){
+        //Hmmm...
+    }
+}
+
+
+
+
+@Composable
+fun DogDetailScreen2(viewModel: DogViewModel = viewModel(), dogIdx: String) {
+    LaunchedEffect(dogIdx) {
+        viewModel.fetchDogById(dogIdx)
+    }
+
+    val dog by viewModel.dog.collectAsState()
+    val localDog = dog
+
+    if (localDog != null) {
+        Column() {
+            DogDetailUI(navController = rememberNavController(),dog = localDog)
+        }
+    }
+}
 
 //Kode under er kopiert fra J, kun gjort endring for å hente kun der dogId er lik.
 @Composable
-fun DogDetailScreen(navController: NavController, dogIdx: String) {
+fun DogDetailScreen(navController : NavController ,dogIdx: String) {
     val uid = FirebaseAuth.getInstance().currentUser?.uid
     var dogsList by remember { mutableStateOf<List<Dog>>(emptyList()) }
 
@@ -92,7 +170,7 @@ fun DogDetailScreen(navController: NavController, dogIdx: String) {
     if (dogsList.isNotEmpty()) {
         LazyColumn {
             items(dogsList) { dog ->
-              DogDetailUI(dog = dog)
+              DogDetailUI(navController, dog = dog)
 
             }
         }
@@ -106,7 +184,7 @@ fun DogDetailScreen(navController: NavController, dogIdx: String) {
 
 
 @Composable
-fun DogDetailUI(dog: Dog) {
+fun DogDetailUI(navController : NavController ,dog: Dog) {
     Column(modifier = Modifier
         .fillMaxSize()
         .padding(20.dp)) {
@@ -130,6 +208,12 @@ fun DogDetailUI(dog: Dog) {
 
             Text(text = "Navn: ${dog.name}")
             Text(text = "Rase: ${dog.breed}")
+            Text(text = "DogId: ${dog.dogId}")
+            Text(text = "VetLog: ${dog.vetLog}")
+            Button(onClick = { navController.navigate("addVetLogScreen/${dog.dogId}")}) {
+
+            }
+
 
 /*
         if (dog.vetLog == null){
@@ -162,9 +246,5 @@ fun DogDetailUI(dog: Dog) {
 
 
 
-@Preview
-@Composable
-fun PreViewDog(){
-    DogDetailUI(Dog("1wd", "Jon", "Hund", null))
-}
+
 

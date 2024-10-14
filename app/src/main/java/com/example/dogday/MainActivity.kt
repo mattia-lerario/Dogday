@@ -60,7 +60,8 @@ enum class DogScreen(@StringRes val title: Int) {
     NewUser(title = R.string.newUser),
     AddDog(title = R.string.addDog),
     DogDetail(title = R.string.DogDetail),
-    AddVetLog(title = R.string.addVetLog)
+    AddVetLog(title = R.string.addVetLog),
+    SettingsScreen(title = R.string.settings)
     //DogDetail/{dogId}
     //Summary(title = R.string.order_summary)
 
@@ -121,11 +122,11 @@ fun BottomNavigationBar(navController: NavHostController) {
         )
         NavigationBarItem(
             icon = { Icon(Icons.Default.Settings, contentDescription = "Login") },
-            label = { Text("Login") },
+            label = { Text("Innstillinger") },
             selected = currentDestination == "login",
             onClick = {
                 if (currentDestination != "login") {
-                    navController.navigate("login")
+                    navController.navigate(route = DogScreen.SettingsScreen.name)
                 }
             }
         )
@@ -148,8 +149,8 @@ fun MainApp() {
     Scaffold(
         topBar = {
             DogAppBar(
-                canNavigateBack = true,
-                navigateUp = {},
+                canNavigateBack = navController.previousBackStackEntry != null,
+                navigateUp = {navController.navigateUp()},
                 currentScreen = currentScreen
             )
         },
@@ -158,7 +159,7 @@ fun MainApp() {
         floatingActionButton = {
             if (currentScreen == DogScreen.DogDetail){
             FloatingActionButton(
-                onClick = { },
+                onClick = { navController.navigate(route = DogScreen.SettingsScreen.name) },
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Legg til")
             }
@@ -184,16 +185,25 @@ fun NavigationHost(navController: NavHostController, modifier: Modifier) {
         composable(route = DogScreen.Register.name) { RegisterScreen(navController) } // Use RegisterScreen here
         composable(route = DogScreen.NewUser.name) {NewUserScreen(navController)} // No need to pass uid and email
         composable(route = DogScreen.AddDog.name) { AddDogScreen(navController) }
-        composable(route = DogScreen.AddVetLog.name) {addVetLogScreen(navController)}
+        //composable(route = DogScreen.AddVetLog.name) {addVetLogScreen(navController)}
+        composable(route = DogScreen.SettingsScreen.name) { SettingsScreen(navController) }
         composable(
             route = "DogDetailScreen/{dogId}",
             arguments = listOf(navArgument("dogId") {type = NavType.StringType })
         ) { backStackEntry ->
             val dogId = backStackEntry.arguments?.getString("dogId") ?: ""
-            DogDetailScreen(navController = navController, dogIdx = dogId)
-
+            DogDetailScreen(navController = navController ,dogIdx = dogId)
+//navController = navController,
     }
-}
+        composable(
+            route = "addVetLogScreen/{dogId}",
+            arguments = listOf(navArgument("dogId") {type = NavType.StringType })
+        ) { backStackEntry ->
+            val dogId = backStackEntry.arguments?.getString("dogId") ?: ""
+            addVetLogScreen(navController = navController, dogIdx = dogId)
+//navController = navController,
+        }
+    }
 
 
 @Composable
