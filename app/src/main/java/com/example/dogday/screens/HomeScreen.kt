@@ -66,19 +66,18 @@ fun DogsList() {
                                 val dogId = dogInfo?.get("dogId") as? String
                                 val name = dogInfo?.get("name") as? String
                                 val breed = dogInfo?.get("breed") as? String
-
-                                val nickName = dogData["nickName"] as? String ?: ""
-                                val birthday = dogData["birthday"] as? Long ?: 0L
-                                val breeder = dogData["breeder"] as? String ?: ""
+                                val nickName = dogInfo?.get("nickName") as? String
+                                val birthday = dogInfo?.get("birthday") as? Long
+                                val breeder = dogInfo?.get("breeder") as? String
 
                                 if (dogId != null && name != null && breed != null) {
                                     Dog(
                                         dogId = dogId,
                                         name = name,
-                                        nickName = nickName,
+                                        nickName = nickName ?: "",
                                         breed = breed,
-                                        birthday = birthday,
-                                        breeder = breeder
+                                        birthday = birthday ?: 0L,
+                                        breeder = breeder ?: ""
                                     )
                                 } else {
                                     null

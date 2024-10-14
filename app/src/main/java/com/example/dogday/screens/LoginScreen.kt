@@ -18,6 +18,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.max
+import com.example.dogday.R
 import com.example.dogday.ui.theme.InputBackgroundLight
 import com.example.dogday.ui.theme.ButtonColorLight
 import com.google.firebase.analytics.ktx.analytics
