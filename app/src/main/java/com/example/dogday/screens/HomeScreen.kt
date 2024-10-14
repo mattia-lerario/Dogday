@@ -63,23 +63,27 @@ fun DogsList() {
                         if (dogsMap != null) {
                             val dogs = dogsMap.values.mapNotNull { dogData ->
                                 val dogInfo = dogData as? Map<*, *>
-                                val dogId = dogInfo?.get("dogId") as? String
-                                val name = dogInfo?.get("name") as? String
-                                val breed = dogInfo?.get("breed") as? String
 
-                                val nickName = dogData["nickName"] as? String ?: ""
-                                val birthday = dogData["birthday"] as? Long ?: 0L
-                                val breeder = dogData["breeder"] as? String ?: ""
+                                if (dogInfo != null) {
+                                    val dogId = dogInfo["dogId"] as? String
+                                    val name = dogInfo["name"] as? String
+                                    val breed = dogInfo["breed"] as? String
+                                    val nickName = dogInfo["nickName"] as? String ?: ""
+                                    val birthday = dogInfo["birthday"] as? Long ?: 0L
+                                    val breeder = dogInfo["breeder"] as? String ?: ""
 
-                                if (dogId != null && name != null && breed != null) {
-                                    Dog(
-                                        dogId = dogId,
-                                        name = name,
-                                        nickName = nickName,
-                                        breed = breed,
-                                        birthday = birthday,
-                                        breeder = breeder
-                                    )
+                                    if (dogId != null && name != null && breed != null) {
+                                        Dog(
+                                            dogId = dogId,
+                                            name = name,
+                                            nickName = nickName,
+                                            breed = breed,
+                                            birthday = birthday,
+                                            breeder = breeder
+                                        )
+                                    } else {
+                                        null
+                                    }
                                 } else {
                                     null
                                 }
@@ -95,6 +99,7 @@ fun DogsList() {
                 }
         }
     }
+
 
     if (dogsList.isNotEmpty()) {
         LazyColumn {

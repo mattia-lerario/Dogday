@@ -29,9 +29,8 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.navigation.NavController
-import com.example.dogday.Dog
-import com.example.dogday.FirestoreInteractions
 import com.example.dogday.models.Dog
+import com.example.dogday.FirestoreInteractions
 import com.google.firebase.auth.FirebaseAuth
 import java.text.SimpleDateFormat
 import java.util.Date
