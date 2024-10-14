@@ -20,12 +20,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.dogday.FirestoreInteractions
 import com.example.dogday.User
 import com.example.dogday.UserSession
+import com.example.dogday.ui.theme.ButtonColorLight
+import com.example.dogday.ui.theme.InputBackgroundLight
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
@@ -39,6 +44,8 @@ fun NewUserScreen(navController: NavController) {
     var firstName by remember { mutableStateOf("") }
     var lastName by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
+    var hasDog by remember { mutableStateOf(false) }
+
 
     var showDatePicker by remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState()
@@ -52,15 +59,38 @@ fun NewUserScreen(navController: NavController) {
             .padding(16.dp),
         verticalArrangement = Arrangement.Center
     ) {
-        Text("Welcome, Let's make a new account for you!")
+        Text(
+            text = "Welcome!",
+            style = MaterialTheme.typography.headlineLarge,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 24.dp)
+        )
+
+        Text(
+            text = "Let's make a new account for you...",
+            style = MaterialTheme.typography.headlineSmall,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 24.dp)
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         TextField(
             value = firstName,
             onValueChange = { firstName = it },
-            label = { Text("First Name") },
-            modifier = Modifier.fillMaxWidth()
+            label = { Text("First Name", color = Color.Black) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp),
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = InputBackgroundLight,
+                unfocusedContainerColor = InputBackgroundLight,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent
+            ),
+            shape = MaterialTheme.shapes.small
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -69,7 +99,16 @@ fun NewUserScreen(navController: NavController) {
             value = lastName,
             onValueChange = { lastName = it },
             label = { Text("Last Name") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp),
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = InputBackgroundLight,
+                unfocusedContainerColor = InputBackgroundLight,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent
+            ),
+            shape = MaterialTheme.shapes.small
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -78,8 +117,32 @@ fun NewUserScreen(navController: NavController) {
             value = phoneNumber,
             onValueChange = { phoneNumber = it },
             label = { Text("Phone Number") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp),
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = InputBackgroundLight,
+                unfocusedContainerColor = InputBackgroundLight,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent
+            ),
+            shape = MaterialTheme.shapes.small
         )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text("Do you have a dog?")
+            Spacer(modifier = Modifier.width(8.dp))
+            Switch(
+                checked = hasDog,
+                onCheckedChange = { hasDog = it }
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Box(
             modifier = Modifier.fillMaxWidth()
@@ -146,8 +209,7 @@ fun NewUserScreen(navController: NavController) {
                             if (document.exists()) {
                                 val user = document.toObject(User::class.java)
                                 if (user != null) {
-                                    // Check if the dogs map is empty
-                                    if (user.dogs.isEmpty()) {
+                                    if (hasDog) {
                                         navController.navigate("addDogScreen")
                                     } else {
                                         navController.navigate("home")
@@ -157,8 +219,19 @@ fun NewUserScreen(navController: NavController) {
                         }
                 }
             }
-        }) {
-            Text("Save information")
+        },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = ButtonColorLight
+            ),
+            contentPadding = PaddingValues(vertical = 8.dp)
+        ) {
+            Text(
+                "Save information",
+                fontWeight = FontWeight.Bold
+            )
         }
     }
-}
+};

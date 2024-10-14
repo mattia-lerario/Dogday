@@ -57,7 +57,7 @@ fun LoginScreen(navController: NavController) {
     ) {
 
         Image(
-            painter = painterResource(R.drawable.dogday_logo), // Add your logo drawable here
+            painter = painterResource(R.drawable.dogday_logo),
             contentDescription = "DogDay Logo",
             modifier = Modifier.size(350.dp),
             contentScale = ContentScale.Fit
@@ -106,7 +106,7 @@ fun LoginScreen(navController: NavController) {
 
         Row(
             modifier = Modifier
-                .widthIn(max = 300.dp) // Set a max width for the button row
+                .widthIn(max = 300.dp)
                 .padding(horizontal = 8.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
@@ -145,7 +145,7 @@ fun LoginScreen(navController: NavController) {
                     }
                 },
                 modifier = Modifier
-                    .weight(1f) // Makes both buttons take up equal space
+                    .weight(1f)
                     .padding(end = 8.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = ButtonColorLight),
                 contentPadding = PaddingValues(vertical = 8.dp)
@@ -159,7 +159,7 @@ fun LoginScreen(navController: NavController) {
             Button(
                 onClick = { navController.navigate("register") },
                 modifier = Modifier
-                    .weight(1f) // Makes both buttons take up equal space
+                    .weight(1f)
                     .padding(start = 8.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = ButtonColorLight),
                 contentPadding = PaddingValues(vertical = 8.dp)
