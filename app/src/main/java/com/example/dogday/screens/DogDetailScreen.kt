@@ -127,8 +127,12 @@ fun DogDetailUI(navController : NavController, dog: Dog) {
 
 
         Text(text = "Navn: ${dog.name}")
+        Text(text = "Kallenavn: ${dog.nickName}")
         Text(text = "Rase: ${dog.breed}")
-        Text(text = "DogId: ${dog.dogId}")
+        Text(text = "Bursdag: ${dog.birthday}")
+        Text(text = "Oppdretter: ${dog.breeder}")
+
+
 
     }}
 

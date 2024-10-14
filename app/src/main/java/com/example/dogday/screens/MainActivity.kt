@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
@@ -37,6 +38,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.dogday.FirestoreInteractions
 import com.example.dogday.R
+import com.example.dogday.ui.theme.ButtonColorLight
+import com.example.dogday.ui.theme.MyAppTest01Theme
 import com.google.firebase.FirebaseApp
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.auth.ktx.auth
@@ -54,7 +57,10 @@ class MainActivity : ComponentActivity() {
         val auth = Firebase.auth
 
         setContent {
-            MainApp()
+            MyAppTest01Theme{
+                MainApp()
+            }
+
         }
     }
 }
@@ -149,8 +155,10 @@ fun DogAppBar(
     TopAppBar(
         title = { Text(stringResource(currentScreen.title)) },
 
+        //colors = ButtonDefaults.buttonColors(containerColor = ButtonColorLight),
         colors = TopAppBarDefaults.mediumTopAppBarColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer
+
         ),
         modifier = modifier,
         navigationIcon = {
