@@ -111,7 +111,13 @@ fun RegisterScreen(navController: NavController) {
             shape = MaterialTheme.shapes.small
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = "Already have an account? Click on Login.",
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
+        )
 
         Row(
             modifier = Modifier
@@ -119,6 +125,7 @@ fun RegisterScreen(navController: NavController) {
                 .padding(horizontal = 8.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
+
             Button(
                 onClick = {
                     Firebase.auth.createUserWithEmailAndPassword(email, password)
@@ -152,7 +159,7 @@ fun RegisterScreen(navController: NavController) {
                 colors = ButtonDefaults.buttonColors(containerColor = ButtonColorLight),
                 contentPadding = PaddingValues(vertical = 8.dp)
             ) {
-                Text("Already have an account? Login")
+                Text("Login")
             }
 
         }
