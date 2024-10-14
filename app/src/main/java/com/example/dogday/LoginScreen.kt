@@ -58,7 +58,9 @@ fun LoginScreen(navController: NavController) {
                 .padding(horizontal = 8.dp),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = InputBackgroundLight,
-                unfocusedContainerColor = InputBackgroundLight
+                unfocusedContainerColor = InputBackgroundLight,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent
             ),
             shape = MaterialTheme.shapes.small
 
@@ -77,7 +79,9 @@ fun LoginScreen(navController: NavController) {
                 .padding(horizontal = 8.dp),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = InputBackgroundLight,
-                unfocusedContainerColor = InputBackgroundLight
+                unfocusedContainerColor = InputBackgroundLight,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent
             ),
             shape = MaterialTheme.shapes.small
         )
@@ -85,9 +89,11 @@ fun LoginScreen(navController: NavController) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ){
+            modifier = Modifier
+                .widthIn(max = 300.dp) // Set a max width for the button row
+                .padding(horizontal = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
             Button(
                 onClick = {
                     if (email.isNotBlank() && password.isNotBlank()) {
@@ -122,39 +128,34 @@ fun LoginScreen(navController: NavController) {
                         loginError = "Email and password must not be empty"
                     }
                 },
-
-            modifier = Modifier
-                .weight(1f)
-                .padding(end = 8.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = ButtonColorLight),
+                modifier = Modifier
+                    .weight(1f) // Makes both buttons take up equal space
+                    .padding(end = 8.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = ButtonColorLight),
                 contentPadding = PaddingValues(vertical = 8.dp)
-
-        ) {
-            Text("Login",
-                fontWeight = FontWeight.Bold
-
+            ) {
+                Text(
+                    "Login",
+                    fontWeight = FontWeight.Bold
                 )
+            }
+
+            Button(
+                onClick = { navController.navigate("register") },
+                modifier = Modifier
+                    .weight(1f) // Makes both buttons take up equal space
+                    .padding(start = 8.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = ButtonColorLight),
+                contentPadding = PaddingValues(vertical = 8.dp)
+            ) {
+                Text(
+                    "Register",
+                    fontWeight = FontWeight.Bold
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(8.dp))
-
-        Button(
-            onClick = { navController.navigate("register") },
-            modifier = Modifier
-                .weight(1f)
-                .padding(start = 8.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = ButtonColorLight),
-            contentPadding = PaddingValues(vertical = 8.dp)
-        ) {
-            Text("Register",
-                fontWeight = FontWeight.Bold
-                )
-         }
-
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
 
         loginError?.let { error ->
             Text(
