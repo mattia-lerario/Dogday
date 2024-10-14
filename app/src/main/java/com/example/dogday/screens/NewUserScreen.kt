@@ -1,5 +1,8 @@
 package com.example.dogday.screens
 
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -23,10 +26,17 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.dogday.FirestoreInteractions
+import com.example.dogday.R
 import com.example.dogday.User
 import com.example.dogday.UserSession
 import com.example.dogday.ui.theme.ButtonColorLight
@@ -53,26 +63,47 @@ fun NewUserScreen(navController: NavController) {
 
     val firestoreInteractions = FirestoreInteractions()
 
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
         verticalArrangement = Arrangement.Center
     ) {
-        Text(
-            text = "Welcome!",
-            style = MaterialTheme.typography.headlineLarge,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 24.dp)
-        )
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(0.dp)
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.dogday_logo),
+                    contentDescription = "DogDay Logo",
+                    modifier = Modifier.size(300.dp),
+                    contentScale = ContentScale.Fit
+                )
+
+                OwnerLabel() // Legger til OwnerLabel her
+            }
+        }
+
+
+        //Text(
+            //text = "Welcome!",
+            //style = MaterialTheme.typography.headlineLarge,
+            //modifier = Modifier
+                //.fillMaxWidth()
+                //.padding(bottom = 24.dp)
+        //)
 
         Text(
-            text = "Let's make a new account for you...",
-            style = MaterialTheme.typography.headlineSmall,
+            text = "Tell us more about you!",
+            style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier
-                .fillMaxWidth()
                 .padding(bottom = 24.dp)
+                .align(Alignment.CenterHorizontally)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -82,7 +113,7 @@ fun NewUserScreen(navController: NavController) {
             onValueChange = { firstName = it },
             label = { Text("First Name", color = Color.Black) },
             modifier = Modifier
-                .fillMaxWidth()
+                .widthIn(max = 500.dp)
                 .padding(horizontal = 8.dp),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = InputBackgroundLight,
@@ -100,7 +131,7 @@ fun NewUserScreen(navController: NavController) {
             onValueChange = { lastName = it },
             label = { Text("Last Name") },
             modifier = Modifier
-                .fillMaxWidth()
+                .widthIn(max = 500.dp)
                 .padding(horizontal = 8.dp),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = InputBackgroundLight,
@@ -118,7 +149,7 @@ fun NewUserScreen(navController: NavController) {
             onValueChange = { phoneNumber = it },
             label = { Text("Phone Number") },
             modifier = Modifier
-                .fillMaxWidth()
+                .widthIn(max = 500.dp)
                 .padding(horizontal = 8.dp),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = InputBackgroundLight,
@@ -131,21 +162,8 @@ fun NewUserScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text("Do you have a dog?")
-            Spacer(modifier = Modifier.width(8.dp))
-            Switch(
-                checked = hasDog,
-                onCheckedChange = { hasDog = it }
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
         Box(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.widthIn(max = 500.dp)
         ) {
             OutlinedTextField(
                 value = convertMillisToDate(birthday),
@@ -234,4 +252,38 @@ fun NewUserScreen(navController: NavController) {
             )
         }
     }
-};
+}
+
+@Composable
+fun OwnerLabel() {
+    Box(
+        modifier = Modifier
+            .size(width = 160.dp, height = 70.dp), // Juster størrelsen etter behov
+        contentAlignment = Alignment.Center
+    ) {
+        // Tegner en form (f.eks. rektangel med avrundede hjørner)
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            drawRoundRect(
+                color = Color(0xFFD95A3C), // Farge på bakgrunnen
+                size = size,
+                cornerRadius = androidx.compose.ui.geometry.CornerRadius(16.dp.toPx(), 16.dp.toPx()) // Avrundede hjørner
+            )
+        }
+
+        // Legger til teksten "The owner" over formen
+        Text(
+            text = "The Owner",
+            color = Color.White,
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.Bold,
+            fontSize = 25.sp,
+            modifier = Modifier.align(Alignment.Center)
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewOwnerLabel() {
+    OwnerLabel()
+}
