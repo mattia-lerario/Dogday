@@ -1,68 +1,45 @@
 package com.example.dogday.screens
 
-import androidx.compose.foundation.BorderStroke
+
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
+
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
+
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
+import androidx.navigation.NavController
+import com.google.firebase.firestore.FirebaseFirestore
+
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+
 import com.example.dogday.R
 import com.example.dogday.models.Dog
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
 
+
+//Kode under er kopiert fra J, kun gjort endring for å hente kun der dogId er lik.
 @Composable
-fun HomeScreen(navController: NavHostController) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(text = "Dine hunder", style = MaterialTheme.typography.bodyLarge)
-
-        DogsList(navController = navController)
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(text = "Finn Din Neste Tur", style = MaterialTheme.typography.bodyLarge)
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(onClick = { navController.navigate("map") }) {
-            Text("Se anbefalinger")
-        }
-    }
-}
-
-@Composable
-fun DogsList(navController: NavHostController) {
+fun DogDetailScreen(navController : NavController ,dogIdx: String) {
     val uid = FirebaseAuth.getInstance().currentUser?.uid
     var dogsList by remember { mutableStateOf<List<Dog>>(emptyList()) }
 
@@ -72,7 +49,8 @@ fun DogsList(navController: NavHostController) {
             firestore.collection("ddcollection").document(uid).get()
                 .addOnSuccessListener { document ->
                     if (document.exists()) {
-                        val dogsMap = document.get("dogs") as? Map<*, *>
+                        val dogsMap = document.get("dogs") as? Map<String, Map<String, Any>>
+
 
                         if (dogsMap != null) {
                             val dogs = dogsMap.values.mapNotNull { dogData ->
@@ -84,7 +62,7 @@ fun DogsList(navController: NavHostController) {
                                 val birthday = dogInfo?.get("birthday") as? Long
                                 val breeder = dogInfo?.get("breeder") as? String
 
-                                if (dogId != null && name != null && breed != null) {
+                                if (dogId != null && name != null && breed != null && dogIdx == dogId) {
                                     Dog(
                                         dogId = dogId,
                                         name = name,
@@ -108,12 +86,11 @@ fun DogsList(navController: NavHostController) {
                 }
         }
     }
-
     if (dogsList.isNotEmpty()) {
         LazyColumn {
             items(dogsList) { dog ->
-                DogListCard(navController = navController, dog = dog)
-                Spacer(modifier = Modifier.height(16.dp))
+                DogDetailUI(navController, dog = dog)
+
             }
         }
     } else {
@@ -121,35 +98,38 @@ fun DogsList(navController: NavHostController) {
     }
 }
 
-@Composable
-fun DogListCard(navController: NavHostController, dog: Dog){
-    Card(elevation = CardDefaults.cardElevation(
-        defaultElevation = 6.dp),
-        onClick = { navController.navigate("DogDetailScreen/${dog.dogId}")},
-        border = BorderStroke(1.dp, Color.Black),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(10.dp)) {
-        Row(modifier = Modifier.padding(10.dp)) {
-            Column(modifier = Modifier.weight(1f)
-                .padding(10.dp)) {
-                Text(text = "${dog.name}",
-                    modifier = Modifier.padding(0.dp))
-                Text(text = "${dog.breed}")
-            }
 
+
+
+
+@Composable
+fun DogDetailUI(navController : NavController, dog: Dog) {
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .padding(20.dp)) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(10.dp),
+            contentAlignment = Alignment.Center
+        ) {
             Image(
                 painter = painterResource(id = R.drawable.dog_cartoon),
                 contentDescription = "Dog",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .size(100.dp)
+                    .size(200.dp)
                     .clip(CircleShape)
                     .padding(0.dp)
+
             )
-
-
         }
 
-    }
-}
+
+        Text(text = "Navn: ${dog.name}")
+        Text(text = "Rase: ${dog.breed}")
+        Text(text = "DogId: ${dog.dogId}")
+
+    }}
+
+
