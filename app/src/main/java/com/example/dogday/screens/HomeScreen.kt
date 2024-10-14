@@ -20,7 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.dogday.Dog
+import com.example.dogday.models.Dog
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -67,11 +67,18 @@ fun DogsList() {
                                 val name = dogInfo?.get("name") as? String
                                 val breed = dogInfo?.get("breed") as? String
 
+                                val nickName = dogData["nickName"] as? String ?: ""
+                                val birthday = dogData["birthday"] as? Long ?: 0L
+                                val breeder = dogData["breeder"] as? String ?: ""
+
                                 if (dogId != null && name != null && breed != null) {
                                     Dog(
                                         dogId = dogId,
                                         name = name,
-                                        breed = breed
+                                        nickName = nickName,
+                                        breed = breed,
+                                        birthday = birthday,
+                                        breeder = breeder
                                     )
                                 } else {
                                     null

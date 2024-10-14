@@ -1,6 +1,7 @@
 package com.example.dogday
 
 import android.util.Log
+import com.example.dogday.models.Dog
 import com.google.firebase.firestore.FirebaseFirestore
 
 class FirestoreInteractions {
