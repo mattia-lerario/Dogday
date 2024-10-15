@@ -159,8 +159,8 @@ fun NewUserScreen(navController: NavController) {
                 },
                 modifier = Modifier
                     .widthIn(max = 500.dp)
-                    .fillMaxWidth(0.8f)
-                    .height(64.dp)
+                    .fillMaxWidth(0.75f)
+                    .height(64.dp),
             )
 
             if (showDatePicker) {
@@ -171,16 +171,31 @@ fun NewUserScreen(navController: NavController) {
                             birthday = datePickerState.selectedDateMillis ?: 0L
                             showDatePicker = false
                         }) {
-                            Text("OK")
+                            Text("OK", color = Color.Black)
                         }
                     },
                     dismissButton = {
                         TextButton(onClick = { showDatePicker = false }) {
-                            Text("Cancel")
+                            Text("Cancel", color = Color.Black)
                         }
                     }
                 ) {
-                    DatePicker(state = datePickerState)
+                    DatePicker(
+                        state = datePickerState,
+                        colors = DatePickerDefaults.colors(
+                            containerColor = Color(0xFFF3CCC3),
+                            titleContentColor = Color.Black,
+                            headlineContentColor = Color.Black,
+                            selectedYearContainerColor = Color(0xFFD95A3C),
+                            weekdayContentColor = Color.DarkGray,
+                            selectedDayContentColor = Color.White,
+                            selectedDayContainerColor = Color(0xFFD95A3C),
+                            todayContentColor = Color.Black,
+                            todayDateBorderColor = Color.Black,
+
+                        )
+
+                    )
                 }
             }
         }
@@ -218,8 +233,8 @@ fun NewUserScreen(navController: NavController) {
             }
         },
             modifier = Modifier
-                .widthIn(max = 500.dp)
-                .padding(horizontal = 8.dp),
+                .width(150.dp) // Sett ønsket bredde
+                .height(48.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = ButtonColorLight
             ),
