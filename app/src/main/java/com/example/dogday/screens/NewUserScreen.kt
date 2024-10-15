@@ -65,7 +65,7 @@ fun NewUserScreen(navController: NavController) {
                 Image(
                     painter = painterResource(R.drawable.dogday_logo),
                     contentDescription = "DogDay Logo",
-                    modifier = Modifier.size(300.dp),
+                    modifier = Modifier.size(250.dp),
                     contentScale = ContentScale.Fit
                 )
 
@@ -267,19 +267,4 @@ fun OwnerLabel() {
     //OwnerLabel()
 //}
 
-@Preview
-@Composable
-fun PreviewLogo() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center // Sentraliserer logoen i preview
-    ) {
-        Image(
-            painter = painterResource(R.drawable.dogday_logo),
-            contentDescription = "DogDay Logo",
-            modifier = Modifier.size(200.dp), // Juster størrelsen etter behov
-            contentScale = ContentScale.Fit
-        )
-    }
-}
 
