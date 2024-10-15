@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.*
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,6 +25,7 @@ import com.example.dogday.FirestoreInteractions
 import com.example.dogday.R
 import com.example.dogday.User
 import com.example.dogday.UserSession
+import com.example.dogday.ui.theme.BackgroundColorLight
 import com.example.dogday.ui.theme.ButtonColorLight
 import com.example.dogday.ui.theme.InputBackgroundLight
 import com.google.firebase.auth.ktx.auth
@@ -156,11 +158,18 @@ fun NewUserScreen(navController: NavController) {
                             contentDescription = "Select date"
                         )
                     }
+
                 },
                 modifier = Modifier
                     .widthIn(max = 500.dp)
                     .fillMaxWidth(0.75f)
                     .height(64.dp),
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = BackgroundColorLight,
+                    unfocusedContainerColor = BackgroundColorLight,
+                    focusedIndicatorColor = Color(0xFFD95A3C),
+                    unfocusedIndicatorColor = Color.Gray
+                )
             )
 
             if (showDatePicker) {
@@ -191,8 +200,7 @@ fun NewUserScreen(navController: NavController) {
                             selectedDayContentColor = Color.White,
                             selectedDayContainerColor = Color(0xFFD95A3C),
                             todayContentColor = Color.Black,
-                            todayDateBorderColor = Color.Black,
-
+                            todayDateBorderColor = Color.Black
                         )
 
                     )
