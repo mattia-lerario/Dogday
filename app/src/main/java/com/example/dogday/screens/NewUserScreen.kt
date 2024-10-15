@@ -218,7 +218,7 @@ fun NewUserScreen(navController: NavController) {
             }
         },
             modifier = Modifier
-                .fillMaxWidth()
+                .widthIn(max = 500.dp)
                 .padding(horizontal = 8.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = ButtonColorLight
