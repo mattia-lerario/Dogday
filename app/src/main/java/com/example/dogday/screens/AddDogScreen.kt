@@ -26,12 +26,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.navigation.NavController
+import com.example.dogday.Dog
+import com.example.dogday.FirestoreInteractions
 import com.example.dogday.models.Dog
 import com.example.dogday.FirestoreInteractions
-//import com.example.dogday.models.Dog
+import com.example.dogday.ui.theme.ButtonColorLight
+import com.example.dogday.ui.theme.InputBackgroundLight
 import com.google.firebase.auth.FirebaseAuth
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -58,8 +62,7 @@ fun AddDogScreen(navController: NavController) {
             .padding(16.dp),
         verticalArrangement = Arrangement.Center
     ) {
-        //TODO: Sjekke om det finnes en hund eller ikke. If/else.
-        Text("Looks like you haven't added your dogs, lets add one!", style = MaterialTheme.typography.titleLarge)
+        Text("Lets add your dog!", style = MaterialTheme.typography.titleLarge)
 
         Spacer(modifier = Modifier.height(16.dp))
 

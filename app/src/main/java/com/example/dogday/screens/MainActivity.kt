@@ -128,6 +128,7 @@ fun NavigationHost(navController: NavHostController, modifier: Modifier) {
             val dogId = backStackEntry.arguments?.getString("dogId") ?: ""
             DogDetailScreen(navController = navController ,dogIdx = dogId)
         }
+        composable("dogQueryScreen") { DogQueryScreen(navController) }
 
 
     }
