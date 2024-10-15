@@ -128,7 +128,7 @@ fun NavigationHost(navController: NavHostController, modifier: Modifier) {
             val dogId = backStackEntry.arguments?.getString("dogId") ?: ""
             DogDetailScreen(navController = navController ,dogIdx = dogId)
         }
-        composable("dogQueryScreen") { DogQueryScreen(navController) }
+        composable(route = DogScreen.DogQueryScreen.name) { DogQueryScreen(navController) }
 
 
     }
@@ -143,7 +143,8 @@ enum class DogScreen(@StringRes val title: Int) {
     AddDog(title = R.string.addDog),
     DogDetail(title = R.string.DogDetail),
     //AddVetLog(title = R.string.addVetLog),
-    SettingsScreen(title = R.string.settings)
+    SettingsScreen(title = R.string.settings),
+    DogQueryScreen(title = R.string.dogQueryScreen),
 
 }
 

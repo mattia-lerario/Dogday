@@ -8,4 +8,5 @@
     <string name="addVetLog">Legg til notater fra dyrlegebesøk</string>
     <string name="DogDetail">Detaljer om hund</string>
     <string name="settings">Innstillinger</string>
+    <string name="dogQueryScreen">DogQuery</string>
 </resources>

@@ -31,18 +31,15 @@ fun SettingsScreen(navController: NavController){
                 }
                 Text(text = "Login")
             }
+            Column(modifier = Modifier.padding(5.dp)) {
+                FloatingActionButton(onClick = {navController.navigate(route = DogScreen.DogQueryScreen.name)}) {
+                }
+                Text(text = "DogQ")
         }
 
 
     }
-}
+}}
 
 
 
-
-
-@Preview
-@Composable
-fun PreviewDog(){
-    SettingsScreen(navController = rememberNavController())
-}
