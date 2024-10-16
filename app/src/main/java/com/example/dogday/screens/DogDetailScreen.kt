@@ -5,8 +5,10 @@ import androidx.compose.foundation.Image
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -131,6 +133,10 @@ fun DogDetailUI(navController : NavController, dog: Dog) {
         Text(text = "Rase: ${dog.breed}")
         Text(text = "Bursdag: ${dog.birthday}")
         Text(text = "Oppdretter: ${dog.breeder}")
+        Spacer(modifier = Modifier.height(26.dp))
+        
+        Text(text = "Knappen under skal snart virke slik at den gjør det mulig" +
+                "å legge til logg fra dyrlege eller lignende!")
 
 
 
