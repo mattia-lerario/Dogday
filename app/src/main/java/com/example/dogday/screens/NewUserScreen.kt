@@ -142,7 +142,7 @@ fun NewUserScreen(navController: NavController) {
         TextField(
             value = firstName,
             onValueChange = { firstName = it },
-            label = { Text("First Name", color = Color.Black) },
+            label = { Text("First Name") },
             modifier = Modifier
                 .widthIn(max = 500.dp)
                 .padding(horizontal = 8.dp),
