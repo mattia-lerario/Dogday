@@ -127,6 +127,17 @@ fun RegisterScreen(navController: NavController) {
         ) {
 
             Button(
+                onClick = { navController.navigate("login") },
+                Modifier
+                    .weight(1f)
+                    .padding(start = 8.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = ButtonColorLight),
+                contentPadding = PaddingValues(vertical = 8.dp)
+            ) {
+                Text("Login")
+            }
+
+            Button(
                 onClick = {
                     Firebase.auth.createUserWithEmailAndPassword(email, password)
                         .addOnCompleteListener { task ->
@@ -150,17 +161,6 @@ fun RegisterScreen(navController: NavController) {
             }
 
             Spacer(modifier = Modifier.height(8.dp))
-
-            Button(
-                onClick = { navController.navigate("login") },
-                Modifier
-                    .weight(1f)
-                    .padding(start = 8.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = ButtonColorLight),
-                contentPadding = PaddingValues(vertical = 8.dp)
-            ) {
-                Text("Login")
-            }
 
         }
 
