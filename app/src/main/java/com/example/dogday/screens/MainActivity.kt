@@ -80,7 +80,7 @@ fun MainApp() {
         else -> DogScreen.valueOf(currentRoute ?: DogScreen.Login.name)
     }
 
-    val noBottomBarRoutes = listOf(
+    val noBarRoutes = listOf(
         DogScreen.AddDog.name,
         DogScreen.NewUser.name,
         DogScreen.Register.name,
@@ -92,11 +92,13 @@ fun MainApp() {
 
     Scaffold(
         topBar = {
-            DogAppBar(
-                canNavigateBack = navController.previousBackStackEntry != null && currentRoute != DogScreen.Home.name,
-                navigateUp = {navController.navigateUp()},
-                currentScreen = currentScreen
-            )
+            if (!noBarRoutes.contains(currentRoute)){
+                DogAppBar(
+                    canNavigateBack = navController.previousBackStackEntry != null && currentRoute != DogScreen.Home.name,
+                    navigateUp = {navController.navigateUp()},
+                    currentScreen = currentScreen
+                )
+            }
         },
 
 
@@ -112,7 +114,7 @@ fun MainApp() {
 
 
         bottomBar = {
-            if (!noBottomBarRoutes.contains(currentRoute)) {
+            if (!noBarRoutes.contains(currentRoute)) {
                 BottomNavigationBar(navController = navController)
             }
         }
