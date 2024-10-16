@@ -80,6 +80,14 @@ fun MainApp() {
         else -> DogScreen.valueOf(currentRoute ?: DogScreen.Login.name)
     }
 
+    val noBottomBarRoutes = listOf(
+        DogScreen.AddDog.name,
+        DogScreen.NewUser.name,
+        DogScreen.Register.name,
+        DogScreen.Login.name,
+        DogScreen.DogQueryScreen.name
+    )
+
     Scaffold(
         topBar = {
             DogAppBar(
@@ -102,7 +110,10 @@ fun MainApp() {
 
 
         bottomBar = {
-            BottomNavigationBar(navController = navController)
+            // Only show BottomNavigationBar if the current screen is NOT in the noBottomBarRoutes list
+            if (!noBottomBarRoutes.contains(currentRoute)) {
+                BottomNavigationBar(navController = navController)
+            }
         }
     ) { paddingValues ->
         NavigationHost(navController = navController, modifier = Modifier.padding(paddingValues))

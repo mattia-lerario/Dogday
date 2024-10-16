@@ -177,36 +177,36 @@ fun AddDogScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        dogImageBitmap?.let { bitmap ->
-            Image(bitmap = bitmap.asImageBitmap(), contentDescription = "Dog Image", modifier = Modifier.size(200.dp))
-        }
+            dogImageBitmap?.let { bitmap ->
+                Image(bitmap = bitmap.asImageBitmap(), contentDescription = "Dog Image", modifier = Modifier.size(200.dp))
+            }
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-        Button(
-            onClick = {
-                if (dogName.isNotEmpty() && dogBreed.isNotEmpty() && dogImageBitmap != null) {
-                    uploadingImage = true
+            Button(
+                onClick = {
+                    if (dogName.isNotEmpty() && dogBreed.isNotEmpty() && dogImageBitmap != null) {
+                        uploadingImage = true
 
-                    val storageRef = storage.reference.child("dog_images/${dogName}_${System.currentTimeMillis()}.jpg")
-                    val baos = ByteArrayOutputStream()
-                    dogImageBitmap?.compress(Bitmap.CompressFormat.JPEG, 100, baos)
-                    val data = baos.toByteArray()
+                        val storageRef = storage.reference.child("dog_images/${dogName}_${System.currentTimeMillis()}.jpg")
+                        val baos = ByteArrayOutputStream()
+                        dogImageBitmap?.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+                        val data = baos.toByteArray()
 
-                    val uploadTask = storageRef.putBytes(data)
-                    uploadTask.addOnSuccessListener { taskSnapshot ->
-                        storageRef.downloadUrl.addOnSuccessListener { uri ->
-                            val imageUrl = uri.toString()
+                        val uploadTask = storageRef.putBytes(data)
+                        uploadTask.addOnSuccessListener { taskSnapshot ->
+                            storageRef.downloadUrl.addOnSuccessListener { uri ->
+                                val imageUrl = uri.toString()
 
-                            val uid = FirebaseAuth.getInstance().currentUser?.uid
-                            if (uid != null) {
-                                val dog = Dog(
-                                    name = dogName,
-                                    nickName = dogNickName,
-                                    breed = dogBreed,
-                                    birthday = System.currentTimeMillis(),
-                                    breeder = dogBreeder,
-                                    imageUrl = imageUrl
+                                val uid = FirebaseAuth.getInstance().currentUser?.uid
+                                if (uid != null) {
+                                    val dog = Dog(
+                                        name = dogName,
+                                        nickName = dogNickName,
+                                        breed = dogBreed,
+                                        birthday = System.currentTimeMillis(),
+                                        breeder = dogBreeder,
+                                        imageUrl = imageUrl
                                 )
                                 firestoreInteractions.addDogToUser(uid, dog)
 
