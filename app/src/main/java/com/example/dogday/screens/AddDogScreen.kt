@@ -68,16 +68,7 @@ fun AddDogScreen(navController: NavController) {
             value = dogName,
             onValueChange = { dogName = it },
             label = { Text("Dog Name") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp),
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = InputBackgroundLight,
-                unfocusedContainerColor = InputBackgroundLight,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
-            ),
-            shape = MaterialTheme.shapes.small
+            modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -86,16 +77,7 @@ fun AddDogScreen(navController: NavController) {
             value = dogNickName,
             onValueChange = { dogNickName = it },
             label = { Text("Dog Nick Name") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp),
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = InputBackgroundLight,
-                unfocusedContainerColor = InputBackgroundLight,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
-            ),
-            shape = MaterialTheme.shapes.small
+            modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -104,37 +86,8 @@ fun AddDogScreen(navController: NavController) {
             value = dogBreed,
             onValueChange = { dogBreed = it },
             label = { Text("Dog Breed") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp),
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = InputBackgroundLight,
-                unfocusedContainerColor = InputBackgroundLight,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
-            ),
-            shape = MaterialTheme.shapes.small
+            modifier = Modifier.fillMaxWidth()
         )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        TextField(
-            value = dogBreeder,
-            onValueChange = { dogBreeder = it },
-            label = { Text("Dog Breeder") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp),
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = InputBackgroundLight,
-                unfocusedContainerColor = InputBackgroundLight,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
-            ),
-            shape = MaterialTheme.shapes.small
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
 
         Box(
             modifier = Modifier.fillMaxWidth()
@@ -221,6 +174,16 @@ fun AddDogScreen(navController: NavController) {
             //}
         }
 
+        Spacer(modifier = Modifier.height(8.dp))
+
+
+        TextField(
+            value = dogBreeder,
+            onValueChange = { dogBreeder = it },
+            label = { Text("Dog Breeder") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(onClick = {
@@ -243,14 +206,7 @@ fun AddDogScreen(navController: NavController) {
                     // Handle error: user UID is null
                 }
             }
-        }, modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 8.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = ButtonColorLight
-            ),
-            contentPadding = PaddingValues(vertical = 8.dp)
-        )  {
+        }) {
             Text("Add Dog")
         }
     }

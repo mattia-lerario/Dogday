@@ -1,3 +1,13 @@
 <resources>
-    <string name="app_name">My App test 01</string>
+    <string name="app_name">DogDay</string>
+    <string name="register">Registrer bruker</string>
+    <string name="home">Hjem</string>
+    <string name="map">Kart</string>
+    <string name="newUser">Ny bruker</string>
+    <string name="addDog">Legg til hund!</string>
+    <string name="addVetLog">Legg til notater fra dyrlegebesøk</string>
+    <string name="DogDetail">Detaljer om hund</string>
+    <string name="settings">Innstillinger</string>
+    <string name="dogQueryScreen">DogQuery</string>
+    <string name="UserDogScreen">Dine hunder</string>
 </resources>
