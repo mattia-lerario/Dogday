@@ -103,18 +103,8 @@ fun LoginScreen(navController: NavController) {
                                 if (task.isSuccessful) {
                                     val uid = Firebase.auth.currentUser?.uid
                                     if (uid != null) {
-                                        val firestore = FirebaseFirestore.getInstance()
-                                        firestore.collection("ddcollection").document(uid).get()
-                                            .addOnSuccessListener { document ->
-                                                if (document.exists()) {
-                                                    val dogsMap = document.get("dogs") as? Map<*, *>
-                                                    if (dogsMap == null || dogsMap.isEmpty()) {
-                                                        navController.navigate("addDogScreen")
-                                                    } else {
-                                                        navController.navigate("home")
-                                                    }
-                                                }
-                                            }
+                                        navController.navigate("home")
+
                                     }
 
                                     val analytics = Firebase.analytics
