@@ -1,6 +1,10 @@
 
 package com.example.dogday.screens
 
+import android.graphics.Bitmap
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -27,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.navigation.NavController
@@ -38,29 +43,44 @@ import com.google.firebase.auth.FirebaseAuth
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import android.Manifest
+import com.google.firebase.storage.FirebaseStorage
+import java.io.ByteArrayOutputStream
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun AddDogScreen(navController: NavController) {
     var dogName by remember { mutableStateOf("") }
     var dogNickName by remember { mutableStateOf("") }
     var dogBreed by remember { mutableStateOf("") }
     var dogBreeder by remember { mutableStateOf("") }
-
-    var showDatePicker by remember { mutableStateOf(false) }
-    val datePickerState = rememberDatePickerState()
-    var dogBirthday by remember { mutableStateOf(datePickerState.selectedDateMillis ?: 0L) }
-
+    var dogImageBitmap by remember { mutableStateOf<Bitmap?>(null) }
+    var hasCameraPermission by remember { mutableStateOf(false) }
+    var uploadingImage by remember { mutableStateOf(false) }
 
     val firestoreInteractions = FirestoreInteractions()
+    val storage = FirebaseStorage.getInstance()
+
+    val requestCameraPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { granted -> hasCameraPermission = granted }
+    )
+    val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap ->
+        dogImageBitmap = bitmap
+    }
+
+    LaunchedEffect(Unit) {
+        requestCameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Lets add your dog!", style = MaterialTheme.typography.titleLarge)
+        Text("Let's add your dog!", style = MaterialTheme.typography.titleLarge)
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -134,124 +154,80 @@ fun AddDogScreen(navController: NavController) {
             shape = MaterialTheme.shapes.small
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Box(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            OutlinedTextField(
-                value = convertMillisToDate(dogBirthday),
-                onValueChange = { },
-                label = { Text("Dog's Birthday") },
-                readOnly = true,
-                trailingIcon = {
-                    IconButton(onClick = { showDatePicker = !showDatePicker }) {
-                        Icon(
-                            imageVector = Icons.Default.DateRange,
-                            contentDescription = "Select date"
-                        )
-                    }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(64.dp)
-            )
-
-            if (showDatePicker) {
-                DatePickerDialog(
-                    onDismissRequest = { showDatePicker = false },
-                    confirmButton = {
-                        TextButton(onClick = {
-                            dogBirthday = datePickerState.selectedDateMillis ?: 0L
-                            showDatePicker = false
-                        }) {
-                            Text("OK")
-                        }
-                    },
-                    dismissButton = {
-                        TextButton(onClick = { showDatePicker = false }) {
-                            Text("Cancel")
-                        }
-                    }
-                ) {
-                    DatePicker(state = datePickerState)
-                }
-            }
-
-            //if (showDatePicker) {
-                //Popup(
-                    //onDismissRequest = { showDatePicker = false},
-                    //alignment = Alignment.TopStart
-                //){
-                   // Box(
-                        //modifier = Modifier
-                            //.fillMaxWidth()
-                            //.offset(y = 64.dp)
-                            //.shadow(elevation = 4.dp)
-                            //.background(MaterialTheme.colorScheme.surface)
-                            //.padding(16.dp)
-                   // ){
-                        //Column {
-                            //DatePicker(
-                                //state = datePickerState,
-                                //showModeToggle = false
-                            //)
-
-                            //Spacer(modifier = Modifier.height(8.dp))
-
-                            //Row(
-                                //modifier = Modifier.fillMaxWidth(),
-                                //horizontalArrangement = Arrangement.End
-                            //) {
-                                //TextButton(onClick = {
-                                    //dogBirthday = datePickerState.selectedDateMillis ?: 0L
-                                    //showDatePicker = false
-                                //}) {
-                                    //Text("Ok")
-                                //}
-                                //TextButton(onClick = { showDatePicker = false}) {
-                                    //Text("Cancel")
-                                //}
-                            //}
-
-
-                        //}
-                    //}
-                //}
-            //}
-        }
-
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(onClick = {
-            if (dogName.isNotEmpty() && dogBreed.isNotEmpty()) {
-                // Get the current user's UID
-                val uid = FirebaseAuth.getInstance().currentUser?.uid
-                if (uid != null) {
-                    // Create a Dog object
-                    val dog = Dog(
-                        name = dogName,
-                        nickName = dogNickName,
-                        breed = dogBreed,
-                        birthday = dogBirthday,
-                        breeder = dogBreeder
-                        )
-                    firestoreInteractions.addDogToUser(uid, dog)
-
-                    navController.navigate("home")
+        Button(
+            onClick = {
+                if (hasCameraPermission) {
+                    cameraLauncher.launch(null)
                 } else {
-                    // Handle error: user UID is null
+                    requestCameraPermissionLauncher.launch(Manifest.permission.CAMERA)
                 }
-            }
-        }, modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 8.dp),
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = ButtonColorLight
             ),
             contentPadding = PaddingValues(vertical = 8.dp)
-        )  {
-            Text("Add Dog")
+        ) {
+            Text("Take Picture")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        dogImageBitmap?.let { bitmap ->
+            Image(bitmap = bitmap.asImageBitmap(), contentDescription = "Dog Image", modifier = Modifier.size(200.dp))
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = {
+                if (dogName.isNotEmpty() && dogBreed.isNotEmpty() && dogImageBitmap != null) {
+                    uploadingImage = true
+
+                    val storageRef = storage.reference.child("dog_images/${dogName}_${System.currentTimeMillis()}.jpg")
+                    val baos = ByteArrayOutputStream()
+                    dogImageBitmap?.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+                    val data = baos.toByteArray()
+
+                    val uploadTask = storageRef.putBytes(data)
+                    uploadTask.addOnSuccessListener { taskSnapshot ->
+                        storageRef.downloadUrl.addOnSuccessListener { uri ->
+                            val imageUrl = uri.toString()
+
+                            val uid = FirebaseAuth.getInstance().currentUser?.uid
+                            if (uid != null) {
+                                val dog = Dog(
+                                    name = dogName,
+                                    nickName = dogNickName,
+                                    breed = dogBreed,
+                                    birthday = System.currentTimeMillis(),
+                                    breeder = dogBreeder,
+                                    imageUrl = imageUrl
+                                )
+                                firestoreInteractions.addDogToUser(uid, dog)
+
+                                navController.navigate("home")
+                            }
+                        }
+                    }.addOnFailureListener {
+                        uploadingImage = false
+                    }
+                }
+            },
+            enabled = !uploadingImage,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = ButtonColorLight
+            ),
+            contentPadding = PaddingValues(vertical = 8.dp)
+        ) {
+            Text(if (uploadingImage) "Uploading..." else "Add Dog")
         }
     }
 }
