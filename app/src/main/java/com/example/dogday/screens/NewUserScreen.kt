@@ -1,34 +1,56 @@
 package com.example.dogday.screens
 
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDefaults
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.dogday.FirestoreInteractions
+import com.example.dogday.R
 import com.example.dogday.User
 import com.example.dogday.UserSession
+import com.example.dogday.ui.theme.BackgroundColorLight
 import com.example.dogday.ui.theme.ButtonColorLight
 import com.example.dogday.ui.theme.InputBackgroundLight
 import com.google.firebase.auth.ktx.auth
@@ -45,7 +67,6 @@ fun NewUserScreen(navController: NavController) {
     var lastName by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
 
-
     var showDatePicker by remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState()
     var birthday by remember { mutableStateOf(datePickerState.selectedDateMillis ?: 0L) }
@@ -56,32 +77,47 @@ fun NewUserScreen(navController: NavController) {
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = "Welcome!",
-            style = MaterialTheme.typography.headlineLarge,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 24.dp)
-        )
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(0.dp)
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.dogday_logo),
+                    contentDescription = "DogDay Logo",
+                    modifier = Modifier.size(250.dp),
+                    contentScale = ContentScale.Fit
+                )
+
+                OwnerLabel() // Legger til OwnerLabel her
+            }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "Let's make a new account for you...",
-            style = MaterialTheme.typography.headlineSmall,
+            text = "Tell us more about you!",
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Bold, // Gjør teksten bold
             modifier = Modifier
-                .fillMaxWidth()
                 .padding(bottom = 24.dp)
+                .align(Alignment.CenterHorizontally)
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(10.dp))
 
         TextField(
             value = firstName,
             onValueChange = { firstName = it },
             label = { Text("First Name", color = Color.Black) },
             modifier = Modifier
-                .fillMaxWidth()
+                .widthIn(max = 500.dp)
                 .padding(horizontal = 8.dp),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = InputBackgroundLight,
@@ -99,7 +135,7 @@ fun NewUserScreen(navController: NavController) {
             onValueChange = { lastName = it },
             label = { Text("Last Name") },
             modifier = Modifier
-                .fillMaxWidth()
+                .widthIn(max = 500.dp)
                 .padding(horizontal = 8.dp),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = InputBackgroundLight,
@@ -117,7 +153,7 @@ fun NewUserScreen(navController: NavController) {
             onValueChange = { phoneNumber = it },
             label = { Text("Phone Number") },
             modifier = Modifier
-                .fillMaxWidth()
+                .widthIn(max = 500.dp)
                 .padding(horizontal = 8.dp),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = InputBackgroundLight,
@@ -131,12 +167,16 @@ fun NewUserScreen(navController: NavController) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Box(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center
         ) {
             OutlinedTextField(
                 value = convertMillisToDate(birthday),
                 onValueChange = { },
-                label = { Text("Your Birthday") },
+                label = {  Text(
+                    text = "Your Birthday",
+                    color = Color.Black // Set the label text color to black
+                )  },
                 readOnly = true,
                 trailingIcon = {
                     IconButton(onClick = { showDatePicker = !showDatePicker }) {
@@ -145,10 +185,18 @@ fun NewUserScreen(navController: NavController) {
                             contentDescription = "Select date"
                         )
                     }
+
                 },
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(64.dp)
+                    .widthIn(max = 500.dp)
+                    .fillMaxWidth(0.75f)
+                    .height(64.dp),
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = BackgroundColorLight,
+                    unfocusedContainerColor = BackgroundColorLight,
+                    focusedIndicatorColor = Color(0xFFD95A3C),
+                    unfocusedIndicatorColor = Color.Gray
+                )
             )
 
             if (showDatePicker) {
@@ -159,21 +207,35 @@ fun NewUserScreen(navController: NavController) {
                             birthday = datePickerState.selectedDateMillis ?: 0L
                             showDatePicker = false
                         }) {
-                            Text("OK")
+                            Text("OK", color = Color.Black)
                         }
                     },
                     dismissButton = {
                         TextButton(onClick = { showDatePicker = false }) {
-                            Text("Cancel")
+                            Text("Cancel", color = Color.Black)
                         }
                     }
                 ) {
-                    DatePicker(state = datePickerState)
+                    DatePicker(
+                        state = datePickerState,
+                        colors = DatePickerDefaults.colors(
+                            containerColor = Color(0xFFF3CCC3),
+                            titleContentColor = Color.Black,
+                            headlineContentColor = Color.Black,
+                            selectedYearContainerColor = Color(0xFFD95A3C),
+                            weekdayContentColor = Color.DarkGray,
+                            subheadContentColor = Color.White, // Subhead color (e.g., Month, Year)
+                            selectedDayContentColor = Color.White,
+                            selectedDayContainerColor = Color(0xFFD95A3C),
+                            todayContentColor = Color.Black,
+                            todayDateBorderColor = Color.Black
+
+                        )
+
+                    )
                 }
             }
         }
-
-        Spacer(modifier = Modifier.height(8.dp))
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -185,7 +247,8 @@ fun NewUserScreen(navController: NavController) {
                     firstName,
                     lastName,
                     phoneNumber,
-                    birthday)
+                    birthday
+                )
                 firestoreInteractions.addUser(user)
                 val uid = Firebase.auth.currentUser?.uid
                 if (uid != null) {
@@ -195,8 +258,11 @@ fun NewUserScreen(navController: NavController) {
                             if (document.exists()) {
                                 val user = document.toObject(User::class.java)
                                 if (user != null) {
-                                        navController.navigate("dogQueryScreen")
-
+                                    if (hasDog) {
+                                        navController.navigate("addDogScreen")
+                                    } else {
+                                        navController.navigate("home")
+                                    }
                                 }
                             }
                         }
@@ -204,8 +270,8 @@ fun NewUserScreen(navController: NavController) {
             }
         },
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp),
+                .width(150.dp) // Sett ønsket bredde
+                .height(48.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = ButtonColorLight
             ),
@@ -217,4 +283,40 @@ fun NewUserScreen(navController: NavController) {
             )
         }
     }
-};
+}
+
+@Composable
+fun OwnerLabel() {
+    Box(
+        modifier = Modifier
+            .size(width = 150.dp, height = 70.dp), // Juster høyden til ønsket størrelse
+        contentAlignment = Alignment.Center
+    ) {
+        // Tegner en fylt form med avrundede hjørner
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            drawRoundRect(
+                color = Color(0xFFD95A3C), // Farge på bakgrunnen
+                size = size,
+                cornerRadius = androidx.compose.ui.geometry.CornerRadius(16.dp.toPx(), 16.dp.toPx()) // Avrundede hjørner
+            )
+        }
+
+        // Legger til teksten "The owner" over formen
+        Text(
+            text = "The Owner",
+            color = Color.White,
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.Bold, // Setter teksten til fet
+            fontSize = 25.sp, // Juster størrelsen etter behov
+            modifier = Modifier.align(Alignment.Center)
+        )
+    }
+}
+
+//@Preview(showBackground = true)
+//@Composable
+//fun PreviewOwnerLabel() {
+    //OwnerLabel()
+//}
+
+
