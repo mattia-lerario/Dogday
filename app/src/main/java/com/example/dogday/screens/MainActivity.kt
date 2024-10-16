@@ -129,7 +129,7 @@ fun NavigationHost(navController: NavHostController, modifier: Modifier) {
             DogDetailScreen(navController = navController ,dogIdx = dogId)
         }
         composable(route = DogScreen.DogQueryScreen.name) { DogQueryScreen(navController) }
-
+        composable(route = DogScreen.UserDogScreen.name) { UserDogScreen(navController) }
 
     }
 }
@@ -142,10 +142,10 @@ enum class DogScreen(@StringRes val title: Int) {
     NewUser(title = R.string.newUser),
     AddDog(title = R.string.addDog),
     DogDetail(title = R.string.DogDetail),
-    //AddVetLog(title = R.string.addVetLog),
     SettingsScreen(title = R.string.settings),
     DogQueryScreen(title = R.string.dogQueryScreen),
-
+    UserDogScreen(title = R.string.UserDogScreen),
+//AddVetLog(title = R.string.addVetLog),
 }
 
 

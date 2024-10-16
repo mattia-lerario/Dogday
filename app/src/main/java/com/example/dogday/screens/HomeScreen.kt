@@ -63,23 +63,12 @@ fun HomeScreen(navController: NavHostController) {
 
     ) {
 
-        Text(text = "Dine hunder", style = MaterialTheme.typography.bodyLarge)
-
-        DogsList(navController = navController)
-
-        Spacer(modifier = Modifier.height(5.dp))
-        CalendarHome()
-        Spacer(modifier = Modifier.height(5.dp))
-
+        //DogsList(navController = navController)
+        DogCard(navController = navController)
         HikeCard(navController = navController)
+        CalendarHome()
 
-        Text(text = "Finn Din Neste Tur", style = MaterialTheme.typography.bodyLarge)
 
-        Spacer(modifier = Modifier.height(5.dp))
-
-        Button(onClick = { navController.navigate("map") }) {
-            Text("Se anbefalinger")
-        }
     }
 }
 
@@ -187,12 +176,50 @@ fun HikeCard(navController: NavHostController){
             .fillMaxWidth()
             .padding(10.dp)) {
         Row(modifier = Modifier.padding(10.dp)) {
+
+            Image(
+                painter = painterResource(id = R.drawable.dog_cartoon),
+                contentDescription = "Dog",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(100.dp)
+                    .clip(CircleShape)
+                    .padding(0.dp)
+            )
+
             Column(modifier = Modifier
                 .weight(1f)
-                .padding(10.dp)) {
+                .padding(10.dp),
+                horizontalAlignment = Alignment.End
+            ) {
                 Text(text = "Ut på tur?", style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(0.dp))
-                Text(text = "Mer tekst")
+                Text(text = "Se spennende turer her!")
+            }
+
+
+        }
+
+    }
+}
+
+
+@Composable
+fun DogCard(navController: NavHostController){
+    Card(elevation = CardDefaults.cardElevation(
+        defaultElevation = 6.dp),
+        onClick = { navController.navigate(DogScreen.UserDogScreen.name)},
+        border = BorderStroke(1.dp, Color.Black),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(5.dp)) {
+        Row(modifier = Modifier.padding(10.dp)) {
+            Column(modifier = Modifier
+                .weight(1f)
+                .padding(5.dp)) {
+                Text(text = "Dine hunder", style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(0.dp))
+                Text(text = "Klikk her for å komme til din oversikt!")
             }
 
             Image(
@@ -214,6 +241,7 @@ fun HikeCard(navController: NavHostController){
 
 
 
+//Denne har jeg fått av AI til.
 fun getDaysOfMonth(year: Int, month: Int): List<String> {
     val calendar = Calendar.getInstance().apply {
         set(Calendar.YEAR, year)
@@ -264,7 +292,8 @@ fun CalendarHome() {
             .fillMaxWidth()
             .padding(8.dp),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFD95A3C))
+        //colors = CardDefaults.cardColors(containerColor = Color(0xFFD95A3C))
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
 
