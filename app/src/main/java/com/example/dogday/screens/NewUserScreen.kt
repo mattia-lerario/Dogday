@@ -258,11 +258,9 @@ fun NewUserScreen(navController: NavController) {
                             if (document.exists()) {
                                 val user = document.toObject(User::class.java)
                                 if (user != null) {
-                                    if (hasDog) {
-                                        navController.navigate("addDogScreen")
-                                    } else {
-                                        navController.navigate("home")
-                                    }
+
+                                        navController.navigate("DogQueryScreen")
+
                                 }
                             }
                         }
