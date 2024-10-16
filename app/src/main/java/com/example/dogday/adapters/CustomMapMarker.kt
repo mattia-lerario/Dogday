@@ -38,7 +38,6 @@ class CustomMapMarker(
                 titleTextView.text = data.name
                 snippetTextView.text = "${data.address}\nContact: ${data.contactInfo}"
 
-                // Set custom marker icon for Kennel (done outside in map setup, see note below)
                 // Load image for Kennel using Coil
                 val imageLoader = ImageLoader(inflater.context)
                 val request = ImageRequest.Builder(inflater.context)
@@ -64,7 +63,6 @@ class CustomMapMarker(
                 titleTextView.text = data.name
                 snippetTextView.text = data.description
 
-                // Set custom marker icon for Hike (done outside in map setup, see note below)
                 // HikeData doesn't necessarily have images, so you can handle that accordingly
                 imageView.setImageResource(android.R.drawable.ic_menu_gallery) // Placeholder image for hikes
             }

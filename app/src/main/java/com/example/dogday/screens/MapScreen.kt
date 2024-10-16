@@ -21,7 +21,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavHostController
-import com.example.dogday.R
 import com.example.dogday.adapters.CustomMapMarker
 import com.example.dogday.models.HikeData
 import com.example.dogday.models.Kennel
@@ -29,7 +28,6 @@ import com.example.dogday.repository.HikeRepository
 import com.example.dogday.repository.KennelRepository
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.MapView
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 
@@ -160,7 +158,6 @@ private fun updateMapWithMarkers(
                         .position(kennelLocation)
                         .title(kennel.name)
                         .snippet("${kennel.address}\nContact: ${kennel.contactInfo}")
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.dog_cartoon)) // Custom icon for Kennel
                 )
                 marker?.tag = kennel
             }
@@ -178,7 +175,6 @@ private fun updateMapWithMarkers(
                         .position(hikeLocation)
                         .title(hike.name)
                         .snippet(hike.description)
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.hikemarker)) // Custom icon for Hike
                 )
                 marker?.tag = hike
             }
