@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
@@ -56,6 +58,37 @@ import com.example.dogday.ui.theme.InputBackgroundLight
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
+
+@Composable
+fun OwnerLabel() {
+    Box(
+        modifier = Modifier
+            .size(width = 150.dp, height = 70.dp), // Juster høyden til ønsket størrelse
+        contentAlignment = Alignment.Center
+    ) {
+        // Tegner en fylt form med avrundede hjørner
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            drawRoundRect(
+                color = Color(0xFFD95A3C), // Farge på bakgrunnen
+                size = size,
+                cornerRadius = androidx.compose.ui.geometry.CornerRadius(
+                    16.dp.toPx(),
+                    16.dp.toPx()
+                ) // Avrundede hjørner
+            )
+        }
+
+        // Legger til teksten "The owner" over formen
+        Text(
+            text = "The Owner",
+            color = Color.White,
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.Bold, // Setter teksten til fet
+            fontSize = 25.sp, // Juster størrelsen etter behov
+            modifier = Modifier.align(Alignment.Center)
+        )
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -167,10 +200,7 @@ fun NewUserScreen(navController: NavController) {
             OutlinedTextField(
                 value = convertMillisToDate(birthday),
                 onValueChange = { },
-                label = {  Text(
-                    text = "Your Birthday",
-                    color = Color.Black // Set the label text color to black
-                )  },
+                label = { Text("Your Birthday", color = Color.Black) },
                 readOnly = true,
                 trailingIcon = {
                     IconButton(onClick = { showDatePicker = !showDatePicker }) {
@@ -179,7 +209,6 @@ fun NewUserScreen(navController: NavController) {
                             contentDescription = "Select date"
                         )
                     }
-
                 },
                 modifier = Modifier
                     .widthIn(max = 500.dp)
@@ -210,23 +239,31 @@ fun NewUserScreen(navController: NavController) {
                         }
                     }
                 ) {
-                    DatePicker(
-                        state = datePickerState,
-                        colors = DatePickerDefaults.colors(
-                            containerColor = Color(0xFFF3CCC3),
-                            titleContentColor = Color.Black,
-                            headlineContentColor = Color.Black,
-                            selectedYearContainerColor = Color(0xFFD95A3C),
-                            weekdayContentColor = Color.DarkGray,
-                            subheadContentColor = Color.White, // Subhead color (e.g., Month, Year)
-                            selectedDayContentColor = Color.White,
-                            selectedDayContainerColor = Color(0xFFD95A3C),
-                            todayContentColor = Color.Black,
-                            todayDateBorderColor = Color.Black
-
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .verticalScroll(rememberScrollState()) // Scroll kun her
+                    ) {
+                        DatePicker(
+                            state = datePickerState,
+                            colors = DatePickerDefaults.colors(
+                                containerColor = Color(0xFFF3CCC3),
+                                titleContentColor = Color.Black,
+                                headlineContentColor = Color.Black,
+                                selectedYearContainerColor = Color(0xFFD95A3C),
+                                selectedYearContentColor = Color.Black,
+                                yearContentColor = Color.Black,
+                                currentYearContentColor = Color.Black,
+                                disabledSelectedYearContentColor = Color.Black,
+                                weekdayContentColor = Color.DarkGray,
+                                subheadContentColor = Color.White,
+                                selectedDayContentColor = Color.White,
+                                selectedDayContainerColor = Color(0xFFD95A3C),
+                                todayContentColor = Color.Black,
+                                todayDateBorderColor = Color.Black,
+                            )
                         )
-
-                    )
+                    }
                 }
             }
         }
@@ -262,7 +299,7 @@ fun NewUserScreen(navController: NavController) {
             }
         },
             modifier = Modifier
-                .width(150.dp) // Sett ønsket bredde
+                .width(150.dp)
                 .height(48.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = ButtonColorLight
@@ -277,38 +314,5 @@ fun NewUserScreen(navController: NavController) {
     }
 }
 
-@Composable
-fun OwnerLabel() {
-    Box(
-        modifier = Modifier
-            .size(width = 150.dp, height = 70.dp), // Juster høyden til ønsket størrelse
-        contentAlignment = Alignment.Center
-    ) {
-        // Tegner en fylt form med avrundede hjørner
-        Canvas(modifier = Modifier.fillMaxSize()) {
-            drawRoundRect(
-                color = Color(0xFFD95A3C), // Farge på bakgrunnen
-                size = size,
-                cornerRadius = androidx.compose.ui.geometry.CornerRadius(16.dp.toPx(), 16.dp.toPx()) // Avrundede hjørner
-            )
-        }
-
-        // Legger til teksten "The owner" over formen
-        Text(
-            text = "The Owner",
-            color = Color.White,
-            textAlign = TextAlign.Center,
-            fontWeight = FontWeight.Bold, // Setter teksten til fet
-            fontSize = 25.sp, // Juster størrelsen etter behov
-            modifier = Modifier.align(Alignment.Center)
-        )
-    }
-}
-
-//@Preview(showBackground = true)
-//@Composable
-//fun PreviewOwnerLabel() {
-    //OwnerLabel()
-//}
 
 
