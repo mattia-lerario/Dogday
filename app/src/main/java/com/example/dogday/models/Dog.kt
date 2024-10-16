@@ -8,5 +8,7 @@ data class Dog(
     val nickName: String = "",
     val breed: String,
     val birthday: Long,
-    val breeder: String = ""
+    val breeder: String = "",
+    val imageUrl: String? = null
+
 )

@@ -44,7 +44,6 @@ fun NewUserScreen(navController: NavController) {
     var firstName by remember { mutableStateOf("") }
     var lastName by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
-    var hasDog by remember { mutableStateOf(false) }
 
 
     var showDatePicker by remember { mutableStateOf(false) }
@@ -128,8 +127,6 @@ fun NewUserScreen(navController: NavController) {
             ),
             shape = MaterialTheme.shapes.small
         )
-
-
 
         Spacer(modifier = Modifier.height(16.dp))
 
