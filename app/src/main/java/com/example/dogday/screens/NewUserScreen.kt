@@ -88,12 +88,6 @@ fun NewUserScreen(navController: NavController) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(0.dp)
             ) {
-                Image(
-                    painter = painterResource(R.drawable.dogday_logo),
-                    contentDescription = "DogDay Logo",
-                    modifier = Modifier.size(250.dp),
-                    contentScale = ContentScale.Fit
-                )
 
                 OwnerLabel() // Legger til OwnerLabel her
             }
@@ -276,7 +270,7 @@ fun NewUserScreen(navController: NavController) {
             contentPadding = PaddingValues(vertical = 8.dp)
         ) {
             Text(
-                "Save information",
+                "Save",
                 fontWeight = FontWeight.Bold
             )
         }
