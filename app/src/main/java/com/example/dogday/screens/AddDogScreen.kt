@@ -44,16 +44,60 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import android.Manifest
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.sp
+import com.example.dogday.ui.theme.BackgroundColorLight
 import com.google.firebase.storage.FirebaseStorage
 import java.io.ByteArrayOutputStream
 
 
+@Composable
+fun YourDogLabel() {
+    Box(
+        modifier = Modifier
+            .size(width = 150.dp, height = 70.dp),
+        contentAlignment = Alignment.Center
+    ) {
+
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            drawRoundRect(
+                color = Color(0xFFD95A3C),
+                size = size,
+                cornerRadius = androidx.compose.ui.geometry.CornerRadius(
+                    16.dp.toPx(),
+                    16.dp.toPx()
+                )
+            )
+        }
+
+        // Legger til teksten "The owner" over formen
+        Text(
+            text = "Your Dog",
+            color = Color.White,
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.Bold, // Setter teksten til fet
+            fontSize = 25.sp, // Juster størrelsen etter behov
+            modifier = Modifier.align(Alignment.Center)
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddDogScreen(navController: NavController) {
     var dogName by remember { mutableStateOf("") }
     var dogNickName by remember { mutableStateOf("") }
     var dogBreed by remember { mutableStateOf("") }
     var dogBreeder by remember { mutableStateOf("") }
+
+    var showDatePicker by remember { mutableStateOf(false) }
+    val datePickerState = rememberDatePickerState()
+    var dogBirthday by remember { mutableStateOf(datePickerState.selectedDateMillis ?: 0L) }
+
     var dogImageBitmap by remember { mutableStateOf<Bitmap?>(null) }
     var hasCameraPermission by remember { mutableStateOf(false) }
     var uploadingImage by remember { mutableStateOf(false) }
@@ -80,6 +124,22 @@ fun AddDogScreen(navController: NavController) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(0.dp)
+            ) {
+
+                YourDogLabel() // Legger til OwnerLabel her
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+
         Text("Let's add your dog!", style = MaterialTheme.typography.titleLarge)
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -89,7 +149,7 @@ fun AddDogScreen(navController: NavController) {
             onValueChange = { dogName = it },
             label = { Text("Dog Name") },
             modifier = Modifier
-                .fillMaxWidth()
+                .widthIn(max = 500.dp)
                 .padding(horizontal = 8.dp),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = InputBackgroundLight,
@@ -107,7 +167,7 @@ fun AddDogScreen(navController: NavController) {
             onValueChange = { dogNickName = it },
             label = { Text("Dog Nick Name") },
             modifier = Modifier
-                .fillMaxWidth()
+                .widthIn(max = 500.dp)
                 .padding(horizontal = 8.dp),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = InputBackgroundLight,
@@ -125,7 +185,7 @@ fun AddDogScreen(navController: NavController) {
             onValueChange = { dogBreed = it },
             label = { Text("Dog Breed") },
             modifier = Modifier
-                .fillMaxWidth()
+                .widthIn(max = 500.dp)
                 .padding(horizontal = 8.dp),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = InputBackgroundLight,
@@ -143,7 +203,7 @@ fun AddDogScreen(navController: NavController) {
             onValueChange = { dogBreeder = it },
             label = { Text("Dog Breeder") },
             modifier = Modifier
-                .fillMaxWidth()
+                .widthIn(max = 500.dp)
                 .padding(horizontal = 8.dp),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = InputBackgroundLight,
@@ -156,6 +216,83 @@ fun AddDogScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
+            OutlinedTextField(
+                value = convertMillisToDate(dogBirthday),
+                onValueChange = { },
+                label = { Text("Your Dog's Birthday", color = Color.Black) },
+                readOnly = true,
+                trailingIcon = {
+                    IconButton(onClick = { showDatePicker = !showDatePicker }) {
+                        Icon(
+                            imageVector = Icons.Default.DateRange,
+                            contentDescription = "Select date"
+                        )
+                    }
+                },
+                modifier = Modifier
+                    .widthIn(max = 500.dp)
+                    .fillMaxWidth(0.75f)
+                    .height(64.dp),
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = BackgroundColorLight,
+                    unfocusedContainerColor = BackgroundColorLight,
+                    focusedIndicatorColor = Color(0xFFD95A3C),
+                    unfocusedIndicatorColor = Color.Gray
+                )
+            )
+
+            if (showDatePicker) {
+                DatePickerDialog(
+                    onDismissRequest = { showDatePicker = false },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            dogBirthday = datePickerState.selectedDateMillis ?: 0L
+                            showDatePicker = false
+                        }) {
+                            Text("OK", color = Color.Black)
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showDatePicker = false }) {
+                            Text("Cancel", color = Color.Black)
+                        }
+                    }
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .verticalScroll(rememberScrollState()) // Scroll kun her
+                    ) {
+                        DatePicker(
+                            state = datePickerState,
+                            colors = DatePickerDefaults.colors(
+                                containerColor = Color(0xFFF3CCC3),
+                                titleContentColor = Color.Black,
+                                headlineContentColor = Color.Black,
+                                selectedYearContainerColor = Color(0xFFD95A3C),
+                                selectedYearContentColor = Color.Black,
+                                yearContentColor = Color.Black,
+                                currentYearContentColor = Color.Black,
+                                disabledSelectedYearContentColor = Color.Black,
+                                weekdayContentColor = Color.DarkGray,
+                                subheadContentColor = Color.White,
+                                selectedDayContentColor = Color.White,
+                                selectedDayContainerColor = Color(0xFFD95A3C),
+                                todayContentColor = Color.Black,
+                                todayDateBorderColor = Color.Black,
+                            )
+                        )
+                    }
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
         Button(
             onClick = {
                 if (hasCameraPermission) {
@@ -165,8 +302,8 @@ fun AddDogScreen(navController: NavController) {
                 }
             },
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp),
+                .width(200.dp)
+                .height(48.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = ButtonColorLight
             ),
@@ -220,8 +357,8 @@ fun AddDogScreen(navController: NavController) {
             },
             enabled = !uploadingImage,
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp),
+                .width(200.dp)
+                .height(48.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = ButtonColorLight
             ),
