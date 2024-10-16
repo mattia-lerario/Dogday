@@ -24,6 +24,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -130,6 +131,15 @@ fun DogsList(navController: NavHostController) {
     } else {
         Text(text = "Ingen hund ennå?")
     }
+
+    Button(
+        onClick = { navController.  navigate(route = DogScreen.AddDog.name) },
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+    ) {
+        Text(text = "Legg til hund", color = MaterialTheme.colorScheme.onPrimary)
+    }
+
 }
 
 @Composable
@@ -164,6 +174,8 @@ fun DogListCard(navController: NavHostController, dog: Dog){
         }
 
     }
+
+
 }
 
 @Composable

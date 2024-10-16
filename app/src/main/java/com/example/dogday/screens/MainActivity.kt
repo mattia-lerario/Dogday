@@ -88,10 +88,12 @@ fun MainApp() {
         DogScreen.DogQueryScreen.name
     )
 
+
+
     Scaffold(
         topBar = {
             DogAppBar(
-                canNavigateBack = navController.previousBackStackEntry != null,
+                canNavigateBack = navController.previousBackStackEntry != null && currentRoute != DogScreen.Home.name,
                 navigateUp = {navController.navigateUp()},
                 currentScreen = currentScreen
             )
@@ -110,7 +112,6 @@ fun MainApp() {
 
 
         bottomBar = {
-            // Only show BottomNavigationBar if the current screen is NOT in the noBottomBarRoutes list
             if (!noBottomBarRoutes.contains(currentRoute)) {
                 BottomNavigationBar(navController = navController)
             }

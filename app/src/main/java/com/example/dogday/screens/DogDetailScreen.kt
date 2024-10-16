@@ -98,6 +98,8 @@ fun DogDetailScreen(navController : NavController ,dogIdx: String) {
     } else {
         Text(text = "You haven't added any dogs yet.")
     }
+
+
 }
 
 
