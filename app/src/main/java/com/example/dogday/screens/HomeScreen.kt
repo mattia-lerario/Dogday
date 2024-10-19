@@ -58,7 +58,8 @@ fun HomeScreen(navController: NavHostController) {
 
     Column(
         modifier = Modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
 
@@ -122,7 +123,7 @@ fun DogsList(navController: NavHostController) {
     }
 
     if (dogsList.isNotEmpty()) {
-        LazyColumn {
+        LazyColumn() {
             items(dogsList) { dog ->
                 DogListCard(navController = navController, dog = dog)
                 Spacer(modifier = Modifier.height(16.dp))
@@ -253,7 +254,7 @@ fun DogCard(navController: NavHostController){
 
 
 
-//Denne har jeg fått av AI til.
+//Denne har jeg fått hjelp av AI til.
 fun getDaysOfMonth(year: Int, month: Int): List<String> {
     val calendar = Calendar.getInstance().apply {
         set(Calendar.YEAR, year)
@@ -335,7 +336,7 @@ fun CalendarHome() {
 
             LazyVerticalGrid(
                 columns = GridCells.Fixed(7),
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.height(200.dp),
                 contentPadding = PaddingValues(4.dp)
             ) {
                 items(daysOfMonth) { day ->
