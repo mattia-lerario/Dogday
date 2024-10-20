@@ -41,6 +41,10 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun MapScreen(navController: NavHostController) {
@@ -261,42 +265,41 @@ private fun updateMapWithMarkers(
     showKennels: Boolean,
     showHikes: Boolean
 ) {
-    map?.let {
-        // Clear previous markers
-        it.clear()
+    map?.let { googleMap ->
+        CoroutineScope(Dispatchers.Main).launch {
+            // Clear previous markers
+            googleMap.clear()
 
-        // Add markers for kennels if toggled on
-        if (showKennels) {
-            kennels.forEach { kennel ->
-                val kennelLocation = LatLng(
-                    kennel.coordinates.latitude,
-                    kennel.coordinates.longitude
-                )
-                val marker = it.addMarker(
-                    MarkerOptions()
-                        .position(kennelLocation)
-                        .title(kennel.name)
-                        .snippet("${kennel.address}\nContact: ${kennel.contactInfo}")
-                )
-                marker?.tag = kennel
-            }
-        }
+            withContext(Dispatchers.Default) {
+                val markers = mutableListOf<MarkerOptions>()
 
-        // Add markers for hikes if toggled on
-        if (showHikes) {
-            hikes.forEach { hike ->
-                val hikeLocation = LatLng(
-                    hike.coordinates.latitude,
-                    hike.coordinates.longitude
-                )
-                val marker = it.addMarker(
-                    MarkerOptions()
-                        .position(hikeLocation)
-                        .title(hike.name)
-                        .snippet(hike.description)
-                )
-                marker?.tag = hike
+                if (showKennels) {
+                    markers.addAll(kennels.map { kennel ->
+                        MarkerOptions()
+                            .position(LatLng(kennel.coordinates.latitude, kennel.coordinates.longitude))
+                            .title(kennel.name)
+                            .snippet("${kennel.address}\nContact: ${kennel.contactInfo}")
+                    })
+                }
+
+                if (showHikes) {
+                    markers.addAll(hikes.map { hike ->
+                        MarkerOptions()
+                            .position(LatLng(hike.coordinates.latitude, hike.coordinates.longitude))
+                            .title(hike.name)
+                            .snippet(hike.description)
+                    })
+                }
+
+                // Add markers on the main thread
+                withContext(Dispatchers.Main) {
+                    markers.forEach { markerOptions ->
+                        val marker = googleMap.addMarker(markerOptions)
+                        // Assign tag if needed
+                    }
+                }
             }
         }
     }
 }
+
