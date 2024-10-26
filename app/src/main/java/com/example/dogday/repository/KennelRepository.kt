@@ -7,7 +7,7 @@ class KennelRepository {
     private val firestore = FirebaseFirestore.getInstance()
 
     fun fetchKennels(onSuccess: (List<Kennel>) -> Unit, onFailure: (Exception) -> Unit) {
-        val kennelCollection = firestore.collection("kennelDB")
+        val kennelCollection = firestore.collection("kennelsDB")
         kennelCollection.get().addOnSuccessListener { result ->
             val kennelList = result.documents.mapNotNull { document ->
                 val kennel = document.toObject(Kennel::class.java)

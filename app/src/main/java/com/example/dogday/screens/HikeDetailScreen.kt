@@ -34,13 +34,13 @@ fun HikeDetailScreen(hikeId: String?) {
         Column(modifier = Modifier.padding(16.dp)) {
             AsyncImage(
                 model = hike?.imageUrl,
-                contentDescription = hike?.name,
+                contentDescription = hike?.title,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(200.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
-            Text(text = hike?.name ?: "", style = MaterialTheme.typography.titleLarge)
+            Text(text = hike?.title ?: "", style = MaterialTheme.typography.titleLarge)
             Text(
                 text = "Description: ${hike?.description}",
                 style = MaterialTheme.typography.bodyMedium

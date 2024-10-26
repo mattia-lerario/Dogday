@@ -1,0 +1,25 @@
+<!-- res/drawable/orange_circle_with_icon.xml -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Orange Circle Layer -->
+    <item>
+        <shape
+            android:shape="oval">
+            <size
+                android:width="50dp"
+                android:height="50dp" />
+            <solid android:color="#FFA500" /> <!-- Orange color -->
+        </shape>
+    </item>
+
+    <!-- Icon Layer (Your PNG icon from drawables) -->
+    <item
+        android:gravity="center"> <!-- Centers the icon within the circle -->
+        <bitmap
+            android:src="@drawable/kennel_icon_image"
+            android:width="24dp"
+        android:height="24dp"
+        android:gravity="center" />
+    </item>
+
+</layer-list>

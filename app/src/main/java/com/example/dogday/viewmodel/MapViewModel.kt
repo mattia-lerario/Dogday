@@ -35,7 +35,7 @@ class MapViewModel : ViewModel() {
     var hikes by mutableStateOf<List<HikeData>>(emptyList())
         private set
 
-    var showKennels by mutableStateOf(true)
+    var showKennels by mutableStateOf(false)
         private set
 
     var showHikes by mutableStateOf(false)
@@ -198,7 +198,7 @@ class MapViewModel : ViewModel() {
                     .position(LatLng(kennel.coordinates.latitude, kennel.coordinates.longitude))
                     .title(kennel.name)
                     .snippet("${kennel.address}\nContact: ${kennel.contactInfo}")
-                    .icon(bitmapDescriptorFromVector(context, R.drawable.orange_circle))
+                    .icon(bitmapDescriptorFromVector(context, R.drawable.hike_marker))
 
                 map.addMarker(markerOptions)
             }
@@ -208,9 +208,9 @@ class MapViewModel : ViewModel() {
             hikes.forEach { hike ->
                 val markerOptions = MarkerOptions()
                     .position(LatLng(hike.coordinates.latitude, hike.coordinates.longitude))
-                    .title(hike.name)
+                    .title(hike.title)
                     .snippet(hike.description)
-                    .icon(bitmapDescriptorFromVector(context, R.drawable.orange_circle))
+                    .icon(bitmapDescriptorFromVector(context, R.drawable.hike_marker))
 
                 map.addMarker(markerOptions)
             }

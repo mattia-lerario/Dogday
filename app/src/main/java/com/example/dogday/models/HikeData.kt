@@ -4,7 +4,7 @@ import com.google.firebase.firestore.GeoPoint
 
 data class HikeData(
     val id: String = "",
-    val name: String = "",
+    val title: String = "",
     val address: String = "",
     val coordinates: GeoPoint = GeoPoint(0.0, 0.0),
     val description: String = "",

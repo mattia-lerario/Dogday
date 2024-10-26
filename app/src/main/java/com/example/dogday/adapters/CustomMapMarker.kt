@@ -62,7 +62,7 @@ class CustomMapMarker(
             }
             is HikeData -> {
                 // Populate view with HikeData data
-                titleTextView.text = data.name
+                titleTextView.text = data.title
                 snippetTextView.text = data.description
 
                 // Set default hike image or hide image view

@@ -33,7 +33,7 @@
             android:id="@+id/circle_background"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:background="@drawable/orange_circle" />
+            android:background="@drawable/hike_marker" />
 
         <!-- ImageView for the small image -->
         <ImageView
