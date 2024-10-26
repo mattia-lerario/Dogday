@@ -9,12 +9,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
@@ -41,31 +40,32 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.dogday.FirestoreInteractions
 import com.example.dogday.R
-import com.example.dogday.ui.theme.ButtonColorLight
 import com.example.dogday.ui.theme.MyAppTest01Theme
 import com.google.firebase.FirebaseApp
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
-import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
 
 class MainActivity : ComponentActivity() {
+    private lateinit var analytics: FirebaseAnalytics
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         FirebaseApp.initializeApp(this)
 
-        // Firebase services
-        val analytics = Firebase.analytics
-        val auth = Firebase.auth
+        // Initialize Firebase Analytics
+        analytics = Firebase.analytics
+
+        // Log an event
+        analytics.logEvent(FirebaseAnalytics.Event.APP_OPEN, null)
 
         setContent {
             MyAppTest01Theme{
                 MainApp()
             }
-
         }
     }
 }
@@ -76,8 +76,11 @@ fun MainApp() {
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
     val currentScreen = when {
-        currentRoute?.startsWith("DogDetailScreen") == true -> DogScreen.DogDetail
-        else -> DogScreen.valueOf(currentRoute ?: DogScreen.Login.name)
+        currentRoute == null -> DogScreen.Login
+        currentRoute.startsWith("DogDetailScreen") -> DogScreen.DogDetail
+        currentRoute.startsWith("kennel_detail") -> DogScreen.KennelDetail
+        currentRoute.startsWith("hike_detail") -> DogScreen.HikeDetail
+        else -> DogScreen.values().find { it.name == currentRoute } ?: DogScreen.Login
     }
 
     val noBarRoutes = listOf(
@@ -85,7 +88,9 @@ fun MainApp() {
         DogScreen.NewUser.name,
         DogScreen.Register.name,
         DogScreen.Login.name,
-        DogScreen.DogQueryScreen.name
+        DogScreen.DogQueryScreen.name,
+        "kennel_detail",  // Add if you want to hide bars on these screens
+        "hike_detail",
     )
 
 
@@ -125,7 +130,7 @@ fun MainApp() {
 
 @Composable
 fun NavigationHost(navController: NavHostController, modifier: Modifier) {
-    val firestoreInteractions = FirestoreInteractions()
+
 
     NavHost(navController = navController, startDestination = "login", modifier = modifier) {
         composable(DogScreen.Login.name) { LoginScreen(navController) }   // Use LoginScreen here
@@ -142,6 +147,20 @@ fun NavigationHost(navController: NavHostController, modifier: Modifier) {
             val dogId = backStackEntry.arguments?.getString("dogId") ?: ""
             DogDetailScreen(navController = navController ,dogIdx = dogId)
         }
+        composable(
+            route = "kennel_detail/{kennelId}",
+            arguments = listOf(navArgument("kennelId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val kennelId = backStackEntry.arguments?.getString("kennelId") ?: ""
+            KennelDetailScreen(kennelId = kennelId)
+        }
+        composable(
+            route = "hike_detail/{hikeId}",
+            arguments = listOf(navArgument("hikeId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val hikeId = backStackEntry.arguments?.getString("hikeId") ?: ""
+            HikeDetailScreen(hikeId = hikeId)
+        }
         composable(route = DogScreen.DogQueryScreen.name) { DogQueryScreen(navController) }
         composable(route = DogScreen.UserDogScreen.name) { UserDogScreen(navController) }
 
@@ -153,13 +172,14 @@ enum class DogScreen(@StringRes val title: Int) {
     Register(title = R.string.register),
     Home(title = R.string.home),
     Map(title = R.string.map),
-    NewUser(title = R.string.newUser),
-    AddDog(title = R.string.addDog),
-    DogDetail(title = R.string.DogDetail),
+    NewUser(title = R.string.new_user),
+    AddDog(title = R.string.add_dog),
+    DogDetail(title = R.string.dog_detail),
     SettingsScreen(title = R.string.settings),
-    DogQueryScreen(title = R.string.dogQueryScreen),
-    UserDogScreen(title = R.string.UserDogScreen),
-//AddVetLog(title = R.string.addVetLog),
+    DogQueryScreen(title = R.string.dog_query_screen),
+    UserDogScreen(title = R.string.user_dog_screen),
+    KennelDetail(title = R.string.kennel_detail),
+    HikeDetail(title = R.string.hike_detail),
 }
 
 
@@ -175,23 +195,20 @@ fun DogAppBar(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(
-                bottomStart = 16. dp, bottomEnd = 16.dp))
+            .clip(RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp))
     ) {
         TopAppBar(
             title = { Text(stringResource(currentScreen.title)) },
-
             colors = TopAppBarDefaults.mediumTopAppBarColors(
                 containerColor = MaterialTheme.colorScheme.primaryContainer
-
             ),
             modifier = modifier,
             navigationIcon = {
                 if (canNavigateBack) {
                     IconButton(onClick = navigateUp) {
                         Icon(
-                            imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = "Tilbake"
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(id = R.string.back)
                         )
                     }
                 }
@@ -202,53 +219,47 @@ fun DogAppBar(
 
 
 
-@Composable
-fun BottomNavigationBar(navController: NavHostController, ) {
-    val currentDestination = navController.currentDestination?.route
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(10.dp)
-            .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp,
-                bottomStart = 16. dp, bottomEnd = 16.dp))
-    ) {
 
-        NavigationBar(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-        ) {
-            NavigationBarItem(
-                icon = { Icon(Icons.Default.Home, contentDescription = "Hjem") },
-                label = { Text("Hjem") },
-                selected = currentDestination == "home",
-                onClick = {
-                    if (currentDestination != "home") {
-                        navController.navigate("home")
-                    }
+@Composable
+fun BottomNavigationBar(navController: NavHostController) {
+    val currentDestination = navController.currentDestination?.route
+
+    NavigationBar(
+        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+    ) {
+        NavigationBarItem(
+            icon = { Icon(Icons.Default.Home, contentDescription = "Hjem") },
+            label = { Text("Hjem") },
+            selected = currentDestination == DogScreen.Home.name,
+            onClick = {
+                if (currentDestination != DogScreen.Home.name) {
+                    navController.navigate(DogScreen.Home.name)
                 }
-            )
-            NavigationBarItem(
-                icon = { Icon(Icons.Default.Search, contentDescription = DogScreen.Map.name) },
-                label = { Text(text = "Kart") },
-                selected = currentDestination == DogScreen.Map.name,
-                onClick = {
-                    if (currentDestination != DogScreen.Map.name) {
-                        navController.navigate(route = DogScreen.Map.name)
-                    }
+            }
+        )
+        NavigationBarItem(
+            icon = { Icon(Icons.Default.Search, contentDescription = "Kart") },
+            label = { Text("Kart") },
+            selected = currentDestination == DogScreen.Map.name,
+            onClick = {
+                if (currentDestination != DogScreen.Map.name) {
+                    navController.navigate(DogScreen.Map.name)
                 }
-            )
-            NavigationBarItem(
-                icon = { Icon(Icons.Default.Settings, contentDescription = "Innstillinger") },
-                label = { Text("Innstillinger") },
-                selected = currentDestination == DogScreen.SettingsScreen.name,
-                onClick = {
-                    if (currentDestination != DogScreen.SettingsScreen.name) {
-                        navController.navigate(route = DogScreen.SettingsScreen.name)
-                    }
+            }
+        )
+        NavigationBarItem(
+            icon = { Icon(Icons.Default.Settings, contentDescription = "Innstillinger") },
+            label = { Text("Innstillinger") },
+            selected = currentDestination == DogScreen.SettingsScreen.name,
+            onClick = {
+                if (currentDestination != DogScreen.SettingsScreen.name) {
+                    navController.navigate(DogScreen.SettingsScreen.name)
                 }
-            )
-        }
+            }
+        )
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable

@@ -42,17 +42,19 @@ class CustomMapMarker(
                 val imageLoader = ImageLoader(inflater.context)
                 val request = ImageRequest.Builder(inflater.context)
                     .data(data.imageUrl)
+                    .size(50, 50)
                     .target(
                         onStart = {
                             imageView.setImageResource(android.R.drawable.ic_menu_gallery)
                         },
                         onSuccess = { result ->
                             imageView.setImageDrawable(result)
-                            // Refresh the info window
+                            // Force marker to refresh
+                            marker.hideInfoWindow()
                             marker.showInfoWindow()
                         },
                         onError = {
-                            imageView.setImageResource(android.R.drawable.ic_menu_report_image)
+                            imageView.setImageResource(android.R.drawable.ic_dialog_alert)
                         }
                     )
                     .build()
@@ -63,14 +65,14 @@ class CustomMapMarker(
                 titleTextView.text = data.name
                 snippetTextView.text = data.description
 
-                // HikeData doesn't necessarily have images, so you can handle that accordingly
-                imageView.setImageResource(android.R.drawable.ic_menu_gallery) // Placeholder image for hikes
+                // Set default hike image or hide image view
+                imageView.setImageResource(android.R.drawable.ic_menu_compass)
             }
             else -> {
                 // Handle case where neither Kennel nor HikeData is available
                 titleTextView.text = marker.title ?: ""
                 snippetTextView.text = marker.snippet ?: ""
-                imageView.setImageResource(android.R.drawable.ic_menu_gallery)
+                imageView.setImageResource(android.R.drawable.ic_menu_directions)
             }
         }
 
