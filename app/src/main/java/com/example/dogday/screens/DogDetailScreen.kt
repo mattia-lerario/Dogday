@@ -44,18 +44,22 @@ import com.example.dogday.models.Dog
 import com.google.firebase.auth.FirebaseAuth
 
 
-//Kode under er kopiert fra J, kun gjort endring for å hente kun der dogId er lik.
+
 @Composable
-fun DogDetailScreen(navController : NavController ,dogIdx: String) {
+fun DogDetailScreen(navController: NavController, dogIdx: String) {
+
     val viewModel: DogListViewModel = viewModel()
+
+    LaunchedEffect(dogIdx) {
+        viewModel.fetchDog(dogIdx)
+    }
 
     val dog by viewModel.dog.collectAsState()
 
-
     dog?.let { DogDetailUI(navController = navController, dog = it) }
-
+    
     if (dog == null) {
-        Text(text = "Rart")
+        Text(text = "Feil på lasting av hund!")
     }
 }
 
