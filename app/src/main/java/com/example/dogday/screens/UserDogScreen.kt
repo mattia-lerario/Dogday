@@ -41,6 +41,7 @@ fun UserDogScreen(navController: NavHostController){
     Column {
         for (dog in dogs) {
             DogX(navController = navController, dog)
+
         }
     }
 
