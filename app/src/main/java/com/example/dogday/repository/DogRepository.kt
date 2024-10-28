@@ -51,4 +51,48 @@ class DogRepository {
             onFailure(Exception("Bruker ikke logget inn."))
         }
     }
+
+    fun fetchDog(dogId: String, onSuccess: (Dog?) -> Unit, onFailure: (Exception) -> Unit) {
+        val uid = auth.currentUser?.uid
+        if (uid != null) {
+            firestore.collection("ddcollection").document(uid).get()
+                .addOnSuccessListener { document ->
+                    if (document.exists()) {
+                        val dogsMap = document.get("dogs") as? Map<*, *>
+                        val dogData = dogsMap?.values?.find {
+                            val dogInfo = it as? Map<*, *>
+                            dogInfo?.get("dogId") == dogId
+                        } as? Map<*, *>
+
+                        if (dogData != null) {
+                            val name = dogData["name"] as? String
+                            val breed = dogData["breed"] as? String
+                            val nickName = dogData["nickName"] as? String
+                            val birthday = dogData["birthday"] as? Long
+                            val breeder = dogData["breeder"] as? String
+
+                            val dog = Dog(
+                                dogId = dogId,
+                                name = name ?: "",
+                                nickName = nickName ?: "",
+                                breed = breed ?: "",
+                                birthday = birthday ?: 0L,
+                                breeder = breeder ?: ""
+                            )
+                            onSuccess(dog)
+                        } else {
+                            onSuccess(null)
+                        }
+                    } else {
+                        onSuccess(null)
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    onFailure(exception)
+                }
+        } else {
+            onFailure(Exception("Bruker ikke logget inn."))
+        }
+    }
 }
+

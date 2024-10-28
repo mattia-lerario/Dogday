@@ -17,17 +17,17 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Color(0xFFD95A3C), // Bruker samme farge som i Light Mode for primær
-    secondary = Color(0xFF8B4A32), // Mørkere variant for bedre kontrast
-    tertiary = Color(0xFF5A2F36),  // Dypere nyanse for tertiærfargen
-    primaryContainer = Color(0xFF9B3D2D), // Tilpasset mørk versjon av primaryContainer
+    primary = Color(0xFFD95A3C),
+    secondary = Color(0xFF8B4A32),
+    tertiary = Color(0xFF5A2F36),
+    primaryContainer = Color(0xFF9B3D2D),
     secondaryContainer = InputBackgroundDark,
-    background = Color(0xFF121212), // Typisk mørk bakgrunnsfarge
+    background = Color(0xFF121212),
     surface = Color(0xFF121212),
     onPrimary = Color.White,
     onSecondary = Color.White,
     onTertiary = Color.White,
-    onBackground = Color(0xFFE1E1E1), // Lys tekstfarge på mørk bakgrunn
+    onBackground = Color(0xFFE1E1E1),
     onSurface = Color(0xFFE1E1E1)
 )
 

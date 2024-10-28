@@ -11,7 +11,12 @@ class DogListViewModel : ViewModel() {
 
     // Opprett en MutableStateFlow med en tom liste
     private val _dogs = MutableStateFlow<List<Dog>>(emptyList())
-    val dogList: StateFlow<List<Dog>> = _dogs.asStateFlow() // Eksponer som StateFlow
+    val dogList: StateFlow<List<Dog>> = _dogs.asStateFlow()
+
+    private val _dog = MutableStateFlow<Dog?>(null)
+    val dog: StateFlow<Dog?> = _dog.asStateFlow()
+
+
 
     init {
         fetchDogs()
@@ -27,5 +32,18 @@ class DogListViewModel : ViewModel() {
             }
         )
     }
-}
+
+    fun fetchDog(dogId: String) {
+        dogRepository.fetchDog(
+            dogId = dogId,
+            onSuccess = { fetchedDog ->
+                _dog.value = fetchedDog
+            },
+            onFailure = { exception ->
+                println("Error fetching dog: ${exception.message}")
+                _dog.value = null
+            })
+
+
+}}
 
