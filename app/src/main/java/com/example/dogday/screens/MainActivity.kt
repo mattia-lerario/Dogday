@@ -145,7 +145,7 @@ fun NavigationHost(navController: NavHostController, modifier: Modifier) {
             arguments = listOf(navArgument("dogId") {type = NavType.StringType })
         ) { backStackEntry ->
             val dogId = backStackEntry.arguments?.getString("dogId") ?: ""
-            DogDetailScreen(navController = navController ,dogIdx = dogId)
+            DogDetailScreen(navController = navController, dogIdx = dogId)
         }
         composable(
             route = "kennel_detail/{kennelId}",

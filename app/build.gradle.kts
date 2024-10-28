@@ -2,8 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     id("com.google.gms.google-services")
-
-
+   
 }
 
 android {
@@ -58,6 +57,8 @@ android {
 }
 
 dependencies {
+
+
     // Firebase Platform BOM for managing versions
     implementation(platform("com.google.firebase:firebase-bom:33.3.0"))
 
@@ -85,6 +86,7 @@ dependencies {
     implementation("com.google.android.gms:play-services-location:21.0.1")
     implementation(libs.volley)
     implementation(libs.firebase.storage.ktx)
+    implementation(libs.support.annotations)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -93,4 +95,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling) // Corrected from libs.androidx.ui.tooling
     debugImplementation(libs.androidx.ui.test.manifest) // Corrected from libs.androidx.ui.test.manifest
 
+
+
 }
+

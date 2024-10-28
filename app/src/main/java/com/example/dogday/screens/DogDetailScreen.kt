@@ -1,6 +1,7 @@
 package com.example.dogday.screens
 
 
+import DogListViewModel
 import androidx.compose.foundation.Image
 
 import androidx.compose.foundation.layout.Box
@@ -19,6 +20,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +37,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 import com.example.dogday.R
 import com.example.dogday.models.Dog
@@ -44,64 +47,16 @@ import com.google.firebase.auth.FirebaseAuth
 //Kode under er kopiert fra J, kun gjort endring for å hente kun der dogId er lik.
 @Composable
 fun DogDetailScreen(navController : NavController ,dogIdx: String) {
-    val uid = FirebaseAuth.getInstance().currentUser?.uid
-    var dogsList by remember { mutableStateOf<List<Dog>>(emptyList()) }
+    val viewModel: DogListViewModel = viewModel()
 
-    LaunchedEffect(uid) {
-        if (uid != null) {
-            val firestore = FirebaseFirestore.getInstance()
-            firestore.collection("ddcollection").document(uid).get()
-                .addOnSuccessListener { document ->
-                    if (document.exists()) {
-                        val dogsMap = document.get("dogs") as? Map<String, Map<String, Any>>
+    val dog by viewModel.dog.collectAsState()
 
 
-                        if (dogsMap != null) {
-                            val dogs = dogsMap.values.mapNotNull { dogData ->
-                                val dogInfo = dogData as? Map<*, *>
-                                val dogId = dogInfo?.get("dogId") as? String
-                                val name = dogInfo?.get("name") as? String
-                                val breed = dogInfo?.get("breed") as? String
-                                val nickName = dogInfo?.get("nickName") as? String
-                                val birthday = dogInfo?.get("birthday") as? Long
-                                val breeder = dogInfo?.get("breeder") as? String
+    dog?.let { DogDetailUI(navController = navController, dog = it) }
 
-                                if (dogId != null && name != null && breed != null && dogIdx == dogId) {
-                                    Dog(
-                                        dogId = dogId,
-                                        name = name,
-                                        nickName = nickName ?: "",
-                                        breed = breed,
-                                        birthday = birthday ?: 0L,
-                                        breeder = breeder ?: ""
-                                    )
-                                } else {
-                                    null
-                                }
-                            }
-                            dogsList = dogs
-                        }
-                    } else {
-                        println("Document does not exist")
-                    }
-                }
-                .addOnFailureListener { exception ->
-                    println("Error fetching document: ${exception.message}")
-                }
-        }
+    if (dog == null) {
+        Text(text = "Rart")
     }
-    if (dogsList.isNotEmpty()) {
-        LazyColumn {
-            items(dogsList) { dog ->
-                DogDetailUI(navController, dog = dog)
-
-            }
-        }
-    } else {
-        Text(text = "You haven't added any dogs yet.")
-    }
-
-
 }
 
 
