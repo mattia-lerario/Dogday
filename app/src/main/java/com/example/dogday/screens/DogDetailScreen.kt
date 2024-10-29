@@ -3,6 +3,7 @@ package com.example.dogday.screens
 
 import DogListViewModel
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -56,11 +57,22 @@ fun DogDetailScreen(navController: NavController, dogIdx: String) {
 
     val dog by viewModel.dog.collectAsState()
 
-    dog?.let { DogDetailUI(navController = navController, dog = it) }
-    
-    if (dog == null) {
-        Text(text = "Feil på lasting av hund!")
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+
+    ){
+        dog?.let { DogDetailUI(navController = navController, dog = it) }
+
+        if (dog == null) {
+            Text(text = "Feil på lasting av hund!")
+        }
     }
+
+
 }
 
 
