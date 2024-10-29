@@ -1,5 +1,6 @@
 import androidx.lifecycle.ViewModel
 import com.example.dogday.models.Dog
+import com.example.dogday.models.VetNote
 import com.example.dogday.repository.DogRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -45,5 +46,14 @@ class DogListViewModel : ViewModel() {
             })
 
 
-}}
+    }
+
+    fun addNoteToDog(dog: Dog, note: VetNote, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+        val updatedDog = dog.copy(vetLog = dog.vetLog + note)
+        dogRepository.updateDog(updatedDog, onSuccess, onFailure)
+    }
+
+
+
+}
 

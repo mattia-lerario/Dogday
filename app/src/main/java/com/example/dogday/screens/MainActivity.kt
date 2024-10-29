@@ -90,6 +90,7 @@ fun MainApp() {
         DogScreen.Register.name,
         DogScreen.Login.name,
         DogScreen.DogQueryScreen.name,
+
         "kennel_detail",  // Add if you want to hide bars on these screens
         "hike_detail",
     )
@@ -111,7 +112,7 @@ fun MainApp() {
         floatingActionButton = {
             if (currentScreen == DogScreen.DogDetail){
                 FloatingActionButton(
-                    onClick = { navController.navigate(route = DogScreen.SettingsScreen.name) },
+                    onClick = { navController.navigate(route = DogScreen.AddVetNote.name) },
                 ) {
                     Icon(Icons.Default.Add, contentDescription = "Legg til")
                 }
@@ -128,6 +129,9 @@ fun MainApp() {
         NavigationHost(navController = navController, modifier = Modifier.padding(paddingValues))
     }
 }
+
+
+
 
 @Composable
 fun NavigationHost(navController: NavHostController, modifier: Modifier) {
@@ -163,6 +167,7 @@ fun NavigationHost(navController: NavHostController, modifier: Modifier) {
             HikeDetailScreen(hikeId = hikeId)
         }
         composable(route = DogScreen.DogQueryScreen.name) { DogQueryScreen(navController) }
+        composable(route = DogScreen.AddVetNote.name) { VetNoteScreen(navController) }
         composable(route = DogScreen.UserDogScreen.name) { UserDogScreen(navController) }
         composable(route = DogScreen.Quiz.name) { DogQuizScreen(navController) }
         composable("quiz_results/{dogID}") { backStackEntry ->
@@ -188,7 +193,8 @@ enum class DogScreen(@StringRes val title: Int) {
     KennelDetail(title = R.string.kennel_detail),
     HikeDetail(title = R.string.hike_detail),
     Quiz(title = R.string.quiz),
-    QuizResults(title = R.string.quizresults)
+    QuizResults(title = R.string.quizresults),
+    AddVetNote(title = R.string.add_note)
 
 }
 
