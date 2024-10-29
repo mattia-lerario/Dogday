@@ -87,6 +87,7 @@ dependencies {
     implementation(libs.volley)
     implementation(libs.firebase.storage.ktx)
     implementation(libs.support.annotations)
+    implementation ("io.coil-kt:coil-compose:1.3.2")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

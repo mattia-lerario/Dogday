@@ -62,6 +62,7 @@ fun DogQuizScreen(navController: NavController) {
 
                 if (isLastQuestion) {
                     val recommendedDogID = getRecommendedDogID(selectedAnswers)
+                    println("Generated dogID based on answers: ${recommendedDogID.name}")
                     navController.navigate("quiz_results/${recommendedDogID.name}")
                 } else {
                     currentQuestionIndex++
@@ -70,22 +71,6 @@ fun DogQuizScreen(navController: NavController) {
         )
 
         Spacer(modifier = Modifier.height(24.dp))
-
-        if (isLastQuestion) {
-            Button(
-                onClick = {
-                    val recommendedDogID = getRecommendedDogID(selectedAnswers)
-                    navController.navigate("quiz_results/${recommendedDogID.name}")
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = ButtonColorLight),
-                contentPadding = PaddingValues(vertical = 8.dp)
-            ) {
-                Text("Submit Quiz", style = MaterialTheme.typography.bodyLarge)
-            }
-        }
 
     }
 }
