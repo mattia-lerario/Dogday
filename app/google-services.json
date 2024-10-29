@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "151197073726",
+    "project_id": "dogday-app",
+    "storage_bucket": "dogday-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:151197073726:android:028958c1388c3740c5ac6f",
+        "android_client_info": {
+          "package_name": "com.example.dogday"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "151197073726-98sulgjshef7g31ikd40sg9ijsbqb2ns.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAjAMMBcvqmPcYSjwwBHgsL3naO1yDLrpc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "151197073726-98sulgjshef7g31ikd40sg9ijsbqb2ns.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
