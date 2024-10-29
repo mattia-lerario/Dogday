@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
 import com.example.dogday.R
 import com.example.dogday.models.Dog
 
@@ -77,14 +78,15 @@ fun DogX(navController: NavHostController, dog: Dog){
                 //Text(text = "${dog.breed}")
             }
 
-            Image(
-                painter = painterResource(id = R.drawable.dog_cartoon),
+            AsyncImage(
+                model = dog.imageUrl ?: R.drawable.dog_cartoon, // Bruk standardbilde hvis URL er null
                 contentDescription = "Dog",
                 contentScale = ContentScale.Crop,
+                placeholder = painterResource(id = R.drawable.dog_cartoon), // Mens laster vises standard-bilde
+                error = painterResource(id = R.drawable.dog_cartoon), // Ved feil: Standardbilde
                 modifier = Modifier
                     .size(100.dp)
                     .clip(CircleShape)
-                    .padding(0.dp)
             )
 
 

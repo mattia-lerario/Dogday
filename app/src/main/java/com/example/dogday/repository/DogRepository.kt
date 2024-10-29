@@ -24,6 +24,7 @@ class DogRepository {
                             val nickName = dogInfo?.get("nickName") as? String
                             val birthday = dogInfo?.get("birthday") as? Long
                             val breeder = dogInfo?.get("breeder") as? String
+                            val imageUrl = dogInfo?.get("imageUrl") as? String
 
                             if (dogId != null && name != null && breed != null) {
                                 Dog(
@@ -32,7 +33,8 @@ class DogRepository {
                                     nickName = nickName ?: "",
                                     breed = breed,
                                     birthday = birthday ?: 0L,
-                                    breeder = breeder ?: ""
+                                    breeder = breeder ?: "",
+                                    imageUrl = imageUrl
                                 )
                             } else {
                                 null
@@ -70,6 +72,7 @@ class DogRepository {
                             val nickName = dogData["nickName"] as? String
                             val birthday = dogData["birthday"] as? Long
                             val breeder = dogData["breeder"] as? String
+                            val imageUrl = dogData["imageUrl"] as? String
 
                             val dog = Dog(
                                 dogId = dogId,
@@ -77,7 +80,8 @@ class DogRepository {
                                 nickName = nickName ?: "",
                                 breed = breed ?: "",
                                 birthday = birthday ?: 0L,
-                                breeder = breeder ?: ""
+                                breeder = breeder ?: "",
+                                imageUrl = imageUrl
                             )
                             onSuccess(dog)
                         } else {
