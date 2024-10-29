@@ -3,6 +3,7 @@ package com.example.dogday.repository
 import com.example.dogday.models.Dog
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 
 class DogRepository {
 
@@ -74,6 +75,7 @@ class DogRepository {
                             val breeder = dogData["breeder"] as? String
                             val imageUrl = dogData["imageUrl"] as? String
 
+
                             val dog = Dog(
                                 dogId = dogId,
                                 name = name ?: "",
@@ -98,5 +100,36 @@ class DogRepository {
             onFailure(Exception("Bruker ikke logget inn."))
         }
     }
-}
+
+
+    fun updateDog(dog: Dog, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+        val uid = auth.currentUser?.uid
+        if (uid != null) {
+            val dogData = mapOf(
+                "dogId" to dog.dogId,
+                "name" to dog.name,
+                "nickName" to dog.nickName,
+                "breed" to dog.breed,
+                "birthday" to dog.birthday,
+                "breeder" to dog.breeder,
+                "imageUrl" to dog.imageUrl,
+                "vetLog" to dog.vetLog.map { vetNote ->
+                    mapOf(
+                        "note" to vetNote.note
+                    )
+                }
+            )
+
+            firestore.collection("ddcollection").document(uid)
+                .set(mapOf("dogs" to mapOf(dog.dogId to dogData)), SetOptions.merge())
+                .addOnSuccessListener {
+                    onSuccess()
+                }
+                .addOnFailureListener { exception ->
+                    onFailure(exception)  // Logger evt. feilen
+                }
+        } else {
+            onFailure(Exception("Bruker ikke logget inn."))
+        }
+    }}
 

@@ -9,6 +9,7 @@ data class Dog(
     val breed: String,
     val birthday: Long,
     val breeder: String = "",
-    val imageUrl: String? = null
+    val imageUrl: String? = null,
+    val vetLog: List<VetNote> = emptyList()
 
 )
