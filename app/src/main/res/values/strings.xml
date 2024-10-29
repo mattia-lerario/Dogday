@@ -19,6 +19,10 @@
     <string name="dog_query_screen">DogQuery</string>
     <string name="user_dog_screen">Dine hunder</string>
 
+    <string name="quiz">Quiz</string>
+    <string name="quizresults">Quiz Results</string>
+
+
     <!-- Additional Features -->
     <string name="add_vet_log">Legg til notater fra dyrlegebesøk</string>
     <!-- Navigational assets -->

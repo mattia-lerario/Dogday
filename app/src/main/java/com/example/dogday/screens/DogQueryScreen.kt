@@ -67,7 +67,7 @@ fun DogQueryScreen(navController: NavController) {
         // "No" Button
         Button(
             onClick = {
-                navController.navigate(route = DogScreen.Home.name)
+                navController.navigate(route = DogScreen.Quiz.name)
             },
             modifier = Modifier
                 .fillMaxWidth()

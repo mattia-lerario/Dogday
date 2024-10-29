@@ -41,6 +41,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.dogday.R
+import com.example.dogday.models.DogID
 import com.example.dogday.ui.theme.MyAppTest01Theme
 import com.google.firebase.FirebaseApp
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -163,6 +164,12 @@ fun NavigationHost(navController: NavHostController, modifier: Modifier) {
         }
         composable(route = DogScreen.DogQueryScreen.name) { DogQueryScreen(navController) }
         composable(route = DogScreen.UserDogScreen.name) { UserDogScreen(navController) }
+        composable(route = DogScreen.Quiz.name) { DogQuizScreen(navController) }
+        composable("quiz_results/{dogID}") { backStackEntry ->
+            val dogID = backStackEntry.arguments?.getString("dogID") ?: DogID.BULLDOG.name
+            DogQuizResultsScreen(navController = navController, dogID = dogID)
+        }
+
 
     }
 }
@@ -180,6 +187,9 @@ enum class DogScreen(@StringRes val title: Int) {
     UserDogScreen(title = R.string.user_dog_screen),
     KennelDetail(title = R.string.kennel_detail),
     HikeDetail(title = R.string.hike_detail),
+    Quiz(title = R.string.quiz),
+    QuizResults(title = R.string.quizresults)
+
 }
 
 
