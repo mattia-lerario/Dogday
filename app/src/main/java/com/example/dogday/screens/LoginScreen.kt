@@ -4,6 +4,7 @@ package com.example.dogday.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -33,135 +34,242 @@ fun LoginScreen(navController: NavController) {
     var password by remember { mutableStateOf("") }
     var loginError by remember { mutableStateOf<String?>(null) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+    BoxWithConstraints(
+        modifier = Modifier.fillMaxSize()
     ) {
+        val isLandscape = maxWidth > maxHeight
 
-        Image(
-            painter = painterResource(R.drawable.dogday_logo), // Add your logo drawable here
-            contentDescription = "DogDay Logo",
-            modifier = Modifier.size(350.dp),
-            contentScale = ContentScale.Fit
-        )
+        if (isLandscape) {
+            // Layout for landscape orientation
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                // Logo on the left side
+                Image(
+                    painter = painterResource(R.drawable.dogday_logo),
+                    contentDescription = "DogDay Logo",
+                    modifier = Modifier.size(200.dp),
+                    contentScale = ContentScale.Fit
+                )
 
-        Spacer(modifier = Modifier.height(18.dp))
+                // Inputs, buttons, and error message centered in the middle
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    TextField(
+                        value = email,
+                        onValueChange = { email = it },
+                        label = { Text("Email", color = Color.Black) },
+                        modifier = Modifier
+                            .widthIn(max = 300.dp)
+                            .padding(horizontal = 8.dp),
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = InputBackgroundLight,
+                            unfocusedContainerColor = InputBackgroundLight,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent
+                        ),
+                        shape = MaterialTheme.shapes.small
+                    )
 
-        TextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Email", color = Color.Black) },
-            modifier = Modifier
-                .widthIn(max = 300.dp)
-                .padding(horizontal = 8.dp),
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = InputBackgroundLight,
-                unfocusedContainerColor = InputBackgroundLight,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
-            ),
-            shape = MaterialTheme.shapes.small
+                    Spacer(modifier = Modifier.height(8.dp))
 
+                    TextField(
+                        value = password,
+                        onValueChange = { password = it },
+                        label = { Text("Password", color = Color.Black) },
+                        visualTransformation = PasswordVisualTransformation(),
+                        modifier = Modifier
+                            .widthIn(max = 300.dp)
+                            .padding(horizontal = 8.dp),
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = InputBackgroundLight,
+                            unfocusedContainerColor = InputBackgroundLight,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent
+                        ),
+                        shape = MaterialTheme.shapes.small
+                    )
 
-        )
+                    Spacer(modifier = Modifier.height(16.dp))
 
-        Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier
+                            .widthIn(max = 300.dp)
+                            .padding(horizontal = 8.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Button(
+                            onClick = {
+                                if (email.isNotBlank() && password.isNotBlank()) {
+                                    Firebase.auth.signInWithEmailAndPassword(email, password)
+                                        .addOnCompleteListener { task ->
+                                            if (task.isSuccessful) {
+                                                val uid = Firebase.auth.currentUser?.uid
+                                                if (uid != null) {
+                                                    navController.navigate("home")
+                                                }
 
-        TextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Password", color = Color.Black) },
-            visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier
-                .widthIn(max = 300.dp)
-                .padding(horizontal = 8.dp),
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = InputBackgroundLight,
-                unfocusedContainerColor = InputBackgroundLight,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
-            ),
-            shape = MaterialTheme.shapes.small
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Row(
-            modifier = Modifier
-                .widthIn(max = 300.dp) // Set a max width for the button row
-                .padding(horizontal = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Button(
-                onClick = {
-                    if (email.isNotBlank() && password.isNotBlank()) {
-                        Firebase.auth.signInWithEmailAndPassword(email, password)
-                            .addOnCompleteListener { task ->
-                                if (task.isSuccessful) {
-                                    val uid = Firebase.auth.currentUser?.uid
-                                    if (uid != null) {
-                                        navController.navigate("home")
-
-                                    }
-
-                                    val analytics = Firebase.analytics
-                                    analytics.logEvent("login") {
-                                        param("method", "email")
-                                    }
+                                                val analytics = Firebase.analytics
+                                                analytics.logEvent("login") {
+                                                    param("method", "email")
+                                                }
+                                            } else {
+                                                loginError = task.exception?.localizedMessage
+                                            }
+                                        }
                                 } else {
-                                    loginError = task.exception?.localizedMessage
+                                    loginError = "Email and password must not be empty"
                                 }
-                            }
-                    } else {
-                        loginError = "Email and password must not be empty"
+                            },
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(end = 8.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = ButtonColorLight),
+                            contentPadding = PaddingValues(vertical = 8.dp)
+                        ) {
+                            Text(
+                                "Login",
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+
+                        Button(
+                            onClick = { navController.navigate("register") },
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(start = 8.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = ButtonColorLight),
+                            contentPadding = PaddingValues(vertical = 8.dp)
+                        ) {
+                            Text(
+                                "Register",
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
                     }
-                },
-                modifier = Modifier
-                    .weight(1f) // Makes both buttons take up equal space
-                    .padding(end = 8.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = ButtonColorLight),
-                contentPadding = PaddingValues(vertical = 8.dp)
-            ) {
-                Text(
-                    "Login",
-                    fontWeight = FontWeight.Bold
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    loginError?.let { error ->
+                        Text(
+                            text = error,
+                            color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.padding(top = 8.dp)
+                        )
+                    }
+                }
+
+                // Dog image on the right side
+                Image(
+                    painter = painterResource(R.drawable.dog_cartoon),
+                    contentDescription = "Dog Image",
+                    modifier = Modifier.size(200.dp),
+                    contentScale = ContentScale.Fit
                 )
             }
-
-            Button(
-                onClick = { navController.navigate("register") },
+        } else {
+            // Layout for portrait orientation
+            Column(
                 modifier = Modifier
-                    .weight(1f) // Makes both buttons take up equal space
-                    .padding(start = 8.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = ButtonColorLight),
-                contentPadding = PaddingValues(vertical = 8.dp)
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    "Register",
-                    fontWeight = FontWeight.Bold
+                Image(
+                    painter = painterResource(R.drawable.dogday_logo),
+                    contentDescription = "DogDay Logo",
+                    modifier = Modifier.size(350.dp),
+                    contentScale = ContentScale.Fit
+                )
+
+                Spacer(modifier = Modifier.height(18.dp))
+
+                TextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    label = { Text("Email", color = Color.Black) },
+                    modifier = Modifier
+                        .widthIn(max = 300.dp)
+                        .padding(horizontal = 8.dp),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = InputBackgroundLight,
+                        unfocusedContainerColor = InputBackgroundLight,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent
+                    ),
+                    shape = MaterialTheme.shapes.small
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                TextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    label = { Text("Password", color = Color.Black) },
+                    visualTransformation = PasswordVisualTransformation(),
+                    modifier = Modifier
+                        .widthIn(max = 300.dp)
+                        .padding(horizontal = 8.dp),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = InputBackgroundLight,
+                        unfocusedContainerColor = InputBackgroundLight,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent
+                    ),
+                    shape = MaterialTheme.shapes.small
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(
+                    modifier = Modifier
+                        .widthIn(max = 300.dp)
+                        .padding(horizontal = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Button(
+                        onClick = {
+                            // Login button logic
+                        },
+                        modifier = Modifier.weight(1f).padding(end = 8.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = ButtonColorLight)
+                    ) {
+                        Text("Login", fontWeight = FontWeight.Bold)
+                    }
+
+                    Button(
+                        onClick = { navController.navigate("register") },
+                        modifier = Modifier.weight(1f).padding(start = 8.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = ButtonColorLight)
+                    ) {
+                        Text("Register", fontWeight = FontWeight.Bold)
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                loginError?.let { error ->
+                    Text(text = error, color = MaterialTheme.colorScheme.error)
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Image(
+                    painter = painterResource(R.drawable.dog_cartoon),
+                    contentDescription = "Dog Image",
+                    modifier = Modifier.size(200.dp),
+                    contentScale = ContentScale.Fit
                 )
             }
         }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        loginError?.let { error ->
-            Text(
-                text = error,
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(top = 8.dp)
-            )
-        }
-
-        Image(
-            painter = painterResource(R.drawable.dog_cartoon),
-            contentDescription = "Dog Image",
-            modifier = Modifier.size(200.dp),
-            contentScale = ContentScale.Fit
-        )
-
     }
 }
+
