@@ -37,7 +37,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.dogday.R
-import com.example.dogday.models.Dog
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -62,42 +61,6 @@ fun HomeScreen(navController: NavHostController) {
 
 
     }
-}
-
-@Composable
-fun DogListCard(navController: NavHostController, dog: Dog){
-    Card(elevation = CardDefaults.cardElevation(
-        defaultElevation = 6.dp),
-        onClick = { navController.navigate("DogDetailScreen/${dog.dogId}")},
-        border = BorderStroke(1.dp, Color.Black),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(10.dp)) {
-        Row(modifier = Modifier.padding(10.dp)) {
-            Column(modifier = Modifier
-                .weight(1f)
-                .padding(5.dp)) {
-                Text(text = "${dog.name}", style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.padding(0.dp))
-                //Text(text = "${dog.breed}")
-            }
-
-            Image(
-                painter = painterResource(id = R.drawable.dog_cartoon),
-                contentDescription = "Dog",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(100.dp)
-                    .clip(CircleShape)
-                    .padding(0.dp)
-            )
-
-
-        }
-
-    }
-
-
 }
 
 @Composable
