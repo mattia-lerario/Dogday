@@ -12,11 +12,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -42,6 +47,7 @@ import coil.compose.AsyncImage
 
 import com.example.dogday.R
 import com.example.dogday.models.Dog
+import com.example.dogday.models.VetNote
 
 
 @Composable
@@ -102,16 +108,59 @@ fun DogDetailUI(navController : NavController, dog: Dog) {
         Text(text = "Bursdag: ${dog.birthday}")
         Text(text = "Oppdretter: ${dog.breeder}")
         Spacer(modifier = Modifier.height(26.dp))
+        Text(text = "Hendelseslogg:")
+        VetLogNotes(dog = dog)
 
-        
-        Text(text = "Knappen under skal snart virke slik at den gjør det mulig" +
-                "å legge til logg fra dyrlege eller lignende!")
+
 
 
 
     }}
 
+@Composable
+fun VetLogNotes(dog: Dog){
+    if (dog.vetLog.isEmpty()) {
+        Text(text = "Ingen hendelser registrert!" +
+                " Trykk på + for å legge til!")
+    }
+    else {
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .height(400.dp)
+        ) {
+            items(dog.vetLog) { vetNote ->
+                VetNoteItem(vetNote)
 
+        }
+    }
 
+}}
+
+@Composable
+fun VetNoteItem(vetNote: VetNote) {
+    Card(
+        shape = MaterialTheme.shapes.medium,
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(5.dp)
+
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth()
+        ) {
+            Text(
+                text = vetNote.note,
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.padding(bottom = 4.dp)
+            )
+            // Her kan du legge til andre detaljer om VetNote hvis tilgjengelig, som dato
+        }
+    }
+}
 
 

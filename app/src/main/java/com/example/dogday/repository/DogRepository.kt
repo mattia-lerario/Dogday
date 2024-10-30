@@ -1,6 +1,7 @@
 package com.example.dogday.repository
 
 import com.example.dogday.models.Dog
+import com.example.dogday.models.VetNote
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
@@ -27,6 +28,11 @@ class DogRepository {
                             val breeder = dogInfo?.get("breeder") as? String
                             val imageUrl = dogInfo?.get("imageUrl") as? String
 
+                            val vetLog = (dogInfo?.get("vetLog") as? List<Map<*, *>>)?.mapNotNull { vetNoteData ->
+                                val note = vetNoteData["note"] as? String
+                                note?.let { VetNote(note = it) }
+                            } ?: emptyList()
+
                             if (dogId != null && name != null && breed != null) {
                                 Dog(
                                     dogId = dogId,
@@ -35,7 +41,8 @@ class DogRepository {
                                     breed = breed,
                                     birthday = birthday ?: 0L,
                                     breeder = breeder ?: "",
-                                    imageUrl = imageUrl
+                                    imageUrl = imageUrl,
+                                    vetLog = vetLog
                                 )
                             } else {
                                 null
@@ -75,6 +82,10 @@ class DogRepository {
                             val breeder = dogData["breeder"] as? String
                             val imageUrl = dogData["imageUrl"] as? String
 
+                            val vetLog = (dogData["vetLog"] as? List<Map<*, *>>)?.mapNotNull { vetNoteData ->
+                                val note = vetNoteData["note"] as? String
+                                note?.let { VetNote(note = it) }
+                            } ?: emptyList()
 
                             val dog = Dog(
                                 dogId = dogId,
@@ -83,7 +94,8 @@ class DogRepository {
                                 breed = breed ?: "",
                                 birthday = birthday ?: 0L,
                                 breeder = breeder ?: "",
-                                imageUrl = imageUrl
+                                imageUrl = imageUrl,
+                                vetLog = vetLog
                             )
                             onSuccess(dog)
                         } else {
