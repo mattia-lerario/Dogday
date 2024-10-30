@@ -1,5 +1,6 @@
 package com.example.dogday.screens
 
+import DogListViewModel
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -33,6 +34,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -139,6 +141,7 @@ fun MainApp() {
 
 @Composable
 fun NavigationHost(navController: NavHostController, modifier: Modifier) {
+    val viewModel: DogListViewModel = viewModel()
 
 
     NavHost(navController = navController, startDestination = "login", modifier = modifier) {
@@ -171,12 +174,38 @@ fun NavigationHost(navController: NavHostController, modifier: Modifier) {
             HikeDetailScreen(hikeId = hikeId)
         }
         composable(route = DogScreen.DogQueryScreen.name) { DogQueryScreen(navController) }
+
         composable(
             route = "addVetNote/{dogId}",
             arguments = listOf(navArgument("dogId") { type = NavType.StringType })
         ) { backStackEntry ->
             val dogId = backStackEntry.arguments?.getString("dogId") ?: ""
-            VetNoteScreen(navController = navController, dogId = dogId)
+            VetNoteScreen(
+                navController = navController,
+                dogId = dogId,
+                onSaveNote = { vetNote ->
+                    viewModel.fetchDog(dogId)
+                    viewModel.dog.value?.let { dog ->
+                        if (dog.vetLog.any { it.id == vetNote.id }) {
+                            viewModel.updateVetNoteForDog(dog, vetNote)
+                        } else {
+                            viewModel.addNoteToDog(dog, vetNote, onSuccess = {
+                                viewModel.fetchDog(dogId)
+                                navController.popBackStack()
+                            }, onFailure = { exception ->
+                                println("Error saving note: ${exception.message}")
+                            })
+                        }
+                    }
+                },
+                onDeleteNote = { vetNote ->
+                    viewModel.fetchDog(dogId)
+                    viewModel.dog.value?.let { dog ->
+                        viewModel.deleteVetNoteForDog(dog, vetNote)
+                        navController.popBackStack()
+                    }
+                }
+            )
         }
 
         composable(route = DogScreen.UserDogScreen.name) { UserDogScreen(navController) }

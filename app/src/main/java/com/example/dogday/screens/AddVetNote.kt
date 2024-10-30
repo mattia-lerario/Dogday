@@ -2,6 +2,7 @@ package com.example.dogday.screens
 import DogListViewModel
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -17,11 +18,16 @@ import com.example.dogday.models.VetNote
 
 
 @Composable
-fun VetNoteScreen(navController: NavController, dogId: String) {
-    var noteText by remember { mutableStateOf("") }
+fun VetNoteScreen(
+    navController: NavController,
+    dogId: String,
+    vetNote: VetNote? = null,
+    onSaveNote: (VetNote) -> Unit,
+    onDeleteNote: ((VetNote) -> Unit)? = null
+) {
+    var noteText by remember { mutableStateOf(vetNote?.note ?: "") }
     val viewModel: DogListViewModel = viewModel()
 
-    //hente hund
     LaunchedEffect(dogId) {
         viewModel.fetchDog(dogId)
     }
@@ -35,14 +41,17 @@ fun VetNoteScreen(navController: NavController, dogId: String) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Legg til veterinærnotat", style = MaterialTheme.typography.titleLarge)
+        Text(
+            text = if (vetNote == null) "Add Note" else "Edit Note",
+            style = MaterialTheme.typography.titleLarge
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         TextField(
             value = noteText,
             onValueChange = { noteText = it },
-            label = { Text("Beskrivelse") },
+            label = { Text("Write your note here") },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(400.dp),
@@ -57,24 +66,29 @@ fun VetNoteScreen(navController: NavController, dogId: String) {
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             Button(onClick = {
-                val vetNote = VetNote(note = noteText)
-                println(dog)
-
+                val updatedNote = VetNote(note = noteText)
                 dog?.let {
-                    viewModel.addNoteToDog(it, vetNote,
-                        onSuccess = { navController.popBackStack() },
-                        onFailure = { exception ->
-
-                            println("Error adding note: ${exception.message}")
-                        }
-                    )
+                    onSaveNote(updatedNote)
                 }
             }) {
-                Text("Lagre")
+                Text(if (vetNote == null) "Save" else "Update")
             }
 
             Button(onClick = { navController.popBackStack() }) {
-                Text("Avbryt")
+                Text("Cancel")
+            }
+            if (vetNote != null && onDeleteNote != null) {
+                Button(
+                    onClick = {
+                        onDeleteNote(vetNote)
+                        //navController.popBackStack()
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Text("Delete")
+                }
             }
         }
     }
