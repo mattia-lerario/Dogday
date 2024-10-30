@@ -62,6 +62,8 @@ fun LoginScreen(navController: NavController) {
                 .widthIn(max = 300.dp)
                 .padding(horizontal = 8.dp),
             colors = TextFieldDefaults.colors(
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black,
                 focusedContainerColor = InputBackgroundLight,
                 unfocusedContainerColor = InputBackgroundLight,
                 focusedIndicatorColor = Color.Transparent,
@@ -83,10 +85,14 @@ fun LoginScreen(navController: NavController) {
                 .widthIn(max = 300.dp)
                 .padding(horizontal = 8.dp),
             colors = TextFieldDefaults.colors(
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black,
                 focusedContainerColor = InputBackgroundLight,
                 unfocusedContainerColor = InputBackgroundLight,
                 focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
+                unfocusedIndicatorColor = Color.Transparent,
+
+
             ),
             shape = MaterialTheme.shapes.small
         )
