@@ -114,8 +114,9 @@ fun MainApp() {
 
         floatingActionButton = {
             if (currentScreen == DogScreen.DogDetail){
+                val dogId = backStackEntry?.arguments?.getString("dogId") ?: ""
                 FloatingActionButton(
-                    onClick = { navController.navigate(route = DogScreen.AddVetNote.name) },
+                    onClick = { navController.navigate("addVetNote/${dogId}")},
                 ) {
                     Icon(Icons.Default.Add, contentDescription = "Legg til")
                 }
@@ -170,7 +171,14 @@ fun NavigationHost(navController: NavHostController, modifier: Modifier) {
             HikeDetailScreen(hikeId = hikeId)
         }
         composable(route = DogScreen.DogQueryScreen.name) { DogQueryScreen(navController) }
-        composable(route = DogScreen.AddVetNote.name) { VetNoteScreen(navController) }
+        composable(
+            route = "addVetNote/{dogId}",
+            arguments = listOf(navArgument("dogId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val dogId = backStackEntry.arguments?.getString("dogId") ?: ""
+            VetNoteScreen(navController = navController, dogId = dogId)
+        }
+
         composable(route = DogScreen.UserDogScreen.name) { UserDogScreen(navController) }
         composable(route = DogScreen.Quiz.name) { DogQuizScreen(navController) }
         composable("quiz_results/{dogID}") { backStackEntry ->

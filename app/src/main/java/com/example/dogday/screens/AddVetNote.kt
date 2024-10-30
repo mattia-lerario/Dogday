@@ -9,6 +9,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.dogday.models.Dog
@@ -16,10 +17,16 @@ import com.example.dogday.models.VetNote
 
 
 @Composable
-fun VetNoteScreen(navController: NavController) {
+fun VetNoteScreen(navController: NavController, dogId: String) {
     var noteText by remember { mutableStateOf("") }
     val viewModel: DogListViewModel = viewModel()
-    val currentDog by viewModel.dog.collectAsState()
+
+    //hente hund
+    LaunchedEffect(dogId) {
+        viewModel.fetchDog(dogId)
+    }
+
+    val dog by viewModel.dog.collectAsState()
 
     Column(
         modifier = Modifier
@@ -36,7 +43,11 @@ fun VetNoteScreen(navController: NavController) {
             value = noteText,
             onValueChange = { noteText = it },
             label = { Text("Beskrivelse") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(400.dp),
+            maxLines = 6,
+            singleLine = false
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -47,8 +58,9 @@ fun VetNoteScreen(navController: NavController) {
         ) {
             Button(onClick = {
                 val vetNote = VetNote(note = noteText)
+                println(dog)
 
-                currentDog?.let {
+                dog?.let {
                     viewModel.addNoteToDog(it, vetNote,
                         onSuccess = { navController.popBackStack() },
                         onFailure = { exception ->
@@ -61,7 +73,7 @@ fun VetNoteScreen(navController: NavController) {
                 Text("Lagre")
             }
 
-            Button(onClick = { navController.popBackStack() }) {  // Bruker navController direkte for å gå tilbake
+            Button(onClick = { navController.popBackStack() }) {
                 Text("Avbryt")
             }
         }
