@@ -120,7 +120,7 @@ fun MainApp() {
                 FloatingActionButton(
                     onClick = { navController.navigate("addVetNote/${dogId}")},
                 ) {
-                    Icon(Icons.Default.Add, contentDescription = "Legg til")
+                    Icon(Icons.Default.Add, contentDescription = "Add")
                 }
             }},
         floatingActionButtonPosition = FabPosition.End,
@@ -284,8 +284,8 @@ fun BottomNavigationBar(navController: NavHostController) {
         containerColor = MaterialTheme.colorScheme.secondaryContainer,
     ) {
         NavigationBarItem(
-            icon = { Icon(Icons.Default.Home, contentDescription = "Hjem") },
-            label = { Text("Hjem") },
+            icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
+            label = { Text("Home") },
             selected = currentDestination == DogScreen.Home.name,
             onClick = {
                 if (currentDestination != DogScreen.Home.name) {
@@ -294,8 +294,8 @@ fun BottomNavigationBar(navController: NavHostController) {
             }
         )
         NavigationBarItem(
-            icon = { Icon(Icons.Default.Search, contentDescription = "Kart") },
-            label = { Text("Kart") },
+            icon = { Icon(Icons.Default.Search, contentDescription = "Map") },
+            label = { Text("Map") },
             selected = currentDestination == DogScreen.Map.name,
             onClick = {
                 if (currentDestination != DogScreen.Map.name) {
@@ -304,8 +304,8 @@ fun BottomNavigationBar(navController: NavHostController) {
             }
         )
         NavigationBarItem(
-            icon = { Icon(Icons.Default.Settings, contentDescription = "Innstillinger") },
-            label = { Text("Innstillinger") },
+            icon = { Icon(Icons.Default.Settings, contentDescription = "Settings") },
+            label = { Text("Settings") },
             selected = currentDestination == DogScreen.SettingsScreen.name,
             onClick = {
                 if (currentDestination != DogScreen.SettingsScreen.name) {

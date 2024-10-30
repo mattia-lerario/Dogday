@@ -4,32 +4,32 @@
     <string name="app_name">DogDay</string>
 
     <!-- Authentication Screens -->
-    <string name="register">Registrer bruker</string>
-    <string name="login">Logg inn</string>
-    <string name="new_user">Ny bruker</string>
+    <string name="register">Register user</string>
+    <string name="login">Log in</string>
+    <string name="new_user">New user</string>
 
     <!-- Main Screens -->
-    <string name="home">Hjem</string>
-    <string name="map">Kart</string>
-    <string name="settings">Innstillinger</string>
+    <string name="home">Home</string>
+    <string name="map">Map</string>
+    <string name="settings">Settings</string>
 
     <!-- Dog-Related Screens -->
-    <string name="add_dog">Legg til hund!</string>
-    <string name="dog_detail">Detaljer om hund</string>
-    <string name="dog_query_screen">DogQuery</string>
-    <string name="user_dog_screen">Dine hunder</string>
+    <string name="add_dog">Add dog!</string>
+    <string name="dog_detail">Dog details</string>
+    <string name="dog_query_screen">Dog Query</string>
+    <string name="user_dog_screen">Your dogs</string>
 
     <string name="quiz">Quiz</string>
     <string name="quizresults">Quiz Results</string>
     <string name="add_note">Add note</string>
 
-
     <!-- Additional Features -->
-    <string name="add_vet_log">Legg til notater fra dyrlegebesøk</string>
+    <string name="add_vet_log">Add vet visit notes</string>
     <!-- Navigational assets -->
-    <string name="back">Tilbake</string>
+    <string name="back">Back</string>
 
     <!-- Newly Added Strings -->
-    <string name="kennel_detail">Kennel Detaljer</string>
-    <string name="hike_detail">Tur Detaljer</string>
+    <string name="kennel_detail">Kennel Details</string>
+    <string name="hike_detail">Hike Details</string>
+
 </resources>

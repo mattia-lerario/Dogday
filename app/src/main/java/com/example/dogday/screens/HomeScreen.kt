@@ -1,5 +1,6 @@
 package com.example.dogday.screens
 
+import DogListViewModel
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -35,14 +36,17 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.dogday.R
+import com.example.dogday.models.Dog
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
 @Composable
 fun HomeScreen(navController: NavHostController) {
+    val viewModel: DogListViewModel = viewModel()
 
     Column(
         modifier = Modifier
@@ -54,7 +58,12 @@ fun HomeScreen(navController: NavHostController) {
     ) {
 
         //DogsList(navController = navController)
-        DogCard(navController = navController)
+        if (viewModel.dogList.value.isEmpty()) {
+            NotDogOwnerCard(navController = navController)
+        } else {
+            DogCard(navController = navController)
+        }
+
         HikeCard(navController = navController)
         CalendarHome()
         //DogListCard(navController = navController, dog = dogs)
@@ -89,9 +98,9 @@ fun HikeCard(navController: NavHostController){
                 .padding(10.dp),
                 horizontalAlignment = Alignment.End
             ) {
-                Text(text = "Ut på tur?", style = MaterialTheme.typography.titleLarge,
+                Text(text = "Ready for a hike?", style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(0.dp))
-                Text(text = "Se spennende turer her!")
+                Text(text = "Discover exciting hikes here!")
             }
 
 
@@ -117,6 +126,40 @@ fun DogCard(navController: NavHostController){
                 Text(text = "Dine hunder", style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(0.dp))
                 Text(text = "Klikk her for å komme til din oversikt!")
+            }
+
+            Image(
+                painter = painterResource(id = R.drawable.dog_cartoon),
+                contentDescription = "Dog",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(100.dp)
+                    .clip(CircleShape)
+                    .padding(0.dp)
+            )
+
+
+        }
+
+    }
+}
+
+@Composable
+fun NotDogOwnerCard(navController: NavHostController){
+    Card(elevation = CardDefaults.cardElevation(
+        defaultElevation = 6.dp),
+        onClick = { navController.navigate(DogScreen.DogQueryScreen.name)},
+        border = BorderStroke(1.dp, Color.Black),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(5.dp)) {
+        Row(modifier = Modifier.padding(10.dp)) {
+            Column(modifier = Modifier
+                .weight(1f)
+                .padding(5.dp)) {
+                Text(text = "Take the Dog Quiz", style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(0.dp))
+                Text(text = "Find the breed for you!")
             }
 
             Image(
