@@ -33,6 +33,10 @@ class DogListViewModel : ViewModel() {
         )
     }
 
+    fun numberOfDogs(): Int {
+        return _dogs.value.size
+    }
+
     fun fetchDog(dogId: String) {
         dogRepository.fetchDog(
             dogId = dogId,
@@ -64,7 +68,7 @@ class DogListViewModel : ViewModel() {
         updateDog(updatedDog)
     }
 
-    private fun updateDog(dog: Dog) {
+    fun updateDog(dog: Dog) {
         viewModelScope.launch {
             dogRepository.updateDog(
                 dog,
@@ -77,5 +81,17 @@ class DogListViewModel : ViewModel() {
                 }
             )
         }
+    }
+
+    fun deleteDog(dog: Dog) {
+        dogRepository.deleteDog(
+            dog = dog,
+            onSuccess = {
+                fetchDogs()
+            },
+            onFailure = { exception ->
+                println("Error deleting dog: ${exception.message}")
+            }
+        )
     }
 }

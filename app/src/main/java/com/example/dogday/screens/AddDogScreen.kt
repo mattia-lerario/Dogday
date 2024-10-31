@@ -1,6 +1,7 @@
 
 package com.example.dogday.screens
 
+import DogListViewModel
 import android.graphics.Bitmap
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -50,6 +51,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.dogday.ui.theme.BackgroundColorLight
 import com.google.firebase.storage.FirebaseStorage
 import java.io.ByteArrayOutputStream
@@ -104,6 +106,7 @@ fun AddDogScreen(navController: NavController) {
 
     val firestoreInteractions = FirestoreInteractions()
     val storage = FirebaseStorage.getInstance()
+    val viewModel : DogListViewModel = viewModel()
 
     val requestCameraPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
@@ -354,11 +357,14 @@ fun AddDogScreen(navController: NavController) {
                                         breed = dogBreed,
                                         birthday = System.currentTimeMillis(),
                                         breeder = dogBreeder,
-                                        imageUrl = imageUrl
+                                        imageUrl = imageUrl,
+
                                 )
                                 firestoreInteractions.addDogToUser(uid, dog)
 
+                                    viewModel.fetchDogs()
                                 navController.navigate("home")
+
                             }
                         }
                     }.addOnFailureListener {

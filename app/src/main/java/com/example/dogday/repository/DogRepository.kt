@@ -143,5 +143,19 @@ class DogRepository {
         } else {
             onFailure(Exception("Bruker ikke logget inn."))
         }
-    }}
+    }
+
+    fun deleteDog(dog: Dog, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+        val uid = auth.currentUser?.uid
+        if (uid != null) {
+            firestore.collection("ddcollection")
+                .document(uid)
+                .update("dogs.${dog.dogId}", null)
+                .addOnSuccessListener { onSuccess() }
+                .addOnFailureListener { exception -> onFailure(exception) }
+        } else {
+            onFailure(Exception("User not logged in"))
+        }
+    }
+}
 

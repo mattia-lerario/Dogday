@@ -28,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -207,6 +208,21 @@ fun NavigationHost(navController: NavHostController, modifier: Modifier) {
                 }
             )
         }
+        composable("editDog/{dogId}", arguments = listOf(navArgument("dogId") { type = NavType.StringType })) { backStackEntry ->
+            val dogId = backStackEntry.arguments?.getString("dogId") ?: ""
+            viewModel.fetchDog(dogId)
+            val dog by viewModel.dog.collectAsState()
+
+            dog?.let {
+                EditDogScreen(
+                    navController = navController,
+                    dog = it,
+                    onSave = { updatedDog -> viewModel.updateDog(updatedDog) },
+                    onDelete = { viewModel.deleteDog(it) }
+                )
+            }
+        }
+
 
         composable(route = DogScreen.UserDogScreen.name) { UserDogScreen(navController) }
         composable(route = DogScreen.Quiz.name) { DogQuizScreen(navController) }
