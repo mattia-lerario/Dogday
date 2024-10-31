@@ -2,6 +2,11 @@ package com.example.dogday.screens
 
 
 import DogListViewModel
+import android.app.DatePickerDialog
+import android.graphics.Bitmap
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 
 import androidx.compose.foundation.layout.Box
@@ -33,6 +38,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDefaults
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
 
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,12 +60,19 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 
 import com.example.dogday.R
 import com.example.dogday.models.Dog
 import com.example.dogday.models.VetNote
+
+
+import java.util.Calendar
+
 
 @Composable
 fun DogDetailScreen(navController: NavController, dogIdx: String) {
@@ -77,6 +100,7 @@ fun DogDetailUI(navController: NavController, dog: Dog, viewModel: DogListViewMo
     Column(modifier = Modifier
         .fillMaxSize()
         .padding(20.dp)) {
+
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -95,13 +119,25 @@ fun DogDetailUI(navController: NavController, dog: Dog, viewModel: DogListViewMo
             )
         }
 
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
+        ) {
+            Button(onClick = { navController.navigate("editDog/${dog.dogId}") }) {
+                Text("Edit")
+            }
+        }
+
+        Text(text = "Name: ${dog.name}", style = MaterialTheme.typography.titleLarge)
+        Text(text = "Nickname: ${dog.nickName}")
         Text(text = "Name: ${dog.name}")
         Text(text = "Nickname: ${dog.nickName}")
         Text(text = "Breed: ${dog.breed}")
         Text(text = "Birthday: ${dog.birthday}")
         Text(text = "Breeder: ${dog.breeder}")
-        Spacer(modifier = Modifier.height(26.dp))
-        Text(text = "Event Log:")
+        Spacer(modifier = Modifier.height(6.dp))
+        Text(text = "Event Log:", style = MaterialTheme.typography.titleLarge)
 
         VetLogNotes(
             dog = dog,
@@ -110,6 +146,196 @@ fun DogDetailUI(navController: NavController, dog: Dog, viewModel: DogListViewMo
         )
     }
 }
+
+
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun EditDogScreen(
+    navController: NavController,
+    dog: Dog,
+    onSave: (Dog) -> Unit,
+    onDelete: () -> Unit
+) {
+    var dogName by remember { mutableStateOf(dog.name) }
+    var dogNickName by remember { mutableStateOf(dog.nickName) }
+    var dogBreed by remember { mutableStateOf(dog.breed) }
+    var dogBreeder by remember { mutableStateOf(dog.breeder) }
+    var dogBirthday by remember { mutableStateOf(dog.birthday) }
+    var dogImageBitmap by remember { mutableStateOf<Bitmap?>(null) }
+    var showDatePicker by remember { mutableStateOf(false) }
+    val datePickerState = rememberDatePickerState()
+
+
+    var uploadingImage by remember { mutableStateOf(false) }
+
+    val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap ->
+        dogImageBitmap = bitmap
+    }
+
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text("Edit Your Dog's Details", style = MaterialTheme.typography.titleLarge)
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        TextField(
+            value = dogName,
+            onValueChange = { dogName = it },
+            label = { Text("Dog Name") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        TextField(
+            value = dogNickName,
+            onValueChange = { dogNickName = it },
+            label = { Text("Dog Nick Name") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        TextField(
+            value = dogBreed,
+            onValueChange = { dogBreed = it },
+            label = { Text("Dog Breed") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        TextField(
+            value = dogBreeder,
+            onValueChange = { dogBreeder = it },
+            label = { Text("Dog Breeder") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        TextField(
+            value = convertMillisToDate(dogBirthday),
+            onValueChange = { },
+            label = { Text("Your Dog's Birthday", color = Color.Black) },
+            readOnly = true,
+            trailingIcon = {
+                IconButton(onClick = { showDatePicker = !showDatePicker }) {
+                    Icon(
+                        imageVector = Icons.Default.DateRange,
+                        contentDescription = "Select date"
+                    )
+                }
+            },
+            modifier = Modifier.fillMaxWidth()
+        )
+        if (showDatePicker) {
+            DatePickerDialog(
+                onDismissRequest = { showDatePicker = false },
+                confirmButton = {
+                    TextButton(onClick = {
+                        dogBirthday = datePickerState.selectedDateMillis ?: 0L
+                        showDatePicker = false
+                    }) {
+                        Text("OK", color = Color.Black)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDatePicker = false }) {
+                        Text("Cancel", color = Color.Black)
+                    }
+                }
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    DatePicker(
+                        state = datePickerState,
+                        colors = DatePickerDefaults.colors(
+                            containerColor = Color(0xFFF3CCC3),
+                            titleContentColor = Color.Black,
+                            headlineContentColor = Color.Black,
+                            selectedYearContainerColor = Color(0xFFD95A3C),
+                            selectedYearContentColor = Color.Black,
+                            yearContentColor = Color.Black,
+                            currentYearContentColor = Color.Black,
+                            disabledSelectedYearContentColor = Color.Black,
+                            weekdayContentColor = Color.DarkGray,
+                            subheadContentColor = Color.White,
+                            selectedDayContentColor = Color.White,
+                            selectedDayContainerColor = Color(0xFFD95A3C),
+                            todayContentColor = Color.Black,
+                            todayDateBorderColor = Color.Black,
+                        )
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = { cameraLauncher.launch(null) },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Take Picture")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        dogImageBitmap?.let { bitmap ->
+            Image(bitmap = bitmap.asImageBitmap(), contentDescription = "Dog Image", modifier = Modifier.size(200.dp))
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = {
+                uploadingImage = true
+                val dogToSave = dog.copy(
+                    name = dogName,
+                    nickName = dogNickName,
+                    breed = dogBreed,
+                    breeder = dogBreeder,
+                    birthday = dogBirthday,
+                    imageUrl = dog.imageUrl
+                )
+                onSave(dogToSave)
+                navController.popBackStack()
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Save Changes")
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Button(
+            onClick = {
+                onDelete()
+                navController.popBackStack()
+            },
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Delete Dog")
+        }
+    }
+}
+
+
+
 
 @Composable
 fun VetLogNotes(

@@ -1,6 +1,7 @@
 package com.example.dogday.screens
 
 import DogListViewModel
+import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -44,9 +45,11 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun HomeScreen(navController: NavHostController) {
     val viewModel: DogListViewModel = viewModel()
+    val numOfDogs = viewModel.numberOfDogs()
 
     Column(
         modifier = Modifier
@@ -61,7 +64,7 @@ fun HomeScreen(navController: NavHostController) {
         if (viewModel.dogList.value.isEmpty()) {
             NotDogOwnerCard(navController = navController)
         } else {
-            DogCard(navController = navController)
+            DogCard(navController = navController, numOfDogs)
         }
 
         HikeCard(navController = navController)
@@ -111,7 +114,7 @@ fun HikeCard(navController: NavHostController){
 
 
 @Composable
-fun DogCard(navController: NavHostController){
+fun DogCard(navController: NavHostController, numberOfDogs: Int){
     Card(elevation = CardDefaults.cardElevation(
         defaultElevation = 6.dp),
         onClick = { navController.navigate(DogScreen.UserDogScreen.name)},
@@ -123,9 +126,9 @@ fun DogCard(navController: NavHostController){
             Column(modifier = Modifier
                 .weight(1f)
                 .padding(5.dp)) {
-                Text(text = "Dine hunder", style = MaterialTheme.typography.titleLarge,
+                Text(text = if (numberOfDogs > 1) "Your dogs" else "Your dog", style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(0.dp))
-                Text(text = "Klikk her for å komme til din oversikt!")
+                Text(text = "Click here to go to your overview!")
             }
 
             Image(
