@@ -19,6 +19,8 @@ import androidx.compose.material3.TextField
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.max
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.dogday.viewmodel.LogInViewModel
 import com.example.dogday.R
 import com.example.dogday.ui.theme.InputBackgroundLight
 import com.example.dogday.ui.theme.ButtonColorLight
@@ -29,10 +31,17 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 
 @Composable
-fun LoginScreen(navController: NavController) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var loginError by remember { mutableStateOf<String?>(null) }
+fun LoginScreen(navController: NavController, logInViewModel: LogInViewModel = viewModel()) {
+    val email by logInViewModel.email.collectAsState()
+    val password by logInViewModel.password.collectAsState()
+    val loginError by logInViewModel.loginError.collectAsState()
+    val loginSuccess by logInViewModel.loginSuccess.collectAsState()
+
+    if (loginSuccess) {
+        LaunchedEffect(Unit) {
+            navController.navigate("home")
+        }
+    }
 
     BoxWithConstraints(
         modifier = Modifier.fillMaxSize()
@@ -64,7 +73,7 @@ fun LoginScreen(navController: NavController) {
                 ) {
                     TextField(
                         value = email,
-                        onValueChange = { email = it },
+                        onValueChange = { logInViewModel.onEmailChange(it) },
                         label = { Text("Email", color = Color.Black) },
                         modifier = Modifier
                             .widthIn(max = 300.dp)
@@ -82,7 +91,7 @@ fun LoginScreen(navController: NavController) {
 
                     TextField(
                         value = password,
-                        onValueChange = { password = it },
+                        onValueChange = { logInViewModel.onPasswordChange(it) },
                         label = { Text("Password", color = Color.Black) },
                         visualTransformation = PasswordVisualTransformation(),
                         modifier = Modifier
@@ -106,28 +115,7 @@ fun LoginScreen(navController: NavController) {
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Button(
-                            onClick = {
-                                if (email.isNotBlank() && password.isNotBlank()) {
-                                    Firebase.auth.signInWithEmailAndPassword(email, password)
-                                        .addOnCompleteListener { task ->
-                                            if (task.isSuccessful) {
-                                                val uid = Firebase.auth.currentUser?.uid
-                                                if (uid != null) {
-                                                    navController.navigate("home")
-                                                }
-
-                                                val analytics = Firebase.analytics
-                                                analytics.logEvent("login") {
-                                                    param("method", "email")
-                                                }
-                                            } else {
-                                                loginError = task.exception?.localizedMessage
-                                            }
-                                        }
-                                } else {
-                                    loginError = "Email and password must not be empty"
-                                }
-                            },
+                            onClick = { logInViewModel.loginUser() },
                             modifier = Modifier
                                 .weight(1f)
                                 .padding(end = 8.dp),
@@ -163,16 +151,19 @@ fun LoginScreen(navController: NavController) {
                             color = MaterialTheme.colorScheme.error,
                             modifier = Modifier.padding(top = 8.dp)
                         )
+                        LaunchedEffect(Unit) {
+                            logInViewModel.clearLoginError()
+                        }
                     }
-                }
 
-                // Dog image on the right side
-                Image(
-                    painter = painterResource(R.drawable.dog_cartoon),
-                    contentDescription = "Dog Image",
-                    modifier = Modifier.size(200.dp),
-                    contentScale = ContentScale.Fit
-                )
+                    // Dog image on the right side
+                    Image(
+                        painter = painterResource(R.drawable.dog_cartoon),
+                        contentDescription = "Dog Image",
+                        modifier = Modifier.size(200.dp),
+                        contentScale = ContentScale.Fit
+                    )
+                }
             }
         } else {
             // Layout for portrait orientation
@@ -194,7 +185,7 @@ fun LoginScreen(navController: NavController) {
 
                 TextField(
                     value = email,
-                    onValueChange = { email = it },
+                    onValueChange = { logInViewModel.onEmailChange(it) },
                     label = { Text("Email", color = Color.Black) },
                     modifier = Modifier
                         .widthIn(max = 300.dp)
@@ -212,7 +203,7 @@ fun LoginScreen(navController: NavController) {
 
                 TextField(
                     value = password,
-                    onValueChange = { password = it },
+                    onValueChange = { logInViewModel.onPasswordChange(it) },
                     label = { Text("Password", color = Color.Black) },
                     visualTransformation = PasswordVisualTransformation(),
                     modifier = Modifier
