@@ -156,6 +156,8 @@ fun LoginScreen(navController: NavController, logInViewModel: LogInViewModel = v
                         }
                     }
 
+                }
+
                     // Dog image on the right side
                     Image(
                         painter = painterResource(R.drawable.dog_cartoon),
@@ -164,7 +166,6 @@ fun LoginScreen(navController: NavController, logInViewModel: LogInViewModel = v
                         contentScale = ContentScale.Fit
                     )
                 }
-            }
         } else {
             // Layout for portrait orientation
             Column(
