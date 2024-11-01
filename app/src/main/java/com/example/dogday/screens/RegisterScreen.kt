@@ -22,6 +22,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,19 +37,28 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.dogday.R
 import com.example.dogday.UserSession
 import com.example.dogday.ui.theme.ButtonColorLight
 import com.example.dogday.ui.theme.InputBackgroundLight
+import com.example.dogday.viewmodel.RegisterViewModel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
 @Composable
-fun RegisterScreen(navController: NavController) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var registerError by remember { mutableStateOf<String?>(null) }
+fun RegisterScreen(navController: NavController, registerViewModel: RegisterViewModel = viewModel()) {
+    val email by registerViewModel.email.collectAsState()
+    val password by registerViewModel.password.collectAsState()
+    val registerError by registerViewModel.registerError.collectAsState()
+    val registerSuccess by registerViewModel.registerSuccess.collectAsState()
+
+    if (registerSuccess) {
+        LaunchedEffect(Unit) {
+            navController.navigate("newUser")
+        }
+    }
 
     BoxWithConstraints(
         modifier = Modifier.fillMaxSize()
@@ -88,7 +99,7 @@ fun RegisterScreen(navController: NavController) {
 
                     TextField(
                         value = email,
-                        onValueChange = { email = it },
+                        onValueChange = { registerViewModel.onEmailChange(it) },
                         label = { Text("Email", color = Color.Black) },
                         modifier = Modifier
                             .widthIn(max = 300.dp)
@@ -106,7 +117,7 @@ fun RegisterScreen(navController: NavController) {
 
                     TextField(
                         value = password,
-                        onValueChange = { password = it },
+                        onValueChange = { registerViewModel.onPasswordChange(it) },
                         label = { Text("Password", color = Color.Black) },
                         visualTransformation = PasswordVisualTransformation(),
                         modifier = Modifier
@@ -147,19 +158,7 @@ fun RegisterScreen(navController: NavController) {
                         }
 
                         Button(
-                            onClick = {
-                                Firebase.auth.createUserWithEmailAndPassword(email, password)
-                                    .addOnCompleteListener { task ->
-                                        if (task.isSuccessful) {
-                                            val uid = Firebase.auth.currentUser?.uid ?: ""
-                                            UserSession.uid = uid
-                                            UserSession.email = email
-                                            navController.navigate("newUser")
-                                        } else {
-                                            registerError = task.exception?.localizedMessage
-                                        }
-                                    }
-                            },
+                            onClick = {registerViewModel.registerUser()},
                             Modifier
                                 .weight(1f)
                                 .padding(horizontal = 8.dp),
@@ -178,6 +177,8 @@ fun RegisterScreen(navController: NavController) {
                             color = MaterialTheme.colorScheme.error,
                             modifier = Modifier.padding(top = 8.dp)
                         )
+                        LaunchedEffect(Unit) {
+                            registerViewModel.clearRegisterError()}
                     }
                 }
 
@@ -217,7 +218,7 @@ fun RegisterScreen(navController: NavController) {
 
                 TextField(
                     value = email,
-                    onValueChange = { email = it },
+                    onValueChange = { registerViewModel.onEmailChange(it) },
                     label = { Text("Email", color = Color.Black) },
                     modifier = Modifier
                         .widthIn(max = 300.dp)
@@ -235,7 +236,7 @@ fun RegisterScreen(navController: NavController) {
 
                 TextField(
                     value = password,
-                    onValueChange = { password = it },
+                    onValueChange = { registerViewModel.onPasswordChange(it) },
                     label = { Text("Password", color = Color.Black) },
                     visualTransformation = PasswordVisualTransformation(),
                     modifier = Modifier
@@ -276,19 +277,7 @@ fun RegisterScreen(navController: NavController) {
                     }
 
                     Button(
-                        onClick = {
-                            Firebase.auth.createUserWithEmailAndPassword(email, password)
-                                .addOnCompleteListener { task ->
-                                    if (task.isSuccessful) {
-                                        val uid = Firebase.auth.currentUser?.uid ?: ""
-                                        UserSession.uid = uid
-                                        UserSession.email = email
-                                        navController.navigate("newUser")
-                                    } else {
-                                        registerError = task.exception?.localizedMessage
-                                    }
-                                }
-                        },
+                        onClick = {registerViewModel.registerUser()},
                         Modifier
                             .weight(1f)
                             .padding(horizontal = 8.dp),
@@ -307,6 +296,9 @@ fun RegisterScreen(navController: NavController) {
                         color = MaterialTheme.colorScheme.error,
                         modifier = Modifier.padding(top = 8.dp)
                     )
+                    LaunchedEffect(Unit) {
+                        registerViewModel.clearRegisterError()
+                    }
                 }
 
                 Image(
