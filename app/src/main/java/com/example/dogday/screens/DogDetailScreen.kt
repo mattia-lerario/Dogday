@@ -134,7 +134,7 @@ fun DogDetailUI(navController: NavController, dog: Dog, viewModel: DogListViewMo
         Text(text = "Name: ${dog.name}")
         Text(text = "Nickname: ${dog.nickName}")
         Text(text = "Breed: ${dog.breed}")
-        Text(text = "Birthday: ${dog.birthday}")
+        Text(text = "Birthday: ${convertMillisToDate(dog.birthday)}")
         Text(text = "Breeder: ${dog.breeder}")
         Spacer(modifier = Modifier.height(6.dp))
         Text(text = "Event Log:", style = MaterialTheme.typography.titleLarge)
