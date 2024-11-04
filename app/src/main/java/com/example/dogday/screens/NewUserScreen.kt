@@ -34,6 +34,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,6 +48,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.dogday.FirestoreInteractions
 import com.example.dogday.R
@@ -55,6 +57,7 @@ import com.example.dogday.UserSession
 import com.example.dogday.ui.theme.BackgroundColorLight
 import com.example.dogday.ui.theme.ButtonColorLight
 import com.example.dogday.ui.theme.InputBackgroundLight
+import com.example.dogday.viewmodel.NewUserViewModel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
@@ -92,19 +95,22 @@ fun OwnerLabel() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NewUserScreen(navController: NavController) {
-    val email = UserSession.email ?: ""
-    val uid = UserSession.uid ?: ""
+fun NewUserScreen(navController: NavController, newUserViewModel: NewUserViewModel = viewModel()) {
+    val firstName by newUserViewModel.firstName
+    val lastName by newUserViewModel.lastName
+    val phoneNumber by newUserViewModel.phoneNumber
+    val birthday by newUserViewModel.birthday
+    val showDatePicker by newUserViewModel.showDatePicker
+    val saveSuccess by newUserViewModel.saveSuccess
 
-    var firstName by remember { mutableStateOf("") }
-    var lastName by remember { mutableStateOf("") }
-    var phoneNumber by remember { mutableStateOf("") }
-
-    var showDatePicker by remember { mutableStateOf(false) }
+    // Create datePickerState locally in the composable
     val datePickerState = rememberDatePickerState()
-    var birthday by remember { mutableStateOf(datePickerState.selectedDateMillis ?: 0L) }
 
-    val firestoreInteractions = FirestoreInteractions()
+    if (saveSuccess) {
+        LaunchedEffect(Unit) {
+            navController.navigate("DogQueryScreen")
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -141,7 +147,7 @@ fun NewUserScreen(navController: NavController) {
 
         TextField(
             value = firstName,
-            onValueChange = { firstName = it },
+            onValueChange = { newUserViewModel.firstName.value = it },
             label = { Text("First Name") },
             modifier = Modifier
                 .widthIn(max = 500.dp)
@@ -159,7 +165,7 @@ fun NewUserScreen(navController: NavController) {
 
         TextField(
             value = lastName,
-            onValueChange = { lastName = it },
+            onValueChange = { newUserViewModel.lastName.value = it },
             label = { Text("Last Name") },
             modifier = Modifier
                 .widthIn(max = 500.dp)
@@ -177,7 +183,7 @@ fun NewUserScreen(navController: NavController) {
 
         TextField(
             value = phoneNumber,
-            onValueChange = { phoneNumber = it },
+            onValueChange = { newUserViewModel.phoneNumber.value = it },
             label = { Text("Phone Number") },
             modifier = Modifier
                 .widthIn(max = 500.dp)
@@ -203,7 +209,7 @@ fun NewUserScreen(navController: NavController) {
                 label = { Text("Your Birthday", color = Color.Black) },
                 readOnly = true,
                 trailingIcon = {
-                    IconButton(onClick = { showDatePicker = !showDatePicker }) {
+                    IconButton(onClick = { newUserViewModel.showDatePicker.value = !showDatePicker }) {
                         Icon(
                             imageVector = Icons.Default.DateRange,
                             contentDescription = "Select date"
@@ -224,17 +230,17 @@ fun NewUserScreen(navController: NavController) {
 
             if (showDatePicker) {
                 DatePickerDialog(
-                    onDismissRequest = { showDatePicker = false },
+                    onDismissRequest = { newUserViewModel.showDatePicker.value = false },
                     confirmButton = {
                         TextButton(onClick = {
-                            birthday = datePickerState.selectedDateMillis ?: 0L
-                            showDatePicker = false
+                            newUserViewModel.birthday.value = datePickerState.selectedDateMillis ?: 0L
+                            newUserViewModel.showDatePicker.value = false
                         }) {
                             Text("OK", color = Color.Black)
                         }
                     },
                     dismissButton = {
-                        TextButton(onClick = { showDatePicker = false }) {
+                        TextButton(onClick = { newUserViewModel.showDatePicker.value = false }) {
                             Text("Cancel", color = Color.Black)
                         }
                     }
@@ -270,34 +276,7 @@ fun NewUserScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(onClick = {
-            if (firstName.isNotEmpty() && phoneNumber.isNotEmpty()) {
-                val user = User(
-                    uid,
-                    email,
-                    firstName,
-                    lastName,
-                    phoneNumber,
-                    birthday
-                )
-                firestoreInteractions.addUser(user)
-                val uid = Firebase.auth.currentUser?.uid
-                if (uid != null) {
-                    val firestore = FirebaseFirestore.getInstance()
-                    firestore.collection("ddcollection").document(uid).get()
-                        .addOnSuccessListener { document ->
-                            if (document.exists()) {
-                                val user = document.toObject(User::class.java)
-                                if (user != null) {
-
-                                        navController.navigate("DogQueryScreen")
-
-                                }
-                            }
-                        }
-                }
-            }
-        },
+        Button(onClick = { newUserViewModel.saveUserData() },
             modifier = Modifier
                 .width(150.dp)
                 .height(48.dp),
