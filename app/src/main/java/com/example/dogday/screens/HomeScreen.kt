@@ -63,6 +63,8 @@ fun HomeScreen(navController: NavHostController) {
         //DogsList(navController = navController)
         if (viewModel.dogList.value.isEmpty()) {
             NotDogOwnerCard(navController = navController)
+            BrowseBreedsCard(navController = navController)
+
         } else {
             DogCard(navController = navController, numOfDogs)
         }
@@ -181,6 +183,42 @@ fun NotDogOwnerCard(navController: NavHostController){
     }
 }
 
+@Composable
+fun BrowseBreedsCard(navController: NavHostController) {
+    Card(
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+        onClick = { navController.navigate("dog_list") },
+        border = BorderStroke(1.dp, Color.Black),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(5.dp)
+    ) {
+        Row(modifier = Modifier.padding(10.dp)) {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(5.dp)
+            ) {
+                Text(
+                    text = "Browse Dog Breeds",
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(0.dp)
+                )
+                Text(text = "Find and explore different dog breeds!")
+            }
+
+            Image(
+                painter = painterResource(id = R.drawable.dog_cartoon),
+                contentDescription = "Dog",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(100.dp)
+                    .clip(CircleShape)
+                    .padding(0.dp)
+            )
+        }
+    }
+}
 
 
 

@@ -1,7 +1,5 @@
 package com.example.dogday.models
 
-import com.example.dogday.R
-
 enum class DogID {
     BULLDOG, GOLDEN_RETRIEVER, BORDER_COLLIE, PUG, LABRADOR, BEAGLE, GERMAN_SHEPHERD, DALMATIAN,
     SIBERIAN_HUSKY, FRENCH_BULLDOG, COCKER_SPANIEL, SHIBA_INU, BOXER, BICHON_FRISE, GREAT_DANE,
@@ -41,5 +39,5 @@ val dogRecommendationMap = mapOf(
 )
 
 fun getRecommendedDogID(answers: List<String>): DogID {
-    return dogRecommendationMap[answers] ?: DogID.BULLDOG // Default to Bulldog if no match
+    return dogRecommendationMap[answers] ?: DogID.BULLDOG
 }

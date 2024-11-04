@@ -106,6 +106,17 @@ fun DogQuizResultsScreen(
             Spacer(modifier = Modifier.height(32.dp))
 
             Button(
+                onClick = { navController.navigate("dog_list") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = ButtonColorLight),
+                contentPadding = PaddingValues(vertical = 8.dp)
+            ) {
+                Text("Browse other Breeds", style = MaterialTheme.typography.bodyLarge)
+            }
+
+            Button(
                 onClick = { navController.navigate(route = DogScreen.Home.name) },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -115,6 +126,8 @@ fun DogQuizResultsScreen(
             ) {
                 Text("Go Home", style = MaterialTheme.typography.bodyLarge)
             }
+
+
         }
     }
 }

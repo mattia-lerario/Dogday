@@ -87,6 +87,9 @@ fun MainApp() {
         currentRoute.startsWith("DogDetailScreen") -> DogScreen.DogDetail
         currentRoute.startsWith("kennel_detail") -> DogScreen.KennelDetail
         currentRoute.startsWith("hike_detail") -> DogScreen.HikeDetail
+        currentRoute.startsWith("dog_list") -> DogScreen.RecommendedDogListScreen
+        currentRoute.startsWith("dog_detail") -> DogScreen.RecommendedDogDetailScreen
+        currentRoute.startsWith("quiz_results") -> DogScreen.DogQuizResultsScreen
         else -> DogScreen.values().find { it.name == currentRoute } ?: DogScreen.Login
     }
 
@@ -231,6 +234,11 @@ fun NavigationHost(navController: NavHostController, modifier: Modifier) {
             DogQuizResultsScreen(navController = navController, dogID = dogID)
         }
 
+        composable("dog_list") { RecommendedDogListScreen(navController) }
+        composable("dog_detail/{breed}", arguments = listOf(navArgument("breed") { type = NavType.StringType })) { backStackEntry ->
+            val breed = backStackEntry.arguments?.getString("breed") ?: ""
+            RecommendedDogDetailScreen(navController, breed)
+        }
 
     }
 }
@@ -249,8 +257,10 @@ enum class DogScreen(@StringRes val title: Int) {
     KennelDetail(title = R.string.kennel_detail),
     HikeDetail(title = R.string.hike_detail),
     Quiz(title = R.string.quiz),
-    QuizResults(title = R.string.quizresults),
-    AddVetNote(title = R.string.add_note)
+    DogQuizResultsScreen(title = R.string.quiz_results),
+    AddVetNote(title = R.string.add_note),
+    RecommendedDogListScreen(title = R.string.recommended_dog_list),
+    RecommendedDogDetailScreen(title = R.string.recommended_dog_detail)
 
 }
 

@@ -19,8 +19,11 @@
     <string name="dog_query_screen">Dog Query</string>
     <string name="user_dog_screen">Your dogs</string>
 
+    <string name="recommended_dog_list">Dog Breeds</string>
+    <string name="recommended_dog_detail">Breed Details</string>
+
     <string name="quiz">Quiz</string>
-    <string name="quizresults">Quiz Results</string>
+    <string name="quiz_results">Quiz Results</string>
     <string name="add_note">Add note</string>
 
     <!-- Additional Features -->
