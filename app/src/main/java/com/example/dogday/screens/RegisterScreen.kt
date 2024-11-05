@@ -108,7 +108,9 @@ fun RegisterScreen(navController: NavController, registerViewModel: RegisterView
                             focusedContainerColor = InputBackgroundLight,
                             unfocusedContainerColor = InputBackgroundLight,
                             focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent
+                            unfocusedIndicatorColor = Color.Transparent,
+                            focusedTextColor = Color.Black,
+                            unfocusedTextColor = Color.Black
                         ),
                         shape = MaterialTheme.shapes.small
                     )
@@ -127,7 +129,9 @@ fun RegisterScreen(navController: NavController, registerViewModel: RegisterView
                             focusedContainerColor = InputBackgroundLight,
                             unfocusedContainerColor = InputBackgroundLight,
                             focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent
+                            unfocusedIndicatorColor = Color.Transparent,
+                            focusedTextColor = Color.Black,
+                            unfocusedTextColor = Color.Black
                         ),
                         shape = MaterialTheme.shapes.small
                     )
@@ -227,7 +231,9 @@ fun RegisterScreen(navController: NavController, registerViewModel: RegisterView
                         focusedContainerColor = InputBackgroundLight,
                         unfocusedContainerColor = InputBackgroundLight,
                         focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent
+                        unfocusedIndicatorColor = Color.Transparent,
+                        focusedTextColor = Color.Black,
+                        unfocusedTextColor = Color.Black
                     ),
                     shape = MaterialTheme.shapes.small
                 )
@@ -246,7 +252,9 @@ fun RegisterScreen(navController: NavController, registerViewModel: RegisterView
                         focusedContainerColor = InputBackgroundLight,
                         unfocusedContainerColor = InputBackgroundLight,
                         focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent
+                        unfocusedIndicatorColor = Color.Transparent,
+                        focusedTextColor = Color.Black,
+                        unfocusedTextColor = Color.Black
                     ),
                     shape = MaterialTheme.shapes.small
                 )

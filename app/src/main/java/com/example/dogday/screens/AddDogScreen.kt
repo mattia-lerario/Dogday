@@ -155,7 +155,9 @@ fun AddDogScreen(navController: NavController, addDogViewModel: AddDogViewModel 
                 focusedContainerColor = InputBackgroundLight,
                 unfocusedContainerColor = InputBackgroundLight,
                 focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black
             ),
             shape = MaterialTheme.shapes.small
         )
@@ -173,7 +175,9 @@ fun AddDogScreen(navController: NavController, addDogViewModel: AddDogViewModel 
                 focusedContainerColor = InputBackgroundLight,
                 unfocusedContainerColor = InputBackgroundLight,
                 focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black
             ),
             shape = MaterialTheme.shapes.small
         )
@@ -191,7 +195,9 @@ fun AddDogScreen(navController: NavController, addDogViewModel: AddDogViewModel 
                 focusedContainerColor = InputBackgroundLight,
                 unfocusedContainerColor = InputBackgroundLight,
                 focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black
             ),
             shape = MaterialTheme.shapes.small
         )
@@ -209,7 +215,9 @@ fun AddDogScreen(navController: NavController, addDogViewModel: AddDogViewModel 
                 focusedContainerColor = InputBackgroundLight,
                 unfocusedContainerColor = InputBackgroundLight,
                 focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black
             ),
             shape = MaterialTheme.shapes.small
         )
@@ -241,7 +249,9 @@ fun AddDogScreen(navController: NavController, addDogViewModel: AddDogViewModel 
                     focusedContainerColor = BackgroundColorLight,
                     unfocusedContainerColor = BackgroundColorLight,
                     focusedIndicatorColor = Color(0xFFD95A3C),
-                    unfocusedIndicatorColor = Color.Gray
+                    unfocusedIndicatorColor = Color.Gray,
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black
                 )
             )
 
