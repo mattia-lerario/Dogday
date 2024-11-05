@@ -4,7 +4,6 @@ package com.example.dogday.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -18,17 +17,11 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TextField
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.max
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.dogday.viewmodel.LogInViewModel
 import com.example.dogday.R
 import com.example.dogday.ui.theme.InputBackgroundLight
 import com.example.dogday.ui.theme.ButtonColorLight
-import com.google.firebase.analytics.ktx.analytics
-import com.google.firebase.analytics.logEvent
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.ktx.Firebase
 
 @Composable
 fun LoginScreen(navController: NavController, logInViewModel: LogInViewModel = viewModel()) {
