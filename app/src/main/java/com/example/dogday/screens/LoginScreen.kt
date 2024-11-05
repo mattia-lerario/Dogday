@@ -79,6 +79,8 @@ fun LoginScreen(navController: NavController, logInViewModel: LogInViewModel = v
                             .widthIn(max = 300.dp)
                             .padding(horizontal = 8.dp),
                         colors = TextFieldDefaults.colors(
+                            focusedTextColor = Color.Black,
+                            unfocusedTextColor = Color.Black,
                             focusedContainerColor = InputBackgroundLight,
                             unfocusedContainerColor = InputBackgroundLight,
                             focusedIndicatorColor = Color.Transparent,
@@ -98,6 +100,8 @@ fun LoginScreen(navController: NavController, logInViewModel: LogInViewModel = v
                             .widthIn(max = 300.dp)
                             .padding(horizontal = 8.dp),
                         colors = TextFieldDefaults.colors(
+                            focusedTextColor = Color.Black,
+                            unfocusedTextColor = Color.Black,
                             focusedContainerColor = InputBackgroundLight,
                             unfocusedContainerColor = InputBackgroundLight,
                             focusedIndicatorColor = Color.Transparent,
@@ -192,6 +196,8 @@ fun LoginScreen(navController: NavController, logInViewModel: LogInViewModel = v
                         .widthIn(max = 300.dp)
                         .padding(horizontal = 8.dp),
                     colors = TextFieldDefaults.colors(
+                        focusedTextColor = Color.Black,
+                        unfocusedTextColor = Color.Black,
                         focusedContainerColor = InputBackgroundLight,
                         unfocusedContainerColor = InputBackgroundLight,
                         focusedIndicatorColor = Color.Transparent,
@@ -211,6 +217,8 @@ fun LoginScreen(navController: NavController, logInViewModel: LogInViewModel = v
                         .widthIn(max = 300.dp)
                         .padding(horizontal = 8.dp),
                     colors = TextFieldDefaults.colors(
+                        focusedTextColor = Color.Black,
+                        unfocusedTextColor = Color.Black,
                         focusedContainerColor = InputBackgroundLight,
                         unfocusedContainerColor = InputBackgroundLight,
                         focusedIndicatorColor = Color.Transparent,
@@ -228,9 +236,7 @@ fun LoginScreen(navController: NavController, logInViewModel: LogInViewModel = v
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Button(
-                        onClick = {
-                            // Login button logic
-                        },
+                        onClick = {logInViewModel.loginUser()},
                         modifier = Modifier.weight(1f).padding(end = 8.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = ButtonColorLight)
                     ) {
