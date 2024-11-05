@@ -2,6 +2,7 @@
 
 package com.example.dogday.viewmodel
 
+import android.Manifest
 import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -65,12 +66,20 @@ class AddDogViewModel : ViewModel() {
         _dogBirthday.value = newBirthday
     }
 
+    fun toggleDatePicker() {
+        _showDatePicker.value = !_showDatePicker.value
+    }
+
     fun onDogImageCaptured(bitmap: Bitmap?) {
         _dogImageBitmap.value = bitmap
     }
 
-    fun toggleDatePicker() {
-        _showDatePicker.value = !_showDatePicker.value
+    fun requestCameraPermission(onResult: (Boolean) -> Unit) {
+        onResult(true) // Simuler tillatelse. I praksis håndteres dette i AddDogScreen
+    }
+
+    fun captureImage(launcher: (Unit?) -> Unit) {
+        launcher(null) // Starter kamera
     }
 
     fun saveDogData() {

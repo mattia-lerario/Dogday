@@ -105,8 +105,7 @@ fun AddDogScreen(navController: NavController, addDogViewModel: AddDogViewModel 
     val datePickerState = rememberDatePickerState()
     val requestCameraPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
-        onResult = { granted -> /* Handle permission result */ }
-    )
+    ) { granted -> addDogViewModel.requestCameraPermission { granted } }
 
     val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap ->
         addDogViewModel.onDogImageCaptured(bitmap)
@@ -296,8 +295,10 @@ fun AddDogScreen(navController: NavController, addDogViewModel: AddDogViewModel 
 
         Button(
             onClick = {
-                requestCameraPermissionLauncher.launch(Manifest.permission.CAMERA)
-                cameraLauncher.launch(null)
+                addDogViewModel.requestCameraPermission { granted ->
+                    if (granted) addDogViewModel.captureImage { cameraLauncher.launch(null) }
+                    else requestCameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                }
             },
             modifier = Modifier
                 .width(200.dp)
