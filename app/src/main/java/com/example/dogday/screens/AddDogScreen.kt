@@ -147,7 +147,7 @@ fun AddDogScreen(navController: NavController, addDogViewModel: AddDogViewModel 
         TextField(
             value = dogName,
             onValueChange = { addDogViewModel.onDogNameChange(it) },
-            label = { Text("Dog Name") },
+            label = { Text("Dog Name", color = Color.Black) },
             modifier = Modifier
                 .widthIn(max = 500.dp)
                 .padding(horizontal = 8.dp),
@@ -167,7 +167,7 @@ fun AddDogScreen(navController: NavController, addDogViewModel: AddDogViewModel 
         TextField(
             value = dogNickName,
             onValueChange = { addDogViewModel.onDogNickNameChange(it) },
-            label = { Text("Dog Nick Name") },
+            label = { Text("Dog Nick Name", color = Color.Black) },
             modifier = Modifier
                 .widthIn(max = 500.dp)
                 .padding(horizontal = 8.dp),
@@ -187,7 +187,7 @@ fun AddDogScreen(navController: NavController, addDogViewModel: AddDogViewModel 
         TextField(
             value = dogBreed,
             onValueChange = { addDogViewModel.onDogBreedChange(it) },
-            label = { Text("Dog Breed") },
+            label = { Text("Dog Breed", color = Color.Black) },
             modifier = Modifier
                 .widthIn(max = 500.dp)
                 .padding(horizontal = 8.dp),
@@ -207,7 +207,7 @@ fun AddDogScreen(navController: NavController, addDogViewModel: AddDogViewModel 
         TextField(
             value = dogBreeder,
             onValueChange = { addDogViewModel.onDogBreederChange(it) },
-            label = { Text("Dog Breeder") },
+            label = { Text("Dog Breeder", color = Color.Black) },
             modifier = Modifier
                 .widthIn(max = 500.dp)
                 .padding(horizontal = 8.dp),
@@ -231,7 +231,10 @@ fun AddDogScreen(navController: NavController, addDogViewModel: AddDogViewModel 
             OutlinedTextField(
                 value = convertMillisToDate(dogBirthday),
                 onValueChange = { },
-                label = { Text("Your Dog's Birthday", color = Color.Black) },
+                label = { Text("Your Dog's Birthday",
+                    Modifier.background(color = Color(0xFFD95A3C)).padding(5.dp),
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold) },
                 readOnly = true,
                 trailingIcon = {
                     IconButton(onClick = { addDogViewModel.toggleDatePicker() }) {
@@ -263,12 +266,12 @@ fun AddDogScreen(navController: NavController, addDogViewModel: AddDogViewModel 
                             addDogViewModel.onDogBirthdayChange(datePickerState.selectedDateMillis ?: 0L)
                             addDogViewModel.toggleDatePicker()
                         }) {
-                            Text("OK", color = Color.Black)
+                            Text("OK", color = Color(0xFFC0634D))
                         }
                     },
                     dismissButton = {
                         TextButton(onClick = { addDogViewModel.toggleDatePicker() }) {
-                            Text("Cancel", color = Color.Black)
+                            Text("Cancel", color = Color(0xFFC0634D))
                         }
                     }
                 ) {
@@ -283,11 +286,14 @@ fun AddDogScreen(navController: NavController, addDogViewModel: AddDogViewModel 
                                 containerColor = Color(0xFFF3CCC3),
                                 titleContentColor = Color.Black,
                                 headlineContentColor = Color.Black,
+                                navigationContentColor = Color.Black,
                                 selectedYearContainerColor = Color(0xFFD95A3C),
                                 selectedYearContentColor = Color.Black,
                                 yearContentColor = Color.Black,
                                 currentYearContentColor = Color.Black,
                                 disabledSelectedYearContentColor = Color.Black,
+                                dayContentColor = Color.Black,
+                                disabledDayContentColor = Color.Black,
                                 weekdayContentColor = Color.DarkGray,
                                 subheadContentColor = Color.White,
                                 selectedDayContentColor = Color.White,

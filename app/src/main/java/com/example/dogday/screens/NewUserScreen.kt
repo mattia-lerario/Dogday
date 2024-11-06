@@ -2,6 +2,7 @@ package com.example.dogday.screens
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -148,7 +149,7 @@ fun NewUserScreen(navController: NavController, newUserViewModel: NewUserViewMod
         TextField(
             value = firstName,
             onValueChange = { newUserViewModel.firstName.value = it },
-            label = { Text("First Name") },
+            label = { Text("First Name", color = Color.Black) },
             modifier = Modifier
                 .widthIn(max = 500.dp)
                 .padding(horizontal = 8.dp),
@@ -169,7 +170,7 @@ fun NewUserScreen(navController: NavController, newUserViewModel: NewUserViewMod
         TextField(
             value = lastName,
             onValueChange = { newUserViewModel.lastName.value = it },
-            label = { Text("Last Name") },
+            label = { Text("Last Name", color = Color.Black) },
             modifier = Modifier
                 .widthIn(max = 500.dp)
                 .padding(horizontal = 8.dp),
@@ -189,7 +190,7 @@ fun NewUserScreen(navController: NavController, newUserViewModel: NewUserViewMod
         TextField(
             value = phoneNumber,
             onValueChange = { newUserViewModel.phoneNumber.value = it },
-            label = { Text("Phone Number") },
+            label = { Text("Phone Number", color = Color.Black) },
             modifier = Modifier
                 .widthIn(max = 500.dp)
                 .padding(horizontal = 8.dp),
@@ -207,13 +208,18 @@ fun NewUserScreen(navController: NavController, newUserViewModel: NewUserViewMod
         Spacer(modifier = Modifier.height(16.dp))
 
         Box(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth(),
             contentAlignment = Alignment.Center
+
         ) {
             OutlinedTextField(
                 value = convertMillisToDate(birthday),
                 onValueChange = { },
-                label = { Text("Your Birthday", color = Color.Black) },
+                label = { Text("Your Birthday",
+                    Modifier.background(color = Color(0xFFD95A3C)).padding(5.dp),
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold) },
                 readOnly = true,
                 trailingIcon = {
                     IconButton(onClick = { newUserViewModel.showDatePicker.value = !showDatePicker }) {
@@ -231,7 +237,7 @@ fun NewUserScreen(navController: NavController, newUserViewModel: NewUserViewMod
                     focusedContainerColor = BackgroundColorLight,
                     unfocusedContainerColor = BackgroundColorLight,
                     focusedIndicatorColor = Color(0xFFD95A3C),
-                    unfocusedIndicatorColor = Color.Gray,
+                    unfocusedIndicatorColor = Color(0xFFC0634D),
                     focusedTextColor = Color.Black,
                     unfocusedTextColor = Color.Black
                 )
@@ -245,12 +251,14 @@ fun NewUserScreen(navController: NavController, newUserViewModel: NewUserViewMod
                             newUserViewModel.birthday.value = datePickerState.selectedDateMillis ?: 0L
                             newUserViewModel.showDatePicker.value = false
                         }) {
-                            Text("OK", color = Color.Black)
+                            Text("OK", color = Color(0xFFC0634D),
+                                fontWeight = FontWeight.Bold )
                         }
                     },
                     dismissButton = {
                         TextButton(onClick = { newUserViewModel.showDatePicker.value = false }) {
-                            Text("Cancel", color = Color.Black)
+                            Text("Cancel", color = Color(0xFFC0634D),
+                                fontWeight = FontWeight.Bold)
                         }
                     }
                 ) {
@@ -265,11 +273,14 @@ fun NewUserScreen(navController: NavController, newUserViewModel: NewUserViewMod
                                 containerColor = Color(0xFFF3CCC3),
                                 titleContentColor = Color.Black,
                                 headlineContentColor = Color.Black,
+                                navigationContentColor = Color.Black,
                                 selectedYearContainerColor = Color(0xFFD95A3C),
                                 selectedYearContentColor = Color.Black,
                                 yearContentColor = Color.Black,
                                 currentYearContentColor = Color.Black,
                                 disabledSelectedYearContentColor = Color.Black,
+                                dayContentColor = Color.Black,
+                                disabledDayContentColor = Color.Black,
                                 weekdayContentColor = Color.DarkGray,
                                 subheadContentColor = Color.White,
                                 selectedDayContentColor = Color.White,
