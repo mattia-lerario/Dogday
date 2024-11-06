@@ -1,6 +1,7 @@
 
 package com.example.dogday.screens
 
+import DogListViewModel
 import android.graphics.Bitmap
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -91,7 +92,9 @@ fun YourDogLabel() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddDogScreen(navController: NavController, addDogViewModel: AddDogViewModel = viewModel()) {
+fun AddDogScreen(navController: NavController,
+                 addDogViewModel: AddDogViewModel = viewModel(),
+                 dogListViewModel: DogListViewModel = viewModel()) {
     val dogName by addDogViewModel.dogName.collectAsState()
     val dogNickName by addDogViewModel.dogNickName.collectAsState()
     val dogBreed by addDogViewModel.dogBreed.collectAsState()
@@ -113,6 +116,7 @@ fun AddDogScreen(navController: NavController, addDogViewModel: AddDogViewModel 
 
     if (saveSuccess) {
         LaunchedEffect(Unit) {
+            dogListViewModel.fetchDogs()
             navController.navigate("home")
         }
     }
