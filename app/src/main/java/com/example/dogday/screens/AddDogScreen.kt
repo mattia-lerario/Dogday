@@ -116,11 +116,13 @@ fun AddDogScreen(
         }
     }
 
+    // Oppdater requestCameraPermissionLauncher til å starte kamera når tillatelse gis
     val requestCameraPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { granted ->
         if (granted) {
-            cameraLauncher.launch(null) // Start kameraet etter tillatelse er gitt
+            // Start kamera når tillatelse er gitt
+            cameraLauncher.launch(null)
         } else {
             println("Camera permission denied")
         }
@@ -328,10 +330,7 @@ fun AddDogScreen(
 
         Button(
             onClick = {
-                addDogViewModel.requestCameraPermission { granted ->
-                    if (granted) cameraLauncher.launch(null)
-                    else requestCameraPermissionLauncher.launch(Manifest.permission.CAMERA)
-                }
+                requestCameraPermissionLauncher.launch(Manifest.permission.CAMERA)
             },
             modifier = Modifier
                 .width(200.dp)
