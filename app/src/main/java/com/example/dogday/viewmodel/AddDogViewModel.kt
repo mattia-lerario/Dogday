@@ -2,17 +2,14 @@
 
 package com.example.dogday.viewmodel
 
-import android.Manifest
 import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.dogday.FirestoreInteractions
 import com.example.dogday.models.Dog
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 
 class AddDogViewModel: ViewModel() {
@@ -78,9 +75,9 @@ class AddDogViewModel: ViewModel() {
         onResult(true) // Simuler tillatelse. I praksis håndteres dette i AddDogScreen
     }
 
-    fun captureImage(launcher: (Unit?) -> Unit) {
-        launcher(null) // Starter kamera
-    }
+    //fun captureImage(launcher: (Unit?) -> Unit) {
+        //launcher(null) // Starter kamera
+    //}
 
     fun saveDogData() {
         if (_dogName.value.isNotEmpty() && _dogBreed.value.isNotEmpty() && _dogImageBitmap.value != null) {
