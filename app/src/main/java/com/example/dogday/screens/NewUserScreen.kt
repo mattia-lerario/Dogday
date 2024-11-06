@@ -2,6 +2,7 @@ package com.example.dogday.screens
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,6 +35,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,6 +49,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.dogday.FirestoreInteractions
 import com.example.dogday.R
@@ -55,6 +58,7 @@ import com.example.dogday.UserSession
 import com.example.dogday.ui.theme.BackgroundColorLight
 import com.example.dogday.ui.theme.ButtonColorLight
 import com.example.dogday.ui.theme.InputBackgroundLight
+import com.example.dogday.viewmodel.NewUserViewModel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
@@ -92,19 +96,22 @@ fun OwnerLabel() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NewUserScreen(navController: NavController) {
-    val email = UserSession.email ?: ""
-    val uid = UserSession.uid ?: ""
+fun NewUserScreen(navController: NavController, newUserViewModel: NewUserViewModel = viewModel()) {
+    val firstName by newUserViewModel.firstName
+    val lastName by newUserViewModel.lastName
+    val phoneNumber by newUserViewModel.phoneNumber
+    val birthday by newUserViewModel.birthday
+    val showDatePicker by newUserViewModel.showDatePicker
+    val saveSuccess by newUserViewModel.saveSuccess
 
-    var firstName by remember { mutableStateOf("") }
-    var lastName by remember { mutableStateOf("") }
-    var phoneNumber by remember { mutableStateOf("") }
-
-    var showDatePicker by remember { mutableStateOf(false) }
+    // Create datePickerState locally in the composable
     val datePickerState = rememberDatePickerState()
-    var birthday by remember { mutableStateOf(datePickerState.selectedDateMillis ?: 0L) }
 
-    val firestoreInteractions = FirestoreInteractions()
+    if (saveSuccess) {
+        LaunchedEffect(Unit) {
+            navController.navigate("DogQueryScreen")
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -141,8 +148,8 @@ fun NewUserScreen(navController: NavController) {
 
         TextField(
             value = firstName,
-            onValueChange = { firstName = it },
-            label = { Text("First Name") },
+            onValueChange = { newUserViewModel.firstName.value = it },
+            label = { Text("First Name", color = Color.Black) },
             modifier = Modifier
                 .widthIn(max = 500.dp)
                 .padding(horizontal = 8.dp),
@@ -150,7 +157,10 @@ fun NewUserScreen(navController: NavController) {
                 focusedContainerColor = InputBackgroundLight,
                 unfocusedContainerColor = InputBackgroundLight,
                 focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black
+
             ),
             shape = MaterialTheme.shapes.small
         )
@@ -159,8 +169,8 @@ fun NewUserScreen(navController: NavController) {
 
         TextField(
             value = lastName,
-            onValueChange = { lastName = it },
-            label = { Text("Last Name") },
+            onValueChange = { newUserViewModel.lastName.value = it },
+            label = { Text("Last Name", color = Color.Black) },
             modifier = Modifier
                 .widthIn(max = 500.dp)
                 .padding(horizontal = 8.dp),
@@ -168,7 +178,9 @@ fun NewUserScreen(navController: NavController) {
                 focusedContainerColor = InputBackgroundLight,
                 unfocusedContainerColor = InputBackgroundLight,
                 focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black
             ),
             shape = MaterialTheme.shapes.small
         )
@@ -177,8 +189,8 @@ fun NewUserScreen(navController: NavController) {
 
         TextField(
             value = phoneNumber,
-            onValueChange = { phoneNumber = it },
-            label = { Text("Phone Number") },
+            onValueChange = { newUserViewModel.phoneNumber.value = it },
+            label = { Text("Phone Number", color = Color.Black) },
             modifier = Modifier
                 .widthIn(max = 500.dp)
                 .padding(horizontal = 8.dp),
@@ -186,7 +198,9 @@ fun NewUserScreen(navController: NavController) {
                 focusedContainerColor = InputBackgroundLight,
                 unfocusedContainerColor = InputBackgroundLight,
                 focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black
             ),
             shape = MaterialTheme.shapes.small
         )
@@ -194,16 +208,21 @@ fun NewUserScreen(navController: NavController) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Box(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth(),
             contentAlignment = Alignment.Center
+
         ) {
             OutlinedTextField(
                 value = convertMillisToDate(birthday),
                 onValueChange = { },
-                label = { Text("Your Birthday", color = Color.Black) },
+                label = { Text("Your Birthday",
+                    Modifier.background(color = Color(0xFFD95A3C)).padding(5.dp),
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold) },
                 readOnly = true,
                 trailingIcon = {
-                    IconButton(onClick = { showDatePicker = !showDatePicker }) {
+                    IconButton(onClick = { newUserViewModel.showDatePicker.value = !showDatePicker }) {
                         Icon(
                             imageVector = Icons.Default.DateRange,
                             contentDescription = "Select date"
@@ -218,24 +237,28 @@ fun NewUserScreen(navController: NavController) {
                     focusedContainerColor = BackgroundColorLight,
                     unfocusedContainerColor = BackgroundColorLight,
                     focusedIndicatorColor = Color(0xFFD95A3C),
-                    unfocusedIndicatorColor = Color.Gray
+                    unfocusedIndicatorColor = Color(0xFFC0634D),
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black
                 )
             )
 
             if (showDatePicker) {
                 DatePickerDialog(
-                    onDismissRequest = { showDatePicker = false },
+                    onDismissRequest = { newUserViewModel.showDatePicker.value = false },
                     confirmButton = {
                         TextButton(onClick = {
-                            birthday = datePickerState.selectedDateMillis ?: 0L
-                            showDatePicker = false
+                            newUserViewModel.birthday.value = datePickerState.selectedDateMillis ?: 0L
+                            newUserViewModel.showDatePicker.value = false
                         }) {
-                            Text("OK", color = Color.Black)
+                            Text("OK", color = Color(0xFFC0634D),
+                                fontWeight = FontWeight.Bold )
                         }
                     },
                     dismissButton = {
-                        TextButton(onClick = { showDatePicker = false }) {
-                            Text("Cancel", color = Color.Black)
+                        TextButton(onClick = { newUserViewModel.showDatePicker.value = false }) {
+                            Text("Cancel", color = Color(0xFFC0634D),
+                                fontWeight = FontWeight.Bold)
                         }
                     }
                 ) {
@@ -250,11 +273,14 @@ fun NewUserScreen(navController: NavController) {
                                 containerColor = Color(0xFFF3CCC3),
                                 titleContentColor = Color.Black,
                                 headlineContentColor = Color.Black,
+                                navigationContentColor = Color.Black,
                                 selectedYearContainerColor = Color(0xFFD95A3C),
                                 selectedYearContentColor = Color.Black,
                                 yearContentColor = Color.Black,
                                 currentYearContentColor = Color.Black,
                                 disabledSelectedYearContentColor = Color.Black,
+                                dayContentColor = Color.Black,
+                                disabledDayContentColor = Color.Black,
                                 weekdayContentColor = Color.DarkGray,
                                 subheadContentColor = Color.White,
                                 selectedDayContentColor = Color.White,
@@ -270,34 +296,7 @@ fun NewUserScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(onClick = {
-            if (firstName.isNotEmpty() && phoneNumber.isNotEmpty()) {
-                val user = User(
-                    uid,
-                    email,
-                    firstName,
-                    lastName,
-                    phoneNumber,
-                    birthday
-                )
-                firestoreInteractions.addUser(user)
-                val uid = Firebase.auth.currentUser?.uid
-                if (uid != null) {
-                    val firestore = FirebaseFirestore.getInstance()
-                    firestore.collection("ddcollection").document(uid).get()
-                        .addOnSuccessListener { document ->
-                            if (document.exists()) {
-                                val user = document.toObject(User::class.java)
-                                if (user != null) {
-
-                                        navController.navigate("DogQueryScreen")
-
-                                }
-                            }
-                        }
-                }
-            }
-        },
+        Button(onClick = { newUserViewModel.saveUserData() },
             modifier = Modifier
                 .width(150.dp)
                 .height(48.dp),
