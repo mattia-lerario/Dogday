@@ -52,7 +52,7 @@ fun MapScreen(navController: NavHostController) {
     }
     val kennels = mapViewModel.kennels
     val hikes = mapViewModel.hikes
-
+    val breeders = mapViewModel.breeders
     // Permission handling (same as before)
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -135,6 +135,11 @@ fun MapScreen(navController: NavHostController) {
                 checked = mapViewModel.showHikes,
                 onCheckedChange = { mapViewModel.updateShowHikes(it) }
             )
+            Text("Show Breeders")
+            Switch(
+                checked = mapViewModel.showBreeders,
+                onCheckedChange = { mapViewModel.updateShowBreeders(it) }
+            )
         }
 
         Box(modifier = Modifier.fillMaxSize()) {
@@ -165,11 +170,12 @@ fun MapScreen(navController: NavHostController) {
             )
 
             // Use LaunchedEffect to update the map with markers when googleMap is ready
-            LaunchedEffect(googleMap, mapViewModel.kennels, mapViewModel.hikes, mapViewModel.showKennels, mapViewModel.showHikes) {
+            LaunchedEffect(googleMap, mapViewModel.kennels, mapViewModel.hikes, mapViewModel.breeders, mapViewModel.showKennels, mapViewModel.showHikes, mapViewModel.showBreeders) {
                 if (googleMap != null) {
                     mapViewModel.updateMapWithMarkers(googleMap!!, context)
                 }
             }
+
 
             // Display the ItemSlider at the bottom
             ItemSlider(

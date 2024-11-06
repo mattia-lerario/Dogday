@@ -11,9 +11,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
-import com.example.dogday.R
+import com.example.dogday.models.Breeder
 import com.example.dogday.models.HikeData
 import com.example.dogday.models.Kennel
+import com.example.dogday.repository.BreederRepository
 import com.example.dogday.repository.HikeRepository
 import com.example.dogday.repository.KennelRepository
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -28,6 +29,7 @@ class MapViewModel : ViewModel() {
 
     private val kennelRepository = KennelRepository()
     private val hikeRepository = HikeRepository()
+    private val breederRepository = BreederRepository()
 
     var kennels by mutableStateOf<List<Kennel>>(emptyList())
         private set
@@ -35,11 +37,19 @@ class MapViewModel : ViewModel() {
     var hikes by mutableStateOf<List<HikeData>>(emptyList())
         private set
 
+    var breeders by mutableStateOf<List<Breeder>>(emptyList())
+        private set
+
+
     var showKennels by mutableStateOf(false)
         private set
 
     var showHikes by mutableStateOf(false)
         private set
+
+    var showBreeders by mutableStateOf(false)
+        private set
+
 
     var visibleItems by mutableStateOf<List<Any>>(emptyList())
         private set
@@ -59,6 +69,12 @@ class MapViewModel : ViewModel() {
         showHikes = show
         fetchHikes()
     }
+
+    fun updateShowBreeders(show: Boolean) {
+        showBreeders = show
+        fetchBreeders()
+    }
+
 
     private fun fetchKennels() {
         if (showKennels) {
@@ -94,6 +110,66 @@ class MapViewModel : ViewModel() {
         }
     }
 
+    private fun fetchBreeders() {
+        if (showBreeders) {
+            breederRepository.fetchBreeders(
+                onSuccess = { fetchedBreeders ->
+                    breeders = fetchedBreeders
+                    errorMessage = null // Clear error message on successful fetch
+                },
+                onFailure = { _ ->
+                    Log.e("MapViewModel", "Error fetching breeders")
+                    errorMessage = "Failed to load breeders. Please try again."
+                }
+            )
+        } else {
+            breeders = emptyList()
+        }
+    }
+
+    fun updateMapWithMarkers(map: GoogleMap, context: Context) {
+        map.clear()
+
+        if (showKennels) {
+            kennels.forEach { kennel ->
+                val markerOptions = MarkerOptions()
+                    .position(LatLng(kennel.coordinates.latitude, kennel.coordinates.longitude))
+                    .title(kennel.name)
+                    .snippet("${kennel.address}\nContact: ${kennel.contactInfo}")
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)) // Kennel marker in orange
+
+                map.addMarker(markerOptions)
+            }
+        }
+
+        if (showHikes) {
+            hikes.forEach { hike ->
+                val markerOptions = MarkerOptions()
+                    .position(LatLng(hike.coordinates.latitude, hike.coordinates.longitude))
+                    .title(hike.title)
+                    .snippet(hike.description)
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)) // Hike marker in green
+
+                map.addMarker(markerOptions)
+            }
+        }
+
+        if (showBreeders) {
+            breeders.forEach { breeder ->
+                val breedListString = breeder.dogBreeds.joinToString(", ")
+                val markerOptions = MarkerOptions()
+                    .position(LatLng(breeder.coordinates.latitude, breeder.coordinates.longitude))
+                    .title(breeder.name)
+                    .snippet("${breeder.address}\nBreeds: $breedListString")
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)) // Breeder marker in blue
+
+                map.addMarker(markerOptions)
+            }
+        }
+
+
+    }
+
     fun updateVisibleItems(visibleRegion: LatLngBounds) {
         val itemsInBounds = mutableListOf<Any>()
 
@@ -113,8 +189,17 @@ class MapViewModel : ViewModel() {
             )
         }
 
+        if (showBreeders) {
+            itemsInBounds.addAll(
+                breeders.filter {
+                    visibleRegion.contains(LatLng(it.coordinates.latitude, it.coordinates.longitude))
+                }
+            )
+        }
+
         visibleItems = itemsInBounds
     }
+
 
     fun centerMapOnMarkersOrDefault(
         googleMap: GoogleMap,
@@ -127,13 +212,23 @@ class MapViewModel : ViewModel() {
 
             if (mapViewModel.showKennels) {
                 kennels.forEach { kennel ->
-                    boundsBuilder.include(LatLng(kennel.coordinates.latitude, kennel.coordinates.longitude))
+                    boundsBuilder.include(
+                        LatLng(
+                            kennel.coordinates.latitude,
+                            kennel.coordinates.longitude
+                        )
+                    )
                 }
             }
 
             if (mapViewModel.showHikes) {
                 hikes.forEach { hike ->
-                    boundsBuilder.include(LatLng(hike.coordinates.latitude, hike.coordinates.longitude))
+                    boundsBuilder.include(
+                        LatLng(
+                            hike.coordinates.latitude,
+                            hike.coordinates.longitude
+                        )
+                    )
                 }
             }
 
@@ -143,13 +238,25 @@ class MapViewModel : ViewModel() {
                     val cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, 100)
                     googleMap.moveCamera(cameraUpdate)
                 } else {
-                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(59.911491, 10.757933), 12f))
+                    googleMap.moveCamera(
+                        CameraUpdateFactory.newLatLngZoom(
+                            LatLng(
+                                59.911491,
+                                10.757933
+                            ), 12f
+                        )
+                    )
                 }
             } catch (e: Exception) {
                 Log.e("MapScreen", "Error adjusting camera: ${e.message}")
             }
         } else {
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(59.911491, 10.757933), 12f))
+            googleMap.moveCamera(
+                CameraUpdateFactory.newLatLngZoom(
+                    LatLng(59.911491, 10.757933),
+                    12f
+                )
+            )
         }
     }
 
@@ -175,7 +282,12 @@ class MapViewModel : ViewModel() {
             return null
         }
 
-        vectorDrawable.setBounds(0, 0, vectorDrawable.intrinsicWidth, vectorDrawable.intrinsicHeight)
+        vectorDrawable.setBounds(
+            0,
+            0,
+            vectorDrawable.intrinsicWidth,
+            vectorDrawable.intrinsicHeight
+        )
         val bitmap = Bitmap.createBitmap(
             vectorDrawable.intrinsicWidth,
             vectorDrawable.intrinsicHeight,
@@ -186,34 +298,4 @@ class MapViewModel : ViewModel() {
         return BitmapDescriptorFactory.fromBitmap(bitmap)
     }
 
-    fun updateMapWithMarkers(
-        map: GoogleMap,
-        context: Context
-    ) {
-        map.clear()
-
-        if (showKennels) {
-            kennels.forEach { kennel ->
-                val markerOptions = MarkerOptions()
-                    .position(LatLng(kennel.coordinates.latitude, kennel.coordinates.longitude))
-                    .title(kennel.name)
-                    .snippet("${kennel.address}\nContact: ${kennel.contactInfo}")
-                    .icon(bitmapDescriptorFromVector(context, R.drawable.hike_marker))
-
-                map.addMarker(markerOptions)
-            }
-        }
-
-        if (showHikes) {
-            hikes.forEach { hike ->
-                val markerOptions = MarkerOptions()
-                    .position(LatLng(hike.coordinates.latitude, hike.coordinates.longitude))
-                    .title(hike.title)
-                    .snippet(hike.description)
-                    .icon(bitmapDescriptorFromVector(context, R.drawable.hike_marker))
-
-                map.addMarker(markerOptions)
-            }
-        }
-    }
 }
