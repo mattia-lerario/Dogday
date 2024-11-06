@@ -107,12 +107,23 @@ fun AddDogScreen(
     val uploadingImage by addDogViewModel.uploadingImage.collectAsState()
 
     val datePickerState = rememberDatePickerState()
-    val requestCameraPermissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission(),
-    ) { granted -> addDogViewModel.requestCameraPermission { granted } }
 
     val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap ->
-        addDogViewModel.onDogImageCaptured(bitmap)
+        if (bitmap != null) {
+            addDogViewModel.onDogImageCaptured(bitmap)
+        } else {
+            println("Failed to capture image or camera was cancelled")
+        }
+    }
+
+    val requestCameraPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) {
+            cameraLauncher.launch(null) // Start kameraet etter tillatelse er gitt
+        } else {
+            println("Camera permission denied")
+        }
     }
 
     if (saveSuccess) {

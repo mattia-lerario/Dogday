@@ -68,7 +68,11 @@ class AddDogViewModel: ViewModel() {
     }
 
     fun onDogImageCaptured(bitmap: Bitmap?) {
-        _dogImageBitmap.value = bitmap
+        if (bitmap != null) {
+            _dogImageBitmap.value = bitmap
+        } else {
+            println("Failed to capture image or camera was cancelled")
+        }
     }
 
     fun requestCameraPermission(onResult: (Boolean) -> Unit) {
@@ -85,8 +89,13 @@ class AddDogViewModel: ViewModel() {
 
             val storageRef = storage.reference.child("dog_images/${_dogName.value}_${System.currentTimeMillis()}.jpg")
             val baos = ByteArrayOutputStream()
-            _dogImageBitmap.value?.compress(Bitmap.CompressFormat.JPEG, 100, baos)
-            val data = baos.toByteArray()
+
+            _dogImageBitmap.value?.let { bitmap ->
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+                val data = baos.toByteArray()
+
+            //_dogImageBitmap.value?.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+            //val data = baos.toByteArray()
 
             storageRef.putBytes(data)
                 .addOnSuccessListener {
@@ -109,7 +118,8 @@ class AddDogViewModel: ViewModel() {
                     }
                 }.addOnFailureListener {
                     _uploadingImage.value = false
-                }
+
+            }   }
         }
     }
 }
