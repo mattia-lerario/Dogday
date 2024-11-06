@@ -22,7 +22,7 @@ class DogListViewModel : ViewModel() {
         fetchDogs()
     }
 
-    private fun fetchDogs() {
+    fun fetchDogs() {
         dogRepository.fetchDogs(
             onSuccess = { dogs ->
                 _dogs.value = dogs // Oppdater verdien av _dogs direkte
