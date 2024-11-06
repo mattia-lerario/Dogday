@@ -2,7 +2,6 @@
 
 package com.example.dogday.viewmodel
 
-import DogListViewModel
 import android.Manifest
 import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
@@ -16,9 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 
-class AddDogViewModel(
-    private val dogListViewModel: DogListViewModel
-) : ViewModel() {
+class AddDogViewModel: ViewModel() {
     private val firestoreInteractions = FirestoreInteractions()
     private val storage = FirebaseStorage.getInstance()
 
@@ -109,7 +106,7 @@ class AddDogViewModel(
 
                         if (uid != null) {
                             firestoreInteractions.addDogToUser(uid, dog)
-                            dogListViewModel.fetchDogs()
+                            //dogListViewModel.fetchDogs()
                             _saveSuccess.value = true
                         }
                     }
