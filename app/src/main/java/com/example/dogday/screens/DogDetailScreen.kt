@@ -309,8 +309,16 @@ fun EditDogScreen(
             onClick = {
                 coroutineScope.launch {
                     uploadingImage = true
-                    val imageUrl = viewModel.getNewImageForDog(dogImageBitmap = dogImageBitmap, dog = dog)
+                    var imageUrl = viewModel.getNewImageForDog(dogImageBitmap = dogImageBitmap, dog = dog)
                     uploadingImage = false
+
+                    if (imageUrl != null) {
+                        imageUrl = imageUrl
+                    }
+                    else
+                    {
+                        imageUrl = dog.imageUrl
+                    }
 
 
 
