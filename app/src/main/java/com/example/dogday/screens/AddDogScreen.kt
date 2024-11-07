@@ -12,49 +12,50 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Button
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.*
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Popup
 import androidx.navigation.NavController
-import com.example.dogday.models.Dog
-import com.example.dogday.FirestoreInteractions
 import com.example.dogday.ui.theme.ButtonColorLight
 import com.example.dogday.ui.theme.InputBackgroundLight
-import com.google.firebase.auth.FirebaseAuth
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import android.Manifest
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.dogday.ui.theme.BackgroundColorLight
-import com.google.firebase.storage.FirebaseStorage
-import java.io.ByteArrayOutputStream
+import com.example.dogday.viewmodel.AddDogViewModel
 
 
 @Composable
@@ -90,34 +91,48 @@ fun YourDogLabel() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddDogScreen(navController: NavController) {
-    var dogName by remember { mutableStateOf("") }
-    var dogNickName by remember { mutableStateOf("") }
-    var dogBreed by remember { mutableStateOf("") }
-    var dogBreeder by remember { mutableStateOf("") }
+fun AddDogScreen(
+    navController: NavController,
+    addDogViewModel: AddDogViewModel = viewModel(),
+    dogListViewModel: DogListViewModel = viewModel()
+) {
+    val dogName by addDogViewModel.dogName.collectAsState()
+    val dogNickName by addDogViewModel.dogNickName.collectAsState()
+    val dogBreed by addDogViewModel.dogBreed.collectAsState()
+    val dogBreeder by addDogViewModel.dogBreeder.collectAsState()
+    val dogBirthday by addDogViewModel.dogBirthday.collectAsState()
+    val showDatePicker by addDogViewModel.showDatePicker.collectAsState()
+    val saveSuccess by addDogViewModel.saveSuccess.collectAsState()
+    val dogImageBitmap by addDogViewModel.dogImageBitmap.collectAsState()
+    val uploadingImage by addDogViewModel.uploadingImage.collectAsState()
 
-    var showDatePicker by remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState()
-    var dogBirthday by remember { mutableStateOf(datePickerState.selectedDateMillis ?: 0L) }
 
-    var dogImageBitmap by remember { mutableStateOf<Bitmap?>(null) }
-    var hasCameraPermission by remember { mutableStateOf(false) }
-    var uploadingImage by remember { mutableStateOf(false) }
-
-    val firestoreInteractions = FirestoreInteractions()
-    val storage = FirebaseStorage.getInstance()
-    val viewModel : DogListViewModel = viewModel()
-
-    val requestCameraPermissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission(),
-        onResult = { granted -> hasCameraPermission = granted }
-    )
     val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap ->
-        dogImageBitmap = bitmap
+        if (bitmap != null) {
+            addDogViewModel.onDogImageCaptured(bitmap)
+        } else {
+            println("Failed to capture image or camera was cancelled")
+        }
     }
 
-    LaunchedEffect(Unit) {
-        requestCameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+    // Oppdater requestCameraPermissionLauncher til å starte kamera når tillatelse gis
+    val requestCameraPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) {
+            // Start kamera når tillatelse er gitt
+            cameraLauncher.launch(null)
+        } else {
+            println("Camera permission denied")
+        }
+    }
+
+    if (saveSuccess) {
+        LaunchedEffect(Unit) {
+            dogListViewModel.fetchDogs()
+            navController.navigate("home")
+        }
     }
 
     Column(
@@ -150,8 +165,8 @@ fun AddDogScreen(navController: NavController) {
 
         TextField(
             value = dogName,
-            onValueChange = { dogName = it },
-            label = { Text("Dog Name") },
+            onValueChange = { addDogViewModel.onDogNameChange(it) },
+            label = { Text("Dog Name", color = Color.Black) },
             modifier = Modifier
                 .widthIn(max = 500.dp)
                 .padding(horizontal = 8.dp),
@@ -161,7 +176,7 @@ fun AddDogScreen(navController: NavController) {
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
                 focusedTextColor = Color.Black,
-                unfocusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black
             ),
             shape = MaterialTheme.shapes.small
         )
@@ -170,8 +185,8 @@ fun AddDogScreen(navController: NavController) {
 
         TextField(
             value = dogNickName,
-            onValueChange = { dogNickName = it },
-            label = { Text("Dog Nick Name") },
+            onValueChange = { addDogViewModel.onDogNickNameChange(it) },
+            label = { Text("Dog Nick Name", color = Color.Black) },
             modifier = Modifier
                 .widthIn(max = 500.dp)
                 .padding(horizontal = 8.dp),
@@ -181,7 +196,7 @@ fun AddDogScreen(navController: NavController) {
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
                 focusedTextColor = Color.Black,
-                unfocusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black
             ),
             shape = MaterialTheme.shapes.small
         )
@@ -190,8 +205,8 @@ fun AddDogScreen(navController: NavController) {
 
         TextField(
             value = dogBreed,
-            onValueChange = { dogBreed = it },
-            label = { Text("Dog Breed") },
+            onValueChange = { addDogViewModel.onDogBreedChange(it) },
+            label = { Text("Dog Breed", color = Color.Black) },
             modifier = Modifier
                 .widthIn(max = 500.dp)
                 .padding(horizontal = 8.dp),
@@ -201,7 +216,7 @@ fun AddDogScreen(navController: NavController) {
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
                 focusedTextColor = Color.Black,
-                unfocusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black
             ),
             shape = MaterialTheme.shapes.small
         )
@@ -210,8 +225,8 @@ fun AddDogScreen(navController: NavController) {
 
         TextField(
             value = dogBreeder,
-            onValueChange = { dogBreeder = it },
-            label = { Text("Dog Breeder") },
+            onValueChange = { addDogViewModel.onDogBreederChange(it) },
+            label = { Text("Dog Breeder", color = Color.Black) },
             modifier = Modifier
                 .widthIn(max = 500.dp)
                 .padding(horizontal = 8.dp),
@@ -221,7 +236,7 @@ fun AddDogScreen(navController: NavController) {
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
                 focusedTextColor = Color.Black,
-                unfocusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black
             ),
             shape = MaterialTheme.shapes.small
         )
@@ -235,10 +250,13 @@ fun AddDogScreen(navController: NavController) {
             OutlinedTextField(
                 value = convertMillisToDate(dogBirthday),
                 onValueChange = { },
-                label = { Text("Your Dog's Birthday", color = Color.Black) },
+                label = { Text("Your Dog's Birthday",
+                    Modifier.background(color = Color(0xFFD95A3C)).padding(5.dp),
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold) },
                 readOnly = true,
                 trailingIcon = {
-                    IconButton(onClick = { showDatePicker = !showDatePicker }) {
+                    IconButton(onClick = { addDogViewModel.toggleDatePicker() }) {
                         Icon(
                             imageVector = Icons.Default.DateRange,
                             contentDescription = "Select date"
@@ -255,24 +273,24 @@ fun AddDogScreen(navController: NavController) {
                     focusedIndicatorColor = Color(0xFFD95A3C),
                     unfocusedIndicatorColor = Color.Gray,
                     focusedTextColor = Color.Black,
-                    unfocusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black
                 )
             )
 
             if (showDatePicker) {
                 DatePickerDialog(
-                    onDismissRequest = { showDatePicker = false },
+                    onDismissRequest = { addDogViewModel.toggleDatePicker() },
                     confirmButton = {
                         TextButton(onClick = {
-                            dogBirthday = datePickerState.selectedDateMillis ?: 0L
-                            showDatePicker = false
+                            addDogViewModel.onDogBirthdayChange(datePickerState.selectedDateMillis ?: 0L)
+                            addDogViewModel.toggleDatePicker()
                         }) {
-                            Text("OK", color = Color.Black)
+                            Text("OK", color = Color(0xFFC0634D))
                         }
                     },
                     dismissButton = {
-                        TextButton(onClick = { showDatePicker = false }) {
-                            Text("Cancel", color = Color.Black)
+                        TextButton(onClick = { addDogViewModel.toggleDatePicker() }) {
+                            Text("Cancel", color = Color(0xFFC0634D))
                         }
                     }
                 ) {
@@ -287,11 +305,14 @@ fun AddDogScreen(navController: NavController) {
                                 containerColor = Color(0xFFF3CCC3),
                                 titleContentColor = Color.Black,
                                 headlineContentColor = Color.Black,
+                                navigationContentColor = Color.Black,
                                 selectedYearContainerColor = Color(0xFFD95A3C),
                                 selectedYearContentColor = Color.Black,
                                 yearContentColor = Color.Black,
                                 currentYearContentColor = Color.Black,
                                 disabledSelectedYearContentColor = Color.Black,
+                                dayContentColor = Color.Black,
+                                disabledDayContentColor = Color.Black,
                                 weekdayContentColor = Color.DarkGray,
                                 subheadContentColor = Color.White,
                                 selectedDayContentColor = Color.White,
@@ -309,11 +330,7 @@ fun AddDogScreen(navController: NavController) {
 
         Button(
             onClick = {
-                if (hasCameraPermission) {
-                    cameraLauncher.launch(null)
-                } else {
-                    requestCameraPermissionLauncher.launch(Manifest.permission.CAMERA)
-                }
+                requestCameraPermissionLauncher.launch(Manifest.permission.CAMERA)
             },
             modifier = Modifier
                 .width(200.dp)
@@ -328,50 +345,18 @@ fun AddDogScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-            dogImageBitmap?.let { bitmap ->
-                Image(bitmap = bitmap.asImageBitmap(), contentDescription = "Dog Image", modifier = Modifier.size(200.dp))
-            }
+        dogImageBitmap?.let { bitmap ->
+            Image(
+                bitmap = bitmap.asImageBitmap(),
+                contentDescription = "Dog Image",
+                modifier = Modifier.size(200.dp)
+            )
+        }
 
-            Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-            Button(
-                onClick = {
-                    if (dogName.isNotEmpty() && dogBreed.isNotEmpty() && dogImageBitmap != null) {
-                        uploadingImage = true
-
-                        val storageRef = storage.reference.child("dog_images/${dogName}_${System.currentTimeMillis()}.jpg")
-                        val baos = ByteArrayOutputStream()
-                        dogImageBitmap?.compress(Bitmap.CompressFormat.JPEG, 100, baos)
-                        val data = baos.toByteArray()
-
-                        val uploadTask = storageRef.putBytes(data)
-                        uploadTask.addOnSuccessListener { taskSnapshot ->
-                            storageRef.downloadUrl.addOnSuccessListener { uri ->
-                                val imageUrl = uri.toString()
-
-                                val uid = FirebaseAuth.getInstance().currentUser?.uid
-                                if (uid != null) {
-                                    val dog = Dog(
-                                        name = dogName,
-                                        nickName = dogNickName,
-                                        breed = dogBreed,
-                                        birthday = System.currentTimeMillis(),
-                                        breeder = dogBreeder,
-                                        imageUrl = imageUrl,
-
-                                )
-                                firestoreInteractions.addDogToUser(uid, dog)
-
-                                    viewModel.fetchDogs()
-                                navController.navigate("home")
-
-                            }
-                        }
-                    }.addOnFailureListener {
-                        uploadingImage = false
-                    }
-                }
-            },
+        Button(
+            onClick = {addDogViewModel.saveDogData()},
             enabled = !uploadingImage,
             modifier = Modifier
                 .width(200.dp)
