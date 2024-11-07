@@ -1,3 +1,4 @@
+import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.dogday.models.Dog
@@ -67,6 +68,16 @@ class DogListViewModel : ViewModel() {
         val updatedDog = dog.copy(vetLog = updatedVetLog)
         updateDog(updatedDog)
     }
+
+    suspend fun getNewImageForDog(dog: Dog, dogImageBitmap: Bitmap?): String? {
+        val imageUrl = dogRepository.getNewDogImageAsString(dog = dog, dogImageBitmap = dogImageBitmap)
+        return if (imageUrl != null) {
+            imageUrl
+        } else {
+            null
+        }
+    }
+
 
     fun updateDog(dog: Dog) {
         viewModelScope.launch {

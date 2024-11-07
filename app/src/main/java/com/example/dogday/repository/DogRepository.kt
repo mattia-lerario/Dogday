@@ -1,10 +1,15 @@
 package com.example.dogday.repository
 
+import android.graphics.Bitmap
 import com.example.dogday.models.Dog
+import com.example.dogday.models.DogID
 import com.example.dogday.models.VetNote
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
+import com.google.firebase.storage.FirebaseStorage
+import kotlinx.coroutines.tasks.await
+import java.io.ByteArrayOutputStream
 
 class DogRepository {
 
@@ -110,6 +115,27 @@ class DogRepository {
                 }
         } else {
             onFailure(Exception("Bruker ikke logget inn."))
+        }
+    }
+
+    suspend fun getNewDogImageAsString(dogImageBitmap: Bitmap?, dog: Dog): String? {
+        val storage = FirebaseStorage.getInstance()
+        val storageRef = storage.reference.child("dog_images/${dog.name}_${System.currentTimeMillis()}.jpg")
+
+        // Konverterer bitmap til byte-array
+        val baos = ByteArrayOutputStream()
+        dogImageBitmap?.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+        val data = baos.toByteArray()
+
+        return try {
+            // Laster opp bildet og venter til det er fullført
+            storageRef.putBytes(data).await()
+
+            // Henter URL når opplastingen er fullført til Firebase
+            storageRef.downloadUrl.await().toString()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
         }
     }
 
