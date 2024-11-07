@@ -49,6 +49,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.runtime.rememberCoroutineScope
 
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -69,6 +70,7 @@ import coil.compose.AsyncImage
 import com.example.dogday.R
 import com.example.dogday.models.Dog
 import com.example.dogday.models.VetNote
+import kotlinx.coroutines.launch
 
 
 import java.util.Calendar
@@ -166,6 +168,9 @@ fun EditDogScreen(
     var dogImageBitmap by remember { mutableStateOf<Bitmap?>(null) }
     var showDatePicker by remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState()
+
+    val coroutineScope = rememberCoroutineScope()
+    val viewModel: DogListViewModel = viewModel()
 
 
     var uploadingImage by remember { mutableStateOf(false) }
@@ -302,6 +307,13 @@ fun EditDogScreen(
 
         Button(
             onClick = {
+                coroutineScope.launch {
+                    uploadingImage = true
+                    val imageUrl = viewModel.getNewImageForDog(dogImageBitmap = dogImageBitmap, dog = dog)
+                    uploadingImage = false
+
+
+
                 uploadingImage = true
                 val dogToSave = dog.copy(
                     name = dogName,
@@ -309,11 +321,11 @@ fun EditDogScreen(
                     breed = dogBreed,
                     breeder = dogBreeder,
                     birthday = dogBirthday,
-                    imageUrl = dog.imageUrl
+                    imageUrl = imageUrl
                 )
                 onSave(dogToSave)
                 navController.popBackStack()
-            },
+            }},
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Save Changes")
