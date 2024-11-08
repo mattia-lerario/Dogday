@@ -133,8 +133,6 @@ fun DogDetailUI(navController: NavController, dog: Dog, viewModel: DogListViewMo
 
         Text(text = "Name: ${dog.name}", style = MaterialTheme.typography.titleLarge)
         Text(text = "Nickname: ${dog.nickName}")
-        Text(text = "Name: ${dog.name}")
-        Text(text = "Nickname: ${dog.nickName}")
         Text(text = "Breed: ${dog.breed}")
         Text(text = "Birthday: ${convertMillisToDate(dog.birthday)}")
         Text(text = "Breeder: ${dog.breeder}")
