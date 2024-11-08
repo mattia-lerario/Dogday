@@ -116,7 +116,8 @@ fun NewUserScreen(navController: NavController, newUserViewModel: NewUserViewMod
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -217,7 +218,9 @@ fun NewUserScreen(navController: NavController, newUserViewModel: NewUserViewMod
                 value = convertMillisToDate(birthday),
                 onValueChange = { },
                 label = { Text("Your Birthday",
-                    Modifier.background(color = Color(0xFFD95A3C)).padding(5.dp),
+                    Modifier
+                        .background(color = Color(0xFFD95A3C))
+                        .padding(5.dp),
                     color = Color.White,
                     fontWeight = FontWeight.Bold) },
                 readOnly = true,
