@@ -24,6 +24,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Scale
 import com.example.dogday.R
+import com.example.dogday.models.Breeder
 import com.example.dogday.models.HikeData
 import com.example.dogday.models.Kennel
 
@@ -38,6 +39,7 @@ fun ItemSlider(
             when (item) {
                 is Kennel -> KennelSliderItem(kennel = item, navController = navController)
                 is HikeData -> HikeSliderItem(hike = item, navController = navController)
+                is Breeder -> BreederSliderItem(breeder = item, navController = navController) // Add Breeder support
             }
         }
     }
@@ -48,11 +50,12 @@ fun KennelSliderItem(kennel: Kennel, navController: NavHostController) {
     Card(
         modifier = Modifier
             .padding(8.dp)
-            .width(250.dp)
+            .width(220.dp)
             .clickable {
                 // Navigate to Kennel detail page
                 navController.navigate("kennel_detail/${kennel.id}")
-            }
+            },
+        shape = RoundedCornerShape(12.dp)
     ) {
         Row(modifier = Modifier.padding(8.dp)) {
             // Image on the left
@@ -66,7 +69,9 @@ fun KennelSliderItem(kennel: Kennel, navController: NavHostController) {
                     .build(),
                 contentDescription = kennel.name,
                 modifier = Modifier
-                    .size(80.dp)
+                    .size(60.dp) // Adjusted size for consistency
+                    .aspectRatio(1f)
+                    .clip(RoundedCornerShape(8.dp)) // Adds a rounded clip to the image for aesthetics
                     .padding(end = 8.dp)
             )
             // Text content on the right
@@ -84,11 +89,12 @@ fun HikeSliderItem(hike: HikeData, navController: NavHostController) {
     Card(
         modifier = Modifier
             .padding(8.dp)
-            .width(250.dp)
+            .width(220.dp)
             .clickable {
                 // Navigate to Hike detail page
                 navController.navigate("hike_detail/${hike.id}")
-            }
+            },
+        shape = RoundedCornerShape(12.dp)
     ) {
         Row(modifier = Modifier.padding(8.dp)) {
             // Image on the left
@@ -98,12 +104,12 @@ fun HikeSliderItem(hike: HikeData, navController: NavHostController) {
                     .placeholder(R.drawable.placeholder_image)
                     .error(R.drawable.placeholder_image)
                     .crossfade(true)
-                    .scale(Scale.FILL)
+                    .scale(Scale.FIT)
                     .build(),
                 contentDescription = hike.title,
                 modifier = Modifier
-                    .size(100.dp) // Increased size to cover more of the card, making it more prominent
-                    .aspectRatio(1f) // Ensures the image stays square
+                    .size(60.dp) // Adjusted size for consistency
+                    .aspectRatio(1f)
                     .clip(RoundedCornerShape(8.dp)) // Adds a rounded clip to the image for aesthetics
                     .padding(end = 8.dp)
             )
@@ -112,6 +118,46 @@ fun HikeSliderItem(hike: HikeData, navController: NavHostController) {
                 Text(text = hike.title, style = MaterialTheme.typography.titleMedium)
                 Text(text = hike.description, style = MaterialTheme.typography.bodySmall, maxLines = 2)
                 Text(text = "Category: Hike", style = MaterialTheme.typography.bodySmall)
+            }
+        }
+    }
+}
+
+@Composable
+fun BreederSliderItem(breeder: Breeder, navController: NavHostController) {
+    Card(
+        modifier = Modifier
+            .padding(8.dp)
+            .width(220.dp)
+            .clickable {
+                // Navigate to Breeder detail page
+                navController.navigate("breeder_detail/${breeder.id}")
+            },
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Row(modifier = Modifier.padding(8.dp)) {
+            // Image on the left
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(breeder.imageUrl)
+                    .placeholder(R.drawable.placeholder_image)
+                    .error(R.drawable.placeholder_image)
+                    .crossfade(true)
+                    .scale(Scale.FIT)
+                    .build(),
+                contentDescription = breeder.name,
+                modifier = Modifier
+                    .size(60.dp) // Adjusted size for consistency
+                    .aspectRatio(1f)
+                    .clip(RoundedCornerShape(8.dp)) // Adds a rounded clip to the image for aesthetics
+                    .padding(end = 8.dp)
+            )
+            // Text content on the right
+            Column {
+                Text(text = breeder.name, style = MaterialTheme.typography.titleMedium)
+                Text(text = breeder.address, style = MaterialTheme.typography.bodySmall)
+                Text(text = "Breeds: ${breeder.dogBreeds.joinToString(", ")}", style = MaterialTheme.typography.bodySmall, maxLines = 2)
+                Text(text = "Category: Breeder", style = MaterialTheme.typography.bodySmall)
             }
         }
     }
