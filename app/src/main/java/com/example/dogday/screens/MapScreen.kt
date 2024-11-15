@@ -5,12 +5,14 @@ import android.os.Bundle
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Switch
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -121,26 +123,80 @@ fun MapScreen(navController: NavHostController) {
         }
     }
 
-    Column {
-        Row {
-            Text("Show Kennels")
-            Switch(
-                checked = mapViewModel.showKennels,
-                onCheckedChange = { mapViewModel.updateShowKennels(it) }
-            )
-            Text("Show Hikes")
-            Switch(
-                checked = mapViewModel.showHikes,
-                onCheckedChange = { mapViewModel.updateShowHikes(it) }
-            )
-            Text("Show Breeders")
-            Switch(
-                checked = mapViewModel.showBreeders,
-                onCheckedChange = { mapViewModel.updateShowBreeders(it) }
-            )
+    Column(
+        modifier = Modifier
+            .fillMaxSize()  // To ensure the column takes up the full screen size
+            .background(Color.Transparent)  // Setting transparent background for the entire column
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(8.dp)
+                .background(Color.Transparent),  // Keeps Row transparent
+            horizontalArrangement = Arrangement.spacedBy(5.dp)
+        ) {
+            // Button for "Kennels"
+            Button(
+                onClick = { mapViewModel.updateShowKennels(!mapViewModel.showKennels) },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (mapViewModel.showKennels) Color(0xFFFFB74D) else Color(0xFFFFCC80),  // Lighter orange when untoggled
+                    contentColor = Color.Black  // Black text color
+                ),
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(2.dp),  // Reduced padding to remove visual clutter
+                elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp) // No elevation to match flat look
+            ) {
+                Text(
+                    text = "Kennels",
+                    modifier = Modifier.padding(vertical = 4.dp),
+                    maxLines = 1
+                )
+            }
+
+            // Button for "Hikes"
+            Button(
+                onClick = { mapViewModel.updateShowHikes(!mapViewModel.showHikes) },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (mapViewModel.showHikes) Color(0xFFFFB74D) else Color(0xFFFFCC80),
+                    contentColor = Color.Black
+                ),
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(2.dp),
+                elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
+            ) {
+                Text(
+                    text = "Hikes",
+                    modifier = Modifier.padding(vertical = 4.dp),
+                    maxLines = 1
+                )
+            }
+
+            // Button for "Breeders"
+            Button(
+                onClick = { mapViewModel.updateShowBreeders(!mapViewModel.showBreeders) },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (mapViewModel.showBreeders) Color(0xFFFFB74D) else Color(0xFFFFCC80),
+                    contentColor = Color.Black
+                ),
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(2.dp),
+                elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
+            ) {
+                Text(
+                    text = "Breeders",
+                    modifier = Modifier.padding(vertical = 4.dp),
+                    maxLines = 1
+                )
+            }
         }
 
-        Box(modifier = Modifier.fillMaxSize()) {
+
+
+
+
+    Box(modifier = Modifier.fillMaxSize()) {
             // Display the MapView using AndroidView
             AndroidView(
                 factory = { context ->
@@ -178,7 +234,7 @@ fun MapScreen(navController: NavHostController) {
             ItemSlider(
                 visibleItems = mapViewModel.visibleItems,
                 navController = navController,
-                modifier = Modifier.align(Alignment.BottomCenter).background(Color(0xAAFFFFFF)) // Semi-transparent background
+                modifier = Modifier.align(Alignment.BottomCenter).background(Color.Transparent)
             )
         }
     }

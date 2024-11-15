@@ -12,11 +12,14 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -55,7 +58,10 @@ fun KennelSliderItem(kennel: Kennel, navController: NavHostController) {
                 // Navigate to Kennel detail page
                 navController.navigate("kennel_detail/${kennel.id}")
             },
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFFFFF3E0) // Light orange color for the background
+        )
     ) {
         Row(modifier = Modifier.padding(8.dp)) {
             // Image on the left
@@ -72,7 +78,8 @@ fun KennelSliderItem(kennel: Kennel, navController: NavHostController) {
                     .size(60.dp) // Adjusted size for consistency
                     .aspectRatio(1f)
                     .clip(RoundedCornerShape(8.dp)) // Adds a rounded clip to the image for aesthetics
-                    .padding(end = 8.dp)
+                    .padding(end = 8.dp),
+                contentScale = ContentScale.Crop // Ensure the image covers completely and crops any overflow
             )
             // Text content on the right
             Column {
@@ -94,7 +101,10 @@ fun HikeSliderItem(hike: HikeData, navController: NavHostController) {
                 // Navigate to Hike detail page
                 navController.navigate("hike_detail/${hike.id}")
             },
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFFFFF3E0) // Light orange color for the background
+        )
     ) {
         Row(modifier = Modifier.padding(8.dp)) {
             // Image on the left
@@ -111,7 +121,8 @@ fun HikeSliderItem(hike: HikeData, navController: NavHostController) {
                     .size(60.dp) // Adjusted size for consistency
                     .aspectRatio(1f)
                     .clip(RoundedCornerShape(8.dp)) // Adds a rounded clip to the image for aesthetics
-                    .padding(end = 8.dp)
+                    .padding(end = 8.dp),
+                contentScale = ContentScale.Crop // Ensure the image covers completely and crops any overflow
             )
             // Text content on the right
             Column {
@@ -133,7 +144,10 @@ fun BreederSliderItem(breeder: Breeder, navController: NavHostController) {
                 // Navigate to Breeder detail page
                 navController.navigate("breeder_detail/${breeder.id}")
             },
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFFFFF3E0) // Light orange color for the background
+        )
     ) {
         Row(modifier = Modifier.padding(8.dp)) {
             // Image on the left
@@ -150,7 +164,8 @@ fun BreederSliderItem(breeder: Breeder, navController: NavHostController) {
                     .size(60.dp) // Adjusted size for consistency
                     .aspectRatio(1f)
                     .clip(RoundedCornerShape(8.dp)) // Adds a rounded clip to the image for aesthetics
-                    .padding(end = 8.dp)
+                    .padding(end = 8.dp),
+                contentScale = ContentScale.Crop // Ensure the image covers completely and crops any overflow
             )
             // Text content on the right
             Column {
