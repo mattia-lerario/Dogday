@@ -50,9 +50,7 @@ fun MapScreen(navController: NavHostController) {
     val fusedLocationProviderClient = remember {
         LocationServices.getFusedLocationProviderClient(context)
     }
-    val kennels = mapViewModel.kennels
-    val hikes = mapViewModel.hikes
-    val breeders = mapViewModel.breeders
+
     // Permission handling (same as before)
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -91,7 +89,7 @@ fun MapScreen(navController: NavHostController) {
     }
 
     // Center the camera on the user's location or on the markers if available
-    LaunchedEffect(googleMap, kennels, hikes) {
+    LaunchedEffect(googleMap, mapViewModel.kennels, mapViewModel.hikes, mapViewModel.breeders) {
         if (googleMap != null) {
             if (mapViewModel.hasLocationPermission) {
                 fusedLocationProviderClient.lastLocation.addOnSuccessListener { location ->
@@ -100,15 +98,15 @@ fun MapScreen(navController: NavHostController) {
                         googleMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 6f))
                     } else {
                         // If user location is not available, move to the markers
-                        mapViewModel.centerMapOnMarkersOrDefault(googleMap!!, kennels, hikes, mapViewModel)
+                        mapViewModel.centerMapOnMarkersOrDefault(googleMap!!, mapViewModel)
                     }
                 }.addOnFailureListener {
                     // If fetching the user location fails, move to the markers
-                    mapViewModel.centerMapOnMarkersOrDefault(googleMap!!, kennels, hikes, mapViewModel)
+                    mapViewModel.centerMapOnMarkersOrDefault(googleMap!!, mapViewModel)
                 }
             } else {
                 // If location permission is not granted, center map on the markers or default location
-                mapViewModel.centerMapOnMarkersOrDefault(googleMap!!, kennels, hikes, mapViewModel)
+                mapViewModel.centerMapOnMarkersOrDefault(googleMap!!, mapViewModel)
             }
         }
     }
@@ -176,7 +174,6 @@ fun MapScreen(navController: NavHostController) {
                 }
             }
 
-
             // Display the ItemSlider at the bottom
             ItemSlider(
                 visibleItems = mapViewModel.visibleItems,
@@ -184,6 +181,5 @@ fun MapScreen(navController: NavHostController) {
                 modifier = Modifier.align(Alignment.BottomCenter).background(Color(0xAAFFFFFF)) // Semi-transparent background
             )
         }
-
     }
 }

@@ -116,6 +116,7 @@ class MapViewModel : ViewModel() {
                 onSuccess = { fetchedBreeders ->
                     breeders = fetchedBreeders
                     errorMessage = null // Clear error message on successful fetch
+                    Log.d("MapViewModel", "Fetched breeders: $fetchedBreeders")
                 },
                 onFailure = { _ ->
                     Log.e("MapViewModel", "Error fetching breeders")
@@ -124,8 +125,11 @@ class MapViewModel : ViewModel() {
             )
         } else {
             breeders = emptyList()
+            Log.d("MapViewModel", "Breeders list cleared")
         }
     }
+
+
 
     fun updateMapWithMarkers(map: GoogleMap, context: Context) {
         map.clear()
@@ -156,16 +160,20 @@ class MapViewModel : ViewModel() {
 
         if (showBreeders) {
             breeders.forEach { breeder ->
-                val breedListString = breeder.dogBreeds.joinToString(", ")
                 val markerOptions = MarkerOptions()
                     .position(LatLng(breeder.coordinates.latitude, breeder.coordinates.longitude))
                     .title(breeder.name)
-                    .snippet("${breeder.address}\nBreeds: $breedListString")
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)) // Breeder marker in blue
+                    .snippet(breeder.address)  // Simplified snippet to avoid issues
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))  // Breeder marker in blue
 
-                map.addMarker(markerOptions)
+                map.addMarker(markerOptions)?.let {
+                    Log.d("MapViewModel", "Added breeder marker for: ${breeder.name}")
+                } ?: run {
+                    Log.e("MapViewModel", "Failed to add breeder marker for: ${breeder.name}")
+                }
             }
         }
+
 
 
     }
@@ -174,91 +182,73 @@ class MapViewModel : ViewModel() {
         val itemsInBounds = mutableListOf<Any>()
 
         if (showKennels) {
-            itemsInBounds.addAll(
-                kennels.filter {
-                    visibleRegion.contains(LatLng(it.coordinates.latitude, it.coordinates.longitude))
-                }
-            )
+            val kennelsInBounds = kennels.filter {
+                visibleRegion.contains(LatLng(it.coordinates.latitude, it.coordinates.longitude))
+            }
+            itemsInBounds.addAll(kennelsInBounds)
+            Log.d("MapViewModel", "Kennels in bounds: $kennelsInBounds")
         }
 
         if (showHikes) {
-            itemsInBounds.addAll(
-                hikes.filter {
-                    visibleRegion.contains(LatLng(it.coordinates.latitude, it.coordinates.longitude))
-                }
-            )
+            val hikesInBounds = hikes.filter {
+                visibleRegion.contains(LatLng(it.coordinates.latitude, it.coordinates.longitude))
+            }
+            itemsInBounds.addAll(hikesInBounds)
+            Log.d("MapViewModel", "Hikes in bounds: $hikesInBounds")
         }
 
         if (showBreeders) {
-            itemsInBounds.addAll(
-                breeders.filter {
-                    visibleRegion.contains(LatLng(it.coordinates.latitude, it.coordinates.longitude))
-                }
-            )
+            val breedersInBounds = breeders.filter {
+                visibleRegion.contains(LatLng(it.coordinates.latitude, it.coordinates.longitude))
+            }
+            itemsInBounds.addAll(breedersInBounds)
+            Log.d("MapViewModel", "Breeders in bounds: $breedersInBounds")
         }
 
         visibleItems = itemsInBounds
+        Log.d("MapViewModel", "Visible items updated: $visibleItems")
     }
 
 
-    fun centerMapOnMarkersOrDefault(
-        googleMap: GoogleMap,
-        kennels: List<Kennel>,
-        hikes: List<HikeData>,
-        mapViewModel: MapViewModel
-    ) {
-        if (kennels.isNotEmpty() || hikes.isNotEmpty()) {
+
+    fun centerMapOnMarkersOrDefault(googleMap: GoogleMap, mapViewModel: MapViewModel) {
+        if (mapViewModel.kennels.isNotEmpty() || mapViewModel.hikes.isNotEmpty() || mapViewModel.breeders.isNotEmpty()) {
             val boundsBuilder = LatLngBounds.Builder()
 
             if (mapViewModel.showKennels) {
-                kennels.forEach { kennel ->
-                    boundsBuilder.include(
-                        LatLng(
-                            kennel.coordinates.latitude,
-                            kennel.coordinates.longitude
-                        )
-                    )
+                mapViewModel.kennels.forEach { kennel ->
+                    boundsBuilder.include(LatLng(kennel.coordinates.latitude, kennel.coordinates.longitude))
                 }
             }
 
             if (mapViewModel.showHikes) {
-                hikes.forEach { hike ->
-                    boundsBuilder.include(
-                        LatLng(
-                            hike.coordinates.latitude,
-                            hike.coordinates.longitude
-                        )
-                    )
+                mapViewModel.hikes.forEach { hike ->
+                    boundsBuilder.include(LatLng(hike.coordinates.latitude, hike.coordinates.longitude))
+                }
+            }
+
+            if (mapViewModel.showBreeders) {
+                mapViewModel.breeders.forEach { breeder ->
+                    boundsBuilder.include(LatLng(breeder.coordinates.latitude, breeder.coordinates.longitude))
                 }
             }
 
             try {
-                if (kennels.size + hikes.size > 1) {
+                if (mapViewModel.kennels.size + mapViewModel.hikes.size + mapViewModel.breeders.size > 1) {
                     val bounds = boundsBuilder.build()
                     val cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, 100)
                     googleMap.moveCamera(cameraUpdate)
                 } else {
-                    googleMap.moveCamera(
-                        CameraUpdateFactory.newLatLngZoom(
-                            LatLng(
-                                59.911491,
-                                10.757933
-                            ), 12f
-                        )
-                    )
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(59.911491, 10.757933), 12f))
                 }
             } catch (e: Exception) {
                 Log.e("MapScreen", "Error adjusting camera: ${e.message}")
             }
         } else {
-            googleMap.moveCamera(
-                CameraUpdateFactory.newLatLngZoom(
-                    LatLng(59.911491, 10.757933),
-                    12f
-                )
-            )
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(59.911491, 10.757933), 12f))
         }
     }
+
 
     fun checkLocationPermission(context: Context): Boolean {
         val fineLocationPermission = ContextCompat.checkSelfPermission(
