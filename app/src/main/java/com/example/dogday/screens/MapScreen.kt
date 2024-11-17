@@ -11,10 +11,19 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -40,6 +49,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.LatLng
+import com.google.firebase.firestore.GeoPoint
 
 @Composable
 fun MapScreen(navController: NavHostController) {
@@ -49,12 +59,24 @@ fun MapScreen(navController: NavHostController) {
 
     var mapView by remember { mutableStateOf<MapView?>(null) }
     var googleMap by remember { mutableStateOf<GoogleMap?>(null) }
+    var showAddHikeDialog by remember { mutableStateOf(false) }
+    var mapViewForDialog by remember { mutableStateOf<MapView?>(null) }
+    var googleMapForDialog by remember { mutableStateOf<GoogleMap?>(null) }
 
     val fusedLocationProviderClient = remember {
         LocationServices.getFusedLocationProviderClient(context)
     }
 
-    // Permission handling (same as before)
+    // Define the launcher to pick images from the user's library
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        if (uri != null) {
+            mapViewModel.onHikeImageSelected(uri.toString())
+        }
+    }
+
+    // Permission handling
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
@@ -78,12 +100,30 @@ fun MapScreen(navController: NavHostController) {
     DisposableEffect(lifecycleOwner) {
         val lifecycleObserver = LifecycleEventObserver { _, event ->
             when (event) {
-                Lifecycle.Event.ON_CREATE -> mapView?.onCreate(Bundle())
-                Lifecycle.Event.ON_START -> mapView?.onStart()
-                Lifecycle.Event.ON_RESUME -> mapView?.onResume()
-                Lifecycle.Event.ON_PAUSE -> mapView?.onPause()
-                Lifecycle.Event.ON_STOP -> mapView?.onStop()
-                Lifecycle.Event.ON_DESTROY -> mapView?.onDestroy()
+                Lifecycle.Event.ON_CREATE -> {
+                    mapView?.onCreate(Bundle())
+                    mapViewForDialog?.onCreate(Bundle())
+                }
+                Lifecycle.Event.ON_START -> {
+                    mapView?.onStart()
+                    mapViewForDialog?.onStart()
+                }
+                Lifecycle.Event.ON_RESUME -> {
+                    mapView?.onResume()
+                    mapViewForDialog?.onResume()
+                }
+                Lifecycle.Event.ON_PAUSE -> {
+                    mapView?.onPause()
+                    mapViewForDialog?.onPause()
+                }
+                Lifecycle.Event.ON_STOP -> {
+                    mapView?.onStop()
+                    mapViewForDialog?.onStop()
+                }
+                Lifecycle.Event.ON_DESTROY -> {
+                    mapView?.onDestroy()
+                    mapViewForDialog?.onDestroy()
+                }
                 else -> {}
             }
         }
@@ -111,16 +151,6 @@ fun MapScreen(navController: NavHostController) {
                 // If location permission is not granted, center map on the markers or default location
                 mapViewModel.centerMapOnMarkersOrDefault(googleMap!!, mapViewModel)
             }
-        }
-    }
-
-    Column {
-        if (mapViewModel.errorMessage != null) {
-            Text(
-                text = mapViewModel.errorMessage!!,
-                color = Color.Red,
-                modifier = Modifier.padding(8.dp)
-            )
         }
     }
 
@@ -194,11 +224,6 @@ fun MapScreen(navController: NavHostController) {
             }
         }
 
-
-
-
-
-
         Box(modifier = Modifier.fillMaxSize()) {
             // Display the MapView using AndroidView
             AndroidView(
@@ -226,6 +251,21 @@ fun MapScreen(navController: NavHostController) {
                 modifier = Modifier.fillMaxSize()
             )
 
+            // Add Hike Button in the Top Left Corner
+            FloatingActionButton(
+                onClick = { showAddHikeDialog = true },
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(16.dp),
+                containerColor = Color(0xFFFFB74D)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add Hike",
+                    tint = Color.Black
+                )
+            }
+
             // Use LaunchedEffect to update the map with markers when googleMap is ready
             LaunchedEffect(googleMap, mapViewModel.kennels, mapViewModel.hikes, mapViewModel.breeders, mapViewModel.showKennels, mapViewModel.showHikes, mapViewModel.showBreeders) {
                 if (googleMap != null) {
@@ -240,5 +280,74 @@ fun MapScreen(navController: NavHostController) {
                 modifier = Modifier.align(Alignment.BottomCenter).background(Color.Transparent)
             )
         }
+    }
+
+    // Add Hike Dialog
+    if (showAddHikeDialog) {
+        AlertDialog(
+            onDismissRequest = { showAddHikeDialog = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    mapViewModel.addNewHike()
+                    showAddHikeDialog = false
+                }) {
+                    Text("Add")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showAddHikeDialog = false }) {
+                    Text("Cancel")
+                }
+            },
+            title = { Text(text = "Add New Hike") },
+            text = {
+                Column {
+                    TextField(
+                        value = mapViewModel.hikeTitle,
+                        onValueChange = { mapViewModel.onHikeTitleChange(it) },
+                        label = { Text("Hike Title") },
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
+                    TextField(
+                        value = mapViewModel.hikeDescription,
+                        onValueChange = { mapViewModel.onHikeDescriptionChange(it) },
+                        label = { Text("Description") },
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
+                    TextField(
+                        value = mapViewModel.hikeAddress,
+                        onValueChange = { mapViewModel.onHikeAddressChange(it) },
+                        label = { Text("Address") },
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
+                    Button(onClick = {
+                        imagePickerLauncher.launch("image/*") // Launch image picker
+                    }) {
+                        Text("Select Image")
+                    }
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                            .background(Color.Gray)
+                    ) {
+                        AndroidView(
+                            factory = { context ->
+                                MapView(context).apply {
+                                    mapViewForDialog = this
+                                    getMapAsync { map ->
+                                        googleMapForDialog = map
+                                        map.setOnMapClickListener { latLng ->
+                                            mapViewModel.onHikeCoordinatesChange(GeoPoint(latLng.latitude, latLng.longitude))
+                                        }
+                                    }
+                                }
+                            },
+                            modifier = Modifier.height(150.dp)
+                        )
+                    }
+                }
+            }
+        )
     }
 }

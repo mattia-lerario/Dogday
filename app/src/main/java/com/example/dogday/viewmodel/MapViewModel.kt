@@ -24,6 +24,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.firebase.firestore.GeoPoint
 
 class MapViewModel : ViewModel() {
 
@@ -60,6 +61,25 @@ class MapViewModel : ViewModel() {
     var errorMessage by mutableStateOf<String?>(null)
         private set
 
+    var showAddHikeDialog by mutableStateOf(false)
+        private set
+
+    var hikeTitle by mutableStateOf("")
+        private set
+
+    var hikeDescription by mutableStateOf("")
+        private set
+
+    var hikeAddress by mutableStateOf("")
+        private set
+
+    var hikeImageUrl by mutableStateOf("")
+        private set
+
+    var hikeCoordinates by mutableStateOf(GeoPoint(59.911491, 10.757933))
+        private set
+
+
     fun updateShowKennels(show: Boolean) {
         showKennels = show
         fetchKennels()
@@ -73,6 +93,51 @@ class MapViewModel : ViewModel() {
     fun updateShowBreeders(show: Boolean) {
         showBreeders = show
         fetchBreeders()
+    }
+    // Function to open the add hike dialog
+    fun openAddHikeDialog() {
+        showAddHikeDialog = true
+    }
+
+    // Function to close the add hike dialog
+    fun closeAddHikeDialog() {
+        showAddHikeDialog = false
+    }
+
+    // Functions to update hike properties
+    fun onHikeTitleChange(newTitle: String) {
+        hikeTitle = newTitle
+    }
+
+    fun onHikeDescriptionChange(newDescription: String) {
+        hikeDescription = newDescription
+    }
+
+    fun onHikeAddressChange(newAddress: String) {
+        hikeAddress = newAddress
+    }
+
+    fun onHikeCoordinatesChange(newCoordinates: GeoPoint) {
+        hikeCoordinates = newCoordinates
+    }
+
+    // Function to handle the image selection from the image picker
+    fun onHikeImageSelected(imageUrl: String) {
+        hikeImageUrl = imageUrl
+    }
+
+    // Function to add the new hike to Firestore
+    fun addNewHike() {
+        val newHike = HikeData(
+            id = "",
+            title = hikeTitle,
+            coordinates = hikeCoordinates,
+            description = hikeDescription,
+            imageUrl = hikeImageUrl,
+            address = hikeAddress
+        )
+        addHike(newHike)
+        closeAddHikeDialog()
     }
 
 
@@ -264,6 +329,20 @@ class MapViewModel : ViewModel() {
         hasLocationPermission = fineLocationPermission || coarseLocationPermission
         return hasLocationPermission
     }
+
+    fun addHike(hike: HikeData) {
+        hikeRepository.addHike(
+            hike,
+            onSuccess = {
+                hikes = hikes + hike // Update the state to include the new hike
+            },
+            onFailure = { exception ->
+                Log.e("MapViewModel", "Error adding hike: ${exception.message}")
+            }
+        )
+    }
+
+
 
     fun bitmapDescriptorFromVector(context: Context, vectorResId: Int): BitmapDescriptor? {
         val vectorDrawable: Drawable? = ContextCompat.getDrawable(context, vectorResId)
