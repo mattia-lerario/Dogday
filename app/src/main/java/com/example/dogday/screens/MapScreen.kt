@@ -4,6 +4,7 @@ import android.Manifest
 import android.os.Bundle
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -129,9 +130,7 @@ fun MapScreen(navController: NavHostController) {
             .background(Color.Transparent)  // Setting transparent background for the entire column
     ) {
         Row(
-            modifier = Modifier
-                .padding(8.dp)
-                .background(Color.Transparent),  // Keeps Row transparent
+            modifier = Modifier.padding(8.dp),
             horizontalArrangement = Arrangement.spacedBy(5.dp)
         ) {
             // Button for "Kennels"
@@ -144,7 +143,8 @@ fun MapScreen(navController: NavHostController) {
                 modifier = Modifier
                     .weight(1f)
                     .padding(2.dp),  // Reduced padding to remove visual clutter
-                elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp) // No elevation to match flat look
+                elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp), // No elevation to match flat look
+                border = if (mapViewModel.showKennels) BorderStroke(2.dp, Color(0xFFD95A3C)) else null  // Add border when toggled
             ) {
                 Text(
                     text = "Kennels",
@@ -163,7 +163,8 @@ fun MapScreen(navController: NavHostController) {
                 modifier = Modifier
                     .weight(1f)
                     .padding(2.dp),
-                elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
+                elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp),
+                border = if (mapViewModel.showHikes) BorderStroke(2.dp, Color(0xFFD95A3C)) else null  // Add border when toggled
             ) {
                 Text(
                     text = "Hikes",
@@ -182,7 +183,8 @@ fun MapScreen(navController: NavHostController) {
                 modifier = Modifier
                     .weight(1f)
                     .padding(2.dp),
-                elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
+                elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp),
+                border = if (mapViewModel.showBreeders) BorderStroke(2.dp, Color(0xFFD95A3C)) else null  // Add border when toggled
             ) {
                 Text(
                     text = "Breeders",
@@ -196,7 +198,8 @@ fun MapScreen(navController: NavHostController) {
 
 
 
-    Box(modifier = Modifier.fillMaxSize()) {
+
+        Box(modifier = Modifier.fillMaxSize()) {
             // Display the MapView using AndroidView
             AndroidView(
                 factory = { context ->
