@@ -5,12 +5,15 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -31,23 +34,39 @@ fun HikeDetailScreen(hikeId: String?) {
     val hike by viewModel.hike.collectAsStateWithLifecycle()
 
     if (hike != null) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth()
+        ) {
             AsyncImage(
                 model = hike?.imageUrl,
                 contentDescription = hike?.title,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(200.dp)
+                    .clip(RoundedCornerShape(16.dp)),
+                contentScale = ContentScale.Crop
             )
+
             Spacer(modifier = Modifier.height(16.dp))
-            Text(text = hike?.title ?: "", style = MaterialTheme.typography.titleLarge)
+
             Text(
-                text = "Description: ${hike?.description}",
-                style = MaterialTheme.typography.bodyMedium
+                text = hike?.title ?: "",
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.padding(bottom = 8.dp)
             )
-            // Add more details as needed
+
+            DetailItem(label = "Address", value = hike?.address)
+            DetailItem(label = "Description", value = hike?.description)
+
+            Spacer(modifier = Modifier.height(16.dp))
         }
     } else {
-        Text(text = "Hike not found", modifier = Modifier.padding(16.dp))
+        Text(
+            text = "Hike not found",
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.padding(16.dp)
+        )
     }
 }
