@@ -342,7 +342,7 @@ fun EditDogScreen(
         Button(
             onClick = {
                 onDelete()
-                navController.popBackStack()
+                navController.navigate(DogScreen.UserDogScreen.name)
             },
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
             modifier = Modifier.fillMaxWidth()
