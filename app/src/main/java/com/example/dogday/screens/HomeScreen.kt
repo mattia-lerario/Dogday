@@ -80,14 +80,18 @@ fun HomeScreen(navController: NavHostController) {
             CalendarHome()
         }
 
-        FloatingActionButton(
-            onClick = { navController.navigate(DogScreen.AddDog.name) },
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(15.dp)
-        ) {
-            Icon(Icons.Default.Add, contentDescription = "Add Dog")
+        if (viewModel.dogList.value.isEmpty()) {
+            FloatingActionButton(
+                onClick = { navController.navigate(DogScreen.AddDog.name) },
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(15.dp)
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Add Dog")
+            }
         }
+
+
     }
 }
 
