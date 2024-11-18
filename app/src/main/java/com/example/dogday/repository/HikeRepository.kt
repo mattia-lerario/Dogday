@@ -28,4 +28,15 @@ class HikeRepository {
             onFailure(exception)
         }
     }
+
+    fun addHike(hike: HikeData, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+        val hikeCollection = firestore.collection("hikeDB")
+        hikeCollection.add(hike)
+            .addOnSuccessListener {
+                onSuccess()
+            }
+            .addOnFailureListener { exception ->
+                onFailure(exception)
+            }
+    }
 }

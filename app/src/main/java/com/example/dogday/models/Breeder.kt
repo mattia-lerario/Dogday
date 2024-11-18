@@ -10,6 +10,6 @@ data class Breeder(
     val ownerName: String = "",
     val contactInfo: String = "",
     val description: String = "",
-    val dogBreeds: ArrayList<String> = arrayListOf(), // Changed to ArrayList to store multiple breeds
+    val dogBreeds: ArrayList<String> = arrayListOf(), // Correctly map as ArrayList
     val imageUrl: String = ""
 )

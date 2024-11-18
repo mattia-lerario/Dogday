@@ -58,7 +58,7 @@ fun VetNoteScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(400.dp),
-            maxLines = 6,
+            maxLines = 26,
             singleLine = false
         )
 

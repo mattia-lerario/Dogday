@@ -39,7 +39,7 @@ fun SettingsScreen(navController: NavController) {
                 FloatingActionButton(onClick = { navController.navigate(route = DogScreen.AddDog.name) }) {
                     // You could add an Icon here if needed
                 }
-                Text(text = "Legg til hund")
+                Text(text = "Add dog")
             }
 
             Column(
@@ -50,7 +50,7 @@ fun SettingsScreen(navController: NavController) {
                 verticalArrangement = Arrangement.Center
             ) {
                 FloatingActionButton(onClick = { navController.navigate(route = DogScreen.Login.name) }) {
-                    // You could add an Icon here if needed
+
                 }
                 Text(text = "Login")
 =======
@@ -76,7 +76,7 @@ fun SettingsScreen(navController: NavController) {
 
 >>>>>>> Stashed changes
                 }
-                Text(text = "DogQ")
+                Text(text = "DogQuiz")
             }
 
             Column(
@@ -100,16 +100,15 @@ fun SettingsScreen(navController: NavController) {
         /*Column(
             modifier = Modifier
                 .padding(5.dp)
-                .fillMaxSize(), // Fill the rest of the screen vertically
+                .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
             FloatingActionButton(onClick = {
-                // Add logout logic here
-                // For example, navigate to Login screen after logout or perform Firebase sign out
+
                 navController.navigate(route = DogScreen.Login.name)
             }) {
-                // You could add an Icon here if needed
+
             }
             Text(text = "Logout")
        }*/

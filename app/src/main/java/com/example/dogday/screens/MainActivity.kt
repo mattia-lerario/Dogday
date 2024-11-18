@@ -46,11 +46,9 @@ import androidx.navigation.navArgument
 import com.example.dogday.R
 import com.example.dogday.models.DogID
 import com.example.dogday.ui.theme.MyAppTest01Theme
-import com.example.dogday.util.seedDogRecommendations
 import com.google.firebase.FirebaseApp
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 
 
@@ -176,6 +174,13 @@ fun NavigationHost(navController: NavHostController, modifier: Modifier) {
         ) { backStackEntry ->
             val hikeId = backStackEntry.arguments?.getString("hikeId") ?: ""
             HikeDetailScreen(hikeId = hikeId)
+        }
+        composable(
+            route = "breeder_detail/{breederId}",
+            arguments = listOf(navArgument("breederId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val breederId = backStackEntry.arguments?.getString("breederId") ?: ""
+            BreederDetailScreen(breederId = breederId)
         }
         composable(route = DogScreen.DogQueryScreen.name) { DogQueryScreen(navController) }
 
