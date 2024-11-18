@@ -35,7 +35,7 @@ fun SettingsScreen(navController: NavController) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-<<<<<<< Updated upstream
+
                 FloatingActionButton(onClick = { navController.navigate(route = DogScreen.AddDog.name) }) {
                     // You could add an Icon here if needed
                 }
@@ -53,12 +53,12 @@ fun SettingsScreen(navController: NavController) {
 
                 }
                 Text(text = "Login")
-=======
+
             FloatingActionButton(onClick = { navController.navigate(route = DogScreen.AddDog.name) }) {
                 Icon(Icons.Default.Add, contentDescription = "Add Dog")
             }
             Text(text = "Add dog")
->>>>>>> Stashed changes
+
             }
 
             Column(
@@ -69,12 +69,12 @@ fun SettingsScreen(navController: NavController) {
                 verticalArrangement = Arrangement.Center
             ) {
                 FloatingActionButton(onClick = { navController.navigate(route = DogScreen.DogQueryScreen.name) }) {
-<<<<<<< Updated upstream
+
                     // You could add an Icon here if needed
-=======
+
                     Icon(Icons.Default.Lightbulb, contentDescription = "Quiz")
 
->>>>>>> Stashed changes
+
                 }
                 Text(text = "DogQuiz")
             }
