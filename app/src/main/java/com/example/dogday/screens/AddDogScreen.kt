@@ -2,61 +2,60 @@
 package com.example.dogday.screens
 
 import DogListViewModel
+import android.graphics.Bitmap
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Button
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material3.*
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.dogday.ui.theme.BackgroundColorLight
 import com.example.dogday.ui.theme.ButtonColorLight
 import com.example.dogday.ui.theme.InputBackgroundLight
-import com.example.dogday.viewmodel.AddDogViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import android.Manifest
+import androidx.compose.foundation.Canvas
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.dogday.ui.theme.BackgroundColorLight
+import com.example.dogday.viewmodel.AddDogViewModel
 
 
 @Composable
@@ -117,10 +116,12 @@ fun AddDogScreen(
         }
     }
 
+    // Oppdater requestCameraPermissionLauncher til å starte kamera når tillatelse gis
     val requestCameraPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { granted ->
         if (granted) {
+            // Start kamera når tillatelse er gitt
             cameraLauncher.launch(null)
         } else {
             println("Camera permission denied")
@@ -134,195 +135,241 @@ fun AddDogScreen(
         }
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Add Dog", color = Color.White) },
-                navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
-                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(0.dp)
+            ) {
+
+                YourDogLabel() // Legger til OwnerLabel her
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+
+        Text("Let's add your dog!", style = MaterialTheme.typography.titleLarge)
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        TextField(
+            value = dogName,
+            onValueChange = { addDogViewModel.onDogNameChange(it) },
+            label = { Text("Dog Name", color = Color.Black) },
+            modifier = Modifier
+                .widthIn(max = 500.dp)
+                .padding(horizontal = 8.dp),
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = InputBackgroundLight,
+                unfocusedContainerColor = InputBackgroundLight,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black
+            ),
+            shape = MaterialTheme.shapes.small
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        TextField(
+            value = dogNickName,
+            onValueChange = { addDogViewModel.onDogNickNameChange(it) },
+            label = { Text("Dog Nick Name", color = Color.Black) },
+            modifier = Modifier
+                .widthIn(max = 500.dp)
+                .padding(horizontal = 8.dp),
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = InputBackgroundLight,
+                unfocusedContainerColor = InputBackgroundLight,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black
+            ),
+            shape = MaterialTheme.shapes.small
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        TextField(
+            value = dogBreed,
+            onValueChange = { addDogViewModel.onDogBreedChange(it) },
+            label = { Text("Dog Breed", color = Color.Black) },
+            modifier = Modifier
+                .widthIn(max = 500.dp)
+                .padding(horizontal = 8.dp),
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = InputBackgroundLight,
+                unfocusedContainerColor = InputBackgroundLight,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black
+            ),
+            shape = MaterialTheme.shapes.small
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        TextField(
+            value = dogBreeder,
+            onValueChange = { addDogViewModel.onDogBreederChange(it) },
+            label = { Text("Dog Breeder", color = Color.Black) },
+            modifier = Modifier
+                .widthIn(max = 500.dp)
+                .padding(horizontal = 8.dp),
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = InputBackgroundLight,
+                unfocusedContainerColor = InputBackgroundLight,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black
+            ),
+            shape = MaterialTheme.shapes.small
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
+            OutlinedTextField(
+                value = convertMillisToDate(dogBirthday),
+                onValueChange = { },
+                label = { Text("Your Dog's Birthday",
+                    Modifier.background(color = Color(0xFFD95A3C)).padding(5.dp),
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold) },
+                readOnly = true,
+                trailingIcon = {
+                    IconButton(onClick = { addDogViewModel.toggleDatePicker() }) {
+                        Icon(
+                            imageVector = Icons.Default.DateRange,
+                            contentDescription = "Select date"
+                        )
                     }
                 },
-                colors = TopAppBarDefaults.mediumTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = Color.White,
-                    navigationIconContentColor = Color.White
+                modifier = Modifier
+                    .widthIn(max = 500.dp)
+                    .fillMaxWidth(0.75f)
+                    .height(64.dp),
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = BackgroundColorLight,
+                    unfocusedContainerColor = BackgroundColorLight,
+                    focusedIndicatorColor = Color(0xFFD95A3C),
+                    unfocusedIndicatorColor = Color.Gray,
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black
                 )
             )
-        }
-    )
-    { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(16.dp)
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(0.dp)
-                ) {
-                    YourDogLabel() // Header Label
-                }
-            }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text("Let's add your dog!", style = MaterialTheme.typography.titleLarge)
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Dog Name Input
-            TextField(
-                value = dogName,
-                onValueChange = { addDogViewModel.onDogNameChange(it) },
-                label = { Text("Dog Name", color = Color.Black) },
-                modifier = Modifier
-                    .widthIn(max = 500.dp)
-                    .padding(horizontal = 8.dp),
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = InputBackgroundLight,
-                    unfocusedContainerColor = InputBackgroundLight,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    focusedTextColor = Color.Black,
-                    unfocusedTextColor = Color.Black
-                ),
-                shape = MaterialTheme.shapes.small
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Dog Nick Name Input
-            TextField(
-                value = dogNickName,
-                onValueChange = { addDogViewModel.onDogNickNameChange(it) },
-                label = { Text("Dog Nick Name", color = Color.Black) },
-                modifier = Modifier
-                    .widthIn(max = 500.dp)
-                    .padding(horizontal = 8.dp),
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = InputBackgroundLight,
-                    unfocusedContainerColor = InputBackgroundLight,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    focusedTextColor = Color.Black,
-                    unfocusedTextColor = Color.Black
-                ),
-                shape = MaterialTheme.shapes.small
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Dog Breed Input
-            TextField(
-                value = dogBreed,
-                onValueChange = { addDogViewModel.onDogBreedChange(it) },
-                label = { Text("Dog Breed", color = Color.Black) },
-                modifier = Modifier
-                    .widthIn(max = 500.dp)
-                    .padding(horizontal = 8.dp),
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = InputBackgroundLight,
-                    unfocusedContainerColor = InputBackgroundLight,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    focusedTextColor = Color.Black,
-                    unfocusedTextColor = Color.Black
-                ),
-                shape = MaterialTheme.shapes.small
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Dog Breeder Input
-            TextField(
-                value = dogBreeder,
-                onValueChange = { addDogViewModel.onDogBreederChange(it) },
-                label = { Text("Dog Breeder", color = Color.Black) },
-                modifier = Modifier
-                    .widthIn(max = 500.dp)
-                    .padding(horizontal = 8.dp),
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = InputBackgroundLight,
-                    unfocusedContainerColor = InputBackgroundLight,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    focusedTextColor = Color.Black,
-                    unfocusedTextColor = Color.Black
-                ),
-                shape = MaterialTheme.shapes.small
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Dog Birthday Input
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
-                OutlinedTextField(
-                    value = convertMillisToDate(dogBirthday),
-                    onValueChange = { },
-                    label = {
-                        Text(
-                            "Your Dog's Birthday",
-                            Modifier.background(color = Color(0xFFD95A3C)).padding(5.dp),
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold
-                        )
-                    },
-                    readOnly = true,
-                    trailingIcon = {
-                        IconButton(onClick = { addDogViewModel.toggleDatePicker() }) {
-                            Icon(
-                                imageVector = Icons.Default.DateRange,
-                                contentDescription = "Select date"
-                            )
+            if (showDatePicker) {
+                DatePickerDialog(
+                    onDismissRequest = { addDogViewModel.toggleDatePicker() },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            addDogViewModel.onDogBirthdayChange(datePickerState.selectedDateMillis ?: 0L)
+                            addDogViewModel.toggleDatePicker()
+                        }) {
+                            Text("OK", color = Color(0xFFC0634D))
                         }
                     },
-                    modifier = Modifier
-                        .widthIn(max = 500.dp)
-                        .fillMaxWidth(0.75f)
-                        .height(64.dp),
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = BackgroundColorLight,
-                        unfocusedContainerColor = BackgroundColorLight,
-                        focusedIndicatorColor = Color(0xFFD95A3C),
-                        unfocusedIndicatorColor = Color.Gray,
-                        focusedTextColor = Color.Black,
-                        unfocusedTextColor = Color.Black
-                    )
-                )
+                    dismissButton = {
+                        TextButton(onClick = { addDogViewModel.toggleDatePicker() }) {
+                            Text("Cancel", color = Color(0xFFC0634D))
+                        }
+                    }
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .verticalScroll(rememberScrollState()) // Scroll kun her
+                    ) {
+                        DatePicker(
+                            state = datePickerState,
+                            colors = DatePickerDefaults.colors(
+                                containerColor = Color(0xFFF3CCC3),
+                                titleContentColor = Color.Black,
+                                headlineContentColor = Color.Black,
+                                navigationContentColor = Color.Black,
+                                selectedYearContainerColor = Color(0xFFD95A3C),
+                                selectedYearContentColor = Color.Black,
+                                yearContentColor = Color.Black,
+                                currentYearContentColor = Color.Black,
+                                disabledSelectedYearContentColor = Color.Black,
+                                dayContentColor = Color.Black,
+                                disabledDayContentColor = Color.Black,
+                                weekdayContentColor = Color.DarkGray,
+                                subheadContentColor = Color.White,
+                                selectedDayContentColor = Color.White,
+                                selectedDayContainerColor = Color(0xFFD95A3C),
+                                todayContentColor = Color.Black,
+                                todayDateBorderColor = Color.Black,
+                            )
+                        )
+                    }
+                }
             }
+        }
 
-            Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-            // Add Dog Button
-            Button(
-                onClick = { addDogViewModel.saveDogData() },
-                enabled = !uploadingImage,
-                modifier = Modifier
-                    .width(200.dp)
-                    .height(48.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = ButtonColorLight
-                ),
-                contentPadding = PaddingValues(vertical = 8.dp)
-            ) {
-                Text(if (uploadingImage) "Uploading..." else "Add Dog")
-            }
+        Button(
+            onClick = {
+                requestCameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+            },
+            modifier = Modifier
+                .width(200.dp)
+                .height(48.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = ButtonColorLight
+            ),
+            contentPadding = PaddingValues(vertical = 8.dp)
+        ) {
+            Text("Take Picture")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        dogImageBitmap?.let { bitmap ->
+            Image(
+                bitmap = bitmap.asImageBitmap(),
+                contentDescription = "Dog Image",
+                modifier = Modifier.size(200.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = {addDogViewModel.saveDogData()},
+            enabled = !uploadingImage,
+            modifier = Modifier
+                .width(200.dp)
+                .height(48.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = ButtonColorLight
+            ),
+            contentPadding = PaddingValues(vertical = 8.dp)
+        ) {
+            Text(if (uploadingImage) "Uploading..." else "Add Dog")
         }
     }
 }
-
 
 fun convertMillisToDate(millis: Long): String {
     val formatter = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
