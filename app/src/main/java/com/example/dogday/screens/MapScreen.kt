@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -49,7 +47,6 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.LatLng
-import com.google.firebase.firestore.GeoPoint
 
 @Composable
 fun MapScreen(navController: NavHostController) {
@@ -57,15 +54,14 @@ fun MapScreen(navController: NavHostController) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val mapViewModel: MapViewModel = viewModel()
 
-    var mapView by remember { mutableStateOf<MapView?>(null) }
-    var googleMap by remember { mutableStateOf<GoogleMap?>(null) }
-    var showAddHikeDialog by remember { mutableStateOf(false) }
-    var mapViewForDialog by remember { mutableStateOf<MapView?>(null) }
-    var googleMapForDialog by remember { mutableStateOf<GoogleMap?>(null) }
-
+    // Remember the MapView with lifecycle support
+    val mapView = rememberMapViewWithLifecycle()
     val fusedLocationProviderClient = remember {
         LocationServices.getFusedLocationProviderClient(context)
     }
+
+    var googleMap by remember { mutableStateOf<GoogleMap?>(null) }
+    var showAddHikeDialog by remember { mutableStateOf(false) }
 
     // Define the launcher to pick images from the user's library
     val imagePickerLauncher = rememberLauncherForActivityResult(
@@ -97,139 +93,76 @@ fun MapScreen(navController: NavHostController) {
         }
     }
 
-    DisposableEffect(lifecycleOwner) {
-        val lifecycleObserver = LifecycleEventObserver { _, event ->
-            when (event) {
-                Lifecycle.Event.ON_CREATE -> {
-                    mapView?.onCreate(Bundle())
-                    mapViewForDialog?.onCreate(Bundle())
-                }
-                Lifecycle.Event.ON_START -> {
-                    mapView?.onStart()
-                    mapViewForDialog?.onStart()
-                }
-                Lifecycle.Event.ON_RESUME -> {
-                    mapView?.onResume()
-                    mapViewForDialog?.onResume()
-                }
-                Lifecycle.Event.ON_PAUSE -> {
-                    mapView?.onPause()
-                    mapViewForDialog?.onPause()
-                }
-                Lifecycle.Event.ON_STOP -> {
-                    mapView?.onStop()
-                    mapViewForDialog?.onStop()
-                }
-                Lifecycle.Event.ON_DESTROY -> {
-                    mapView?.onDestroy()
-                    mapViewForDialog?.onDestroy()
-                }
-                else -> {}
-            }
-        }
-        lifecycleOwner.lifecycle.addObserver(lifecycleObserver)
-        onDispose { lifecycleOwner.lifecycle.removeObserver(lifecycleObserver) }
-    }
-
     // Center the camera on the user's location or on the markers if available
     LaunchedEffect(googleMap, mapViewModel.kennels, mapViewModel.hikes, mapViewModel.breeders) {
-        if (googleMap != null) {
+        googleMap?.let { map ->
             if (mapViewModel.hasLocationPermission) {
                 fusedLocationProviderClient.lastLocation.addOnSuccessListener { location ->
                     if (location != null) {
                         val userLatLng = LatLng(location.latitude, location.longitude)
-                        googleMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 6f))
+                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 6f))
                     } else {
-                        // If user location is not available, move to the markers
-                        mapViewModel.centerMapOnMarkersOrDefault(googleMap!!, mapViewModel)
+                        mapViewModel.centerMapOnMarkersOrDefault(map, mapViewModel)
                     }
                 }.addOnFailureListener {
-                    // If fetching the user location fails, move to the markers
-                    mapViewModel.centerMapOnMarkersOrDefault(googleMap!!, mapViewModel)
+                    mapViewModel.centerMapOnMarkersOrDefault(map, mapViewModel)
                 }
             } else {
-                // If location permission is not granted, center map on the markers or default location
-                mapViewModel.centerMapOnMarkersOrDefault(googleMap!!, mapViewModel)
+                mapViewModel.centerMapOnMarkersOrDefault(map, mapViewModel)
             }
         }
     }
 
     Column(
         modifier = Modifier
-            .fillMaxSize()  // To ensure the column takes up the full screen size
-            .background(Color.Transparent)  // Setting transparent background for the entire column
+            .fillMaxSize()
+            .background(Color.Transparent)
     ) {
+        // Toggle Buttons Row
         Row(
             modifier = Modifier.padding(8.dp),
             horizontalArrangement = Arrangement.spacedBy(5.dp)
         ) {
-            // Button for "Kennels"
-            Button(
-                onClick = { mapViewModel.updateShowKennels(!mapViewModel.showKennels) },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (mapViewModel.showKennels) Color(0xFFFFB74D) else Color(0xFFFFCC80),  // Lighter orange when untoggled
-                    contentColor = Color.Black  // Black text color
-                ),
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(2.dp),  // Reduced padding to remove visual clutter
-                elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp), // No elevation to match flat look
-                border = if (mapViewModel.showKennels) BorderStroke(2.dp, Color(0xFFD95A3C)) else null  // Add border when toggled
-            ) {
-                Text(
-                    text = "Kennels",
-                    modifier = Modifier.padding(vertical = 4.dp),
-                    maxLines = 1
-                )
-            }
+            // Toggle buttons for kennels, hikes, breeders
+            val toggleButtons = listOf(
+                "Kennels" to mapViewModel.showKennels,
+                "Hikes" to mapViewModel.showHikes,
+                "Breeders" to mapViewModel.showBreeders
+            )
 
-            // Button for "Hikes"
-            Button(
-                onClick = { mapViewModel.updateShowHikes(!mapViewModel.showHikes) },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (mapViewModel.showHikes) Color(0xFFFFB74D) else Color(0xFFFFCC80),
-                    contentColor = Color.Black
-                ),
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(2.dp),
-                elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp),
-                border = if (mapViewModel.showHikes) BorderStroke(2.dp, Color(0xFFD95A3C)) else null  // Add border when toggled
-            ) {
-                Text(
-                    text = "Hikes",
-                    modifier = Modifier.padding(vertical = 4.dp),
-                    maxLines = 1
-                )
-            }
-
-            // Button for "Breeders"
-            Button(
-                onClick = { mapViewModel.updateShowBreeders(!mapViewModel.showBreeders) },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (mapViewModel.showBreeders) Color(0xFFFFB74D) else Color(0xFFFFCC80),
-                    contentColor = Color.Black
-                ),
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(2.dp),
-                elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp),
-                border = if (mapViewModel.showBreeders) BorderStroke(2.dp, Color(0xFFD95A3C)) else null  // Add border when toggled
-            ) {
-                Text(
-                    text = "Breeders",
-                    modifier = Modifier.padding(vertical = 4.dp),
-                    maxLines = 1
-                )
+            toggleButtons.forEach { (label, showState) ->
+                Button(
+                    onClick = {
+                        when (label) {
+                            "Kennels" -> mapViewModel.updateShowKennels(!showState)
+                            "Hikes" -> mapViewModel.updateShowHikes(!showState)
+                            "Breeders" -> mapViewModel.updateShowBreeders(!showState)
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (showState) Color(0xFFFFB74D) else Color(0xFFFFCC80),
+                        contentColor = Color.Black
+                    ),
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(2.dp),
+                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp),
+                    border = if (showState) BorderStroke(2.dp, Color(0xFFD95A3C)) else null
+                ) {
+                    Text(
+                        text = label,
+                        modifier = Modifier.padding(vertical = 4.dp),
+                        maxLines = 1
+                    )
+                }
             }
         }
 
         Box(modifier = Modifier.fillMaxSize()) {
             // Display the MapView using AndroidView
             AndroidView(
-                factory = { context ->
-                    MapView(context).apply {
-                        mapView = this
+                factory = {
+                    mapView.apply {
                         getMapAsync { map ->
                             googleMap = map
 
@@ -241,7 +174,6 @@ fun MapScreen(navController: NavHostController) {
                                 }
                             }
 
-                            // Set up OnCameraIdleListener to update visible items
                             map.setOnCameraIdleListener {
                                 mapViewModel.updateVisibleItems(map.projection.visibleRegion.latLngBounds)
                             }
@@ -251,7 +183,7 @@ fun MapScreen(navController: NavHostController) {
                 modifier = Modifier.fillMaxSize()
             )
 
-            // Add Hike Button in the Top Left Corner
+            // FloatingActionButton for adding hike
             FloatingActionButton(
                 onClick = { showAddHikeDialog = true },
                 modifier = Modifier
@@ -266,10 +198,10 @@ fun MapScreen(navController: NavHostController) {
                 )
             }
 
-            // Use LaunchedEffect to update the map with markers when googleMap is ready
+            // Update the map with markers when googleMap or other parameters change
             LaunchedEffect(googleMap, mapViewModel.kennels, mapViewModel.hikes, mapViewModel.breeders, mapViewModel.showKennels, mapViewModel.showHikes, mapViewModel.showBreeders) {
-                if (googleMap != null) {
-                    mapViewModel.updateMapWithMarkers(googleMap!!, context)
+                googleMap?.let {
+                    mapViewModel.updateMapWithMarkers(it, context)
                 }
             }
 
@@ -277,7 +209,9 @@ fun MapScreen(navController: NavHostController) {
             ItemSlider(
                 visibleItems = mapViewModel.visibleItems,
                 navController = navController,
-                modifier = Modifier.align(Alignment.BottomCenter).background(Color.Transparent)
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .background(Color.Transparent)
             )
         }
     }
@@ -320,34 +254,37 @@ fun MapScreen(navController: NavHostController) {
                         label = { Text("Address") },
                         modifier = Modifier.padding(vertical = 4.dp)
                     )
-                    Button(onClick = {
-                        imagePickerLauncher.launch("image/*") // Launch image picker
-                    }) {
+                    Button(onClick = { imagePickerLauncher.launch("image/*") }) {
                         Text("Select Image")
-                    }
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp)
-                            .background(Color.Gray)
-                    ) {
-                        AndroidView(
-                            factory = { context ->
-                                MapView(context).apply {
-                                    mapViewForDialog = this
-                                    getMapAsync { map ->
-                                        googleMapForDialog = map
-                                        map.setOnMapClickListener { latLng ->
-                                            mapViewModel.onHikeCoordinatesChange(GeoPoint(latLng.latitude, latLng.longitude))
-                                        }
-                                    }
-                                }
-                            },
-                            modifier = Modifier.height(150.dp)
-                        )
                     }
                 }
             }
         )
     }
+}
+
+@Composable
+fun rememberMapViewWithLifecycle(): MapView {
+    val context = LocalContext.current
+    val mapView = remember { MapView(context) }
+
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    DisposableEffect(lifecycle) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_CREATE -> mapView.onCreate(Bundle())
+                Lifecycle.Event.ON_START -> mapView.onStart()
+                Lifecycle.Event.ON_RESUME -> mapView.onResume()
+                Lifecycle.Event.ON_PAUSE -> mapView.onPause()
+                Lifecycle.Event.ON_STOP -> mapView.onStop()
+                Lifecycle.Event.ON_DESTROY -> mapView.onDestroy()
+                else -> {}
+            }
+        }
+
+        lifecycle.addObserver(observer)
+        onDispose { lifecycle.removeObserver(observer) }
+    }
+
+    return mapView
 }

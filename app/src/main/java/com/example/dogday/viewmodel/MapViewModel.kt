@@ -315,6 +315,8 @@ class MapViewModel : ViewModel() {
     }
 
 
+
+
     fun checkLocationPermission(context: Context): Boolean {
         val fineLocationPermission = ContextCompat.checkSelfPermission(
             context,
@@ -342,6 +344,22 @@ class MapViewModel : ViewModel() {
         )
     }
 
+    fun toggleShowState(label: String) {
+        when (label) {
+            "Kennels" -> {
+                updateShowKennels(!showKennels)
+            }
+            "Hikes" -> {
+                updateShowHikes(!showHikes)
+            }
+            "Breeders" -> {
+                updateShowBreeders(!showBreeders)
+            }
+            else -> {
+                Log.e("MapViewModel", "Invalid label: $label")
+            }
+        }
+    }
 
 
     fun bitmapDescriptorFromVector(context: Context, vectorResId: Int): BitmapDescriptor? {
