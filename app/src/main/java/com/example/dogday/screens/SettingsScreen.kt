@@ -28,19 +28,6 @@ fun SettingsScreen(navController: NavController) {
             .padding(20.dp)
     ) {
         Row {
-            Column(
-                modifier = Modifier
-                    .padding(5.dp)
-                    .weight(1f),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-
-                FloatingActionButton(onClick = { navController.navigate(route = DogScreen.AddDog.name) }) {
-                    // You could add an Icon here if needed
-                }
-                Text(text = "Add dog")
-            }
 
             Column(
                 modifier = Modifier
@@ -49,10 +36,6 @@ fun SettingsScreen(navController: NavController) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                FloatingActionButton(onClick = { navController.navigate(route = DogScreen.Login.name) }) {
-
-                }
-                Text(text = "Login")
 
             FloatingActionButton(onClick = { navController.navigate(route = DogScreen.AddDog.name) }) {
                 Icon(Icons.Default.Add, contentDescription = "Add Dog")
@@ -69,12 +52,7 @@ fun SettingsScreen(navController: NavController) {
                 verticalArrangement = Arrangement.Center
             ) {
                 FloatingActionButton(onClick = { navController.navigate(route = DogScreen.DogQueryScreen.name) }) {
-
-                    // You could add an Icon here if needed
-
                     Icon(Icons.Default.Lightbulb, contentDescription = "Quiz")
-
-
                 }
                 Text(text = "DogQuiz")
             }
@@ -95,23 +73,6 @@ fun SettingsScreen(navController: NavController) {
 
 
         }
-
-
-        /*Column(
-            modifier = Modifier
-                .padding(5.dp)
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            FloatingActionButton(onClick = {
-
-                navController.navigate(route = DogScreen.Login.name)
-            }) {
-
-            }
-            Text(text = "Logout")
-       }*/
     }
 
     }
