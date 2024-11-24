@@ -13,6 +13,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -25,10 +28,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -49,6 +56,11 @@ fun LoginScreen(
     val loginError by logInViewModel.loginError.collectAsState()
     val loginSuccess by logInViewModel.loginSuccess.collectAsState()
 
+    // To move between input fields and login on password enter
+    val focusRequesterEmail = FocusRequester()
+    val focusRequesterPassword = FocusRequester()
+    val focusManager = LocalFocusManager.current
+
     if (loginSuccess) {
         LaunchedEffect(loginSuccess) {
             navController.navigate("home") {
@@ -58,7 +70,6 @@ fun LoginScreen(
         }
     }
 
-    // Replace BoxWithConstraints with Box
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -84,7 +95,8 @@ fun LoginScreen(
                 label = { Text("Email", color = Color.Black) },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                    .padding(horizontal = 16.dp)
+                    .focusRequester(focusRequesterEmail),
                 colors = TextFieldDefaults.colors(
                     focusedTextColor = Color.Black,
                     unfocusedTextColor = Color.Black,
@@ -92,6 +104,15 @@ fun LoginScreen(
                     unfocusedContainerColor = InputBackgroundLight,
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent
+                ),
+                shape = RoundedCornerShape(12.dp), // Add rounded corners
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Next
+                ),
+                keyboardActions = KeyboardActions(
+                    onNext = {
+                        focusRequesterPassword.requestFocus()
+                    }
                 )
             )
 
@@ -104,7 +125,8 @@ fun LoginScreen(
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                    .padding(horizontal = 16.dp)
+                    .focusRequester(focusRequesterPassword),
                 colors = TextFieldDefaults.colors(
                     focusedTextColor = Color.Black,
                     unfocusedTextColor = Color.Black,
@@ -112,6 +134,16 @@ fun LoginScreen(
                     unfocusedContainerColor = InputBackgroundLight,
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent
+                ),
+                shape = RoundedCornerShape(12.dp), // Add rounded corners
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        focusManager.clearFocus()
+                        logInViewModel.loginUser(context)
+                    }
                 )
             )
 
@@ -137,4 +169,5 @@ fun LoginScreen(
         }
     }
 }
+
 
