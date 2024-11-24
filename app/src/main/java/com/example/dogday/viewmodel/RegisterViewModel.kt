@@ -8,6 +8,7 @@ import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.util.regex.Pattern
 
 class RegisterViewModel : ViewModel() {
 
@@ -54,5 +55,30 @@ class RegisterViewModel : ViewModel() {
 
     fun clearRegisterError() {
         _registerError.value = null
+    }
+
+    fun RegisterViewModel.onEmailChange(newEmail: String) {
+        if (isValidEmail(newEmail)) {
+            _email.value = newEmail
+            _registerError.value = null
+        } else {
+            _registerError.value = "Invalid email format"
+        }
+    }
+
+    fun RegisterViewModel.onPasswordChange(newPassword: String) {
+        if (newPassword.contains("\\s".toRegex())) {
+            _registerError.value = "Password cannot contain spaces or tabs"
+        } else {
+            _password.value = newPassword
+            _registerError.value = null
+        }
+    }
+
+    private fun isValidEmail(email: String): Boolean {
+        val emailPattern = Pattern.compile(
+            "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}\$"
+        )
+        return emailPattern.matcher(email).matches()
     }
 }
