@@ -43,13 +43,11 @@ class LogInViewModel : ViewModel() {
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         _loginSuccess.value = true
+                        logLoginEvent()
+
                         // Save login state
                         val sharedPreferences = context.getSharedPreferences("dogday_preferences", Context.MODE_PRIVATE)
-                        val editor = sharedPreferences.edit()
-                        editor.putBoolean("isLoggedIn", true)
-                        editor.apply()
-
-                        logLoginEvent()
+                        sharedPreferences.edit().putBoolean("isLoggedIn", true).apply()
                     } else {
                         _loginError.value = task.exception?.localizedMessage
                     }
@@ -66,5 +64,10 @@ class LogInViewModel : ViewModel() {
 
     fun clearLoginError() {
         _loginError.value = null
+    }
+
+    // Function to reset login success state
+    fun resetLoginSuccess() {
+        _loginSuccess.value = false
     }
 }

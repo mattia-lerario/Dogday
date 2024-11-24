@@ -3,6 +3,7 @@ package com.example.dogday.screens
 import DogListViewModel
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.StringRes
@@ -34,9 +35,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -50,13 +49,14 @@ import com.example.dogday.R
 import com.example.dogday.models.DogID
 import com.example.dogday.ui.theme.MyAppTest01Theme
 import com.google.android.libraries.places.api.Places
+import com.google.firebase.Firebase
 import com.google.firebase.FirebaseApp
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.analytics
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.ktx.Firebase
 
 
+// Inside MainActivity.kt
 class MainActivity : ComponentActivity() {
     private lateinit var analytics: FirebaseAnalytics
 
@@ -66,51 +66,59 @@ class MainActivity : ComponentActivity() {
         FirebaseApp.initializeApp(this)
         // Initialize Google Places SDK
         if (!Places.isInitialized()) {
-            Places.initialize(applicationContext, "AIzaSyC6Krt10uCwyajM12ZMC9e8yUIdnTo6whY")
+            Places.initialize(applicationContext, "YOUR_API_KEY")
         }
         // Initialize Firebase Analytics
         analytics = Firebase.analytics
 
-        // Log an event
+        // Log an event to verify Firebase initialization
         analytics.logEvent(FirebaseAnalytics.Event.APP_OPEN, null)
-
+        Log.d("MainActivity", "Firebase initialized successfully")
 
         setContent {
-            MyAppTest01Theme{
+            MyAppTest01Theme {
                 MainApp(context = applicationContext)
             }
         }
     }
 }
 
+
 @Composable
-fun MainApp(context: Context = LocalContext.current) {
+fun MainApp(context: Context) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
     val firebaseAuth = FirebaseAuth.getInstance()
 
-    // Providing default value for context allows preview to function correctly
     val sharedPreferences = context.getSharedPreferences("dogday_preferences", Context.MODE_PRIVATE)
     val isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false)
 
+    // Check if user is authenticated and decide the initial screen
     LaunchedEffect(Unit) {
         if (firebaseAuth.currentUser != null && isLoggedIn) {
+            // Log the current user state
+            Log.d("MainApp", "User already logged in, navigating to Home")
+            // User is authenticated, navigate to Home screen
             if (currentRoute == null || currentRoute == DogScreen.Login.name) {
                 navController.navigate(DogScreen.Home.name) {
-                    popUpTo(DogScreen.Login.name) { inclusive = true }
+                    popUpTo(0) // Clear all backstack to prevent navigating back to login
                 }
             }
         } else {
+            // Log the current user state
+            Log.d("MainApp", "User not logged in, navigating to Login")
+            // User is not authenticated, navigate to Login screen
             if (currentRoute != DogScreen.Login.name) {
                 navController.navigate(DogScreen.Login.name) {
-                    popUpTo(DogScreen.Home.name) { inclusive = true }
+                    popUpTo(0) // Clear all backstack to ensure a fresh start
                 }
             }
         }
     }
 
     val currentScreen = when {
+        firebaseAuth.currentUser != null && isLoggedIn -> DogScreen.Home
         currentRoute == null -> DogScreen.Login
         currentRoute.startsWith("DogDetailScreen") -> DogScreen.DogDetail
         currentRoute.startsWith("kennel_detail") -> DogScreen.KennelDetail
@@ -161,6 +169,7 @@ fun MainApp(context: Context = LocalContext.current) {
         NavigationHost(navController = navController, modifier = Modifier.padding(paddingValues), context = context)
     }
 }
+
 
 
 
@@ -390,11 +399,3 @@ fun BottomNavigationBar(navController: NavHostController) {
     }
 }
 
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    MyAppTest01Theme {
-        MainApp() // Now MainApp has default parameters for preview
-    }
-}
