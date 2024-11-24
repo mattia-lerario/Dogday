@@ -132,7 +132,7 @@ fun BreederSliderItem(breeder: Breeder, navController: NavHostController) {
         modifier = Modifier
             .padding(8.dp)
             .width(250.dp)
-            .height(150.dp)
+            .height(100.dp)
             .clickable {
                 breeder.id?.let { id ->
                     navController.navigate("breeder_detail/$id")
