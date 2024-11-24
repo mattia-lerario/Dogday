@@ -36,4 +36,21 @@ class KennelRepository {
             onFailure(exception)
         }
     }
+
+    fun uploadKennelsToFirestore(kennels: List<Kennel>) {
+        val firestore = FirebaseFirestore.getInstance()
+        val collectionRef = firestore.collection("kennelsDB")
+
+        kennels.forEach { kennel ->
+            val documentRef = collectionRef.document(kennel.id)
+            documentRef.set(kennel)
+                .addOnSuccessListener {
+                    Log.d("Firestore", "Successfully uploaded kennel: ${kennel.name}")
+                }
+                .addOnFailureListener { e ->
+                    Log.e("Firestore", "Error uploading kennel: ${kennel.name}", e)
+                }
+        }
+    }
+
 }

@@ -10,5 +10,7 @@ data class Kennel(
     val ownerName: String = "",
     val contactInfo: String = "",
     val description: String = "",
-    val imageUrl: String ="",
+    val imageUrl: String = "",
+    val rating: Double = 0.0,                 // New Field
+    val userRatingsTotal: Int = 0             // New Field
 )

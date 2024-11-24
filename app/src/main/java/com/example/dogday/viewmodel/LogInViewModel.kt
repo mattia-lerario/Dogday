@@ -1,5 +1,6 @@
 package com.example.dogday.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.analytics.ktx.analytics
@@ -31,8 +32,8 @@ class LogInViewModel : ViewModel() {
         _password.value = newPassword
     }
 
-    fun loginUser() {
-        if (_email.value.isBlank() || _password.value.isBlank()){
+    fun loginUser(context: Context) {
+        if (_email.value.isBlank() || _password.value.isBlank()) {
             _loginError.value = "Email and password must not be empty"
             return
         }
@@ -42,6 +43,12 @@ class LogInViewModel : ViewModel() {
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         _loginSuccess.value = true
+                        // Save login state
+                        val sharedPreferences = context.getSharedPreferences("dogday_preferences", Context.MODE_PRIVATE)
+                        val editor = sharedPreferences.edit()
+                        editor.putBoolean("isLoggedIn", true)
+                        editor.apply()
+
                         logLoginEvent()
                     } else {
                         _loginError.value = task.exception?.localizedMessage
@@ -49,6 +56,7 @@ class LogInViewModel : ViewModel() {
                 }
         }
     }
+
     private fun logLoginEvent() {
         val analytics = Firebase.analytics
         analytics.logEvent("login") {

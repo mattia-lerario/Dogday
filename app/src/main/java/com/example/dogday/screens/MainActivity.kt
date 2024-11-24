@@ -1,6 +1,7 @@
 package com.example.dogday.screens
 
 import DogListViewModel
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -28,10 +29,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -46,9 +49,11 @@ import androidx.navigation.navArgument
 import com.example.dogday.R
 import com.example.dogday.models.DogID
 import com.example.dogday.ui.theme.MyAppTest01Theme
+import com.google.android.libraries.places.api.Places
 import com.google.firebase.FirebaseApp
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.ktx.Firebase
 
 
@@ -59,7 +64,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         FirebaseApp.initializeApp(this)
-
+        // Initialize Google Places SDK
+        if (!Places.isInitialized()) {
+            Places.initialize(applicationContext, "AIzaSyC6Krt10uCwyajM12ZMC9e8yUIdnTo6whY")
+        }
         // Initialize Firebase Analytics
         analytics = Firebase.analytics
 
@@ -69,17 +77,39 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             MyAppTest01Theme{
-                MainApp()
+                MainApp(context = applicationContext)
             }
         }
     }
 }
 
 @Composable
-fun MainApp() {
+fun MainApp(context: Context = LocalContext.current) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
+    val firebaseAuth = FirebaseAuth.getInstance()
+
+    // Providing default value for context allows preview to function correctly
+    val sharedPreferences = context.getSharedPreferences("dogday_preferences", Context.MODE_PRIVATE)
+    val isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false)
+
+    LaunchedEffect(Unit) {
+        if (firebaseAuth.currentUser != null && isLoggedIn) {
+            if (currentRoute == null || currentRoute == DogScreen.Login.name) {
+                navController.navigate(DogScreen.Home.name) {
+                    popUpTo(DogScreen.Login.name) { inclusive = true }
+                }
+            }
+        } else {
+            if (currentRoute != DogScreen.Login.name) {
+                navController.navigate(DogScreen.Login.name) {
+                    popUpTo(DogScreen.Home.name) { inclusive = true }
+                }
+            }
+        }
+    }
+
     val currentScreen = when {
         currentRoute == null -> DogScreen.Login
         currentRoute.startsWith("DogDetailScreen") -> DogScreen.DogDetail
@@ -97,66 +127,72 @@ fun MainApp() {
         DogScreen.Register.name,
         DogScreen.Login.name,
         DogScreen.DogQueryScreen.name,
-
-        "kennel_detail",  // Add if you want to hide bars on these screens
+        "kennel_detail",
         "hike_detail",
     )
 
-
-
     Scaffold(
         topBar = {
-            if (!noBarRoutes.contains(currentRoute)){
+            if (!noBarRoutes.contains(currentRoute)) {
                 DogAppBar(
                     canNavigateBack = navController.previousBackStackEntry != null && currentRoute != DogScreen.Home.name,
-                    navigateUp = {navController.navigateUp()},
+                    navigateUp = { navController.navigateUp() },
                     currentScreen = currentScreen
                 )
             }
         },
-
-
         floatingActionButton = {
-            if (currentScreen == DogScreen.DogDetail){
+            if (currentScreen == DogScreen.DogDetail) {
                 val dogId = backStackEntry?.arguments?.getString("dogId") ?: ""
                 FloatingActionButton(
-                    onClick = { navController.navigate("addVetNote/${dogId}")},
+                    onClick = { navController.navigate("addVetNote/$dogId") },
                 ) {
                     Icon(Icons.Default.Add, contentDescription = "Add")
                 }
-            }},
+            }
+        },
         floatingActionButtonPosition = FabPosition.End,
-
-
         bottomBar = {
             if (!noBarRoutes.contains(currentRoute)) {
                 BottomNavigationBar(navController = navController)
             }
         }
     ) { paddingValues ->
-        NavigationHost(navController = navController, modifier = Modifier.padding(paddingValues))
+        NavigationHost(navController = navController, modifier = Modifier.padding(paddingValues), context = context)
     }
 }
 
 
 
-
 @Composable
-fun NavigationHost(navController: NavHostController, modifier: Modifier) {
+fun NavigationHost(navController: NavHostController, modifier: Modifier, context: Context) {
     val viewModel: DogListViewModel = viewModel()
 
-
     NavHost(navController = navController, startDestination = "login", modifier = modifier) {
-        composable(DogScreen.Login.name) { LoginScreen(navController) }   // Use LoginScreen here
-        composable(DogScreen.Home.name) { HomeScreen(navController) }      // Home Screen of the application
-        composable(DogScreen.Map.name) { MapScreen(navController) }        // Map Screen
-        composable(DogScreen.Register.name) { RegisterScreen(navController) } // Use RegisterScreen here
-        composable(DogScreen.NewUser.name) { NewUserScreen(navController) } // No need to pass uid and email
-        composable(DogScreen.AddDog.name) { AddDogScreen(navController) }
-        composable(route = DogScreen.SettingsScreen.name) { SettingsScreen(navController) }
+        composable(DogScreen.Login.name) {
+            LoginScreen(navController, context)   // Pass context to LoginScreen here
+        }
+        composable(DogScreen.Home.name) {
+            HomeScreen(navController)
+        }
+        composable(DogScreen.Map.name) {
+            MapScreen(navController)
+        }
+        composable(DogScreen.Register.name) {
+            RegisterScreen(navController)
+        }
+        composable(DogScreen.NewUser.name) {
+            NewUserScreen(navController)
+        }
+        composable(DogScreen.AddDog.name) {
+            AddDogScreen(navController)
+        }
+        composable(route = DogScreen.SettingsScreen.name) {
+            SettingsScreen(navController)
+        }
         composable(
             route = "DogDetailScreen/{dogId}",
-            arguments = listOf(navArgument("dogId") {type = NavType.StringType })
+            arguments = listOf(navArgument("dogId") { type = NavType.StringType })
         ) { backStackEntry ->
             val dogId = backStackEntry.arguments?.getString("dogId") ?: ""
             DogDetailScreen(navController = navController, dogIdx = dogId)
@@ -182,7 +218,9 @@ fun NavigationHost(navController: NavHostController, modifier: Modifier) {
             val breederId = backStackEntry.arguments?.getString("breederId") ?: ""
             BreederDetailScreen(breederId = breederId)
         }
-        composable(route = DogScreen.DogQueryScreen.name) { DogQueryScreen(navController) }
+        composable(route = DogScreen.DogQueryScreen.name) {
+            DogQueryScreen(navController)
+        }
 
         composable(
             route = "addVetNote/{dogId}",
@@ -231,22 +269,27 @@ fun NavigationHost(navController: NavHostController, modifier: Modifier) {
             }
         }
 
-
-        composable(route = DogScreen.UserDogScreen.name) { UserDogScreen(navController) }
-        composable(route = DogScreen.Quiz.name) { DogQuizScreen(navController) }
+        composable(route = DogScreen.UserDogScreen.name) {
+            UserDogScreen(navController)
+        }
+        composable(route = DogScreen.Quiz.name) {
+            DogQuizScreen(navController)
+        }
         composable("quiz_results/{dogID}") { backStackEntry ->
             val dogID = backStackEntry.arguments?.getString("dogID") ?: DogID.BULLDOG.name
             DogQuizResultsScreen(navController = navController, dogID = dogID)
         }
 
-        composable("dog_list") { RecommendedDogListScreen(navController) }
+        composable("dog_list") {
+            RecommendedDogListScreen(navController)
+        }
         composable("dog_detail/{breed}", arguments = listOf(navArgument("breed") { type = NavType.StringType })) { backStackEntry ->
             val breed = backStackEntry.arguments?.getString("breed") ?: ""
             RecommendedDogDetailScreen(navController, breed)
         }
-
     }
 }
+
 
 enum class DogScreen(@StringRes val title: Int) {
     Login(title = R.string.app_name),
@@ -351,5 +394,7 @@ fun BottomNavigationBar(navController: NavHostController) {
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    MainApp()
+    MyAppTest01Theme {
+        MainApp() // Now MainApp has default parameters for preview
+    }
 }

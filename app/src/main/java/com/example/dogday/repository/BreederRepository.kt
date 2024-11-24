@@ -1,5 +1,6 @@
 package com.example.dogday.repository
 
+import android.util.Log
 import com.example.dogday.models.Breeder
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -26,6 +27,22 @@ class BreederRepository {
             onSuccess(breeder)
         }.addOnFailureListener { exception ->
             onFailure(exception)
+        }
+    }
+
+    fun uploadBreedersToFirestore(breeders: List<Breeder>) {
+        val firestore = FirebaseFirestore.getInstance()
+        val collectionRef = firestore.collection("BreedersDB")
+
+        breeders.forEach { breeder ->
+            val documentRef = collectionRef.document(breeder.id)
+            documentRef.set(breeder)
+                .addOnSuccessListener {
+                    Log.d("Firestore", "Successfully uploaded breeder: ${breeder.name}")
+                }
+                .addOnFailureListener { e ->
+                    Log.e("Firestore", "Error uploading breeder: ${breeder.name}", e)
+                }
         }
     }
 }
