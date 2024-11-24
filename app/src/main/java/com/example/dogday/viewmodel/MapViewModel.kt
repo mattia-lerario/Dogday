@@ -201,54 +201,60 @@ class MapViewModel : ViewModel() {
 
         if (showKennels) {
             kennels.forEach { kennel ->
-                val markerOptions = MarkerOptions()
-                    .position(LatLng(kennel.coordinates.latitude, kennel.coordinates.longitude))
-                    .title(kennel.name)
-                    .snippet("${kennel.address}\nContact: ${kennel.contactInfo}")
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)) // Kennel marker in orange
+                kennel.coordinates?.let { coordinates ->
+                    val markerOptions = MarkerOptions()
+                        .position(LatLng(coordinates.latitude, coordinates.longitude))
+                        .title(kennel.name ?: "Unknown Kennel")
+                        .snippet("${kennel.address}\nContact: ${kennel.contactInfo ?: "No contact info"}")
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)) // Kennel marker in orange
 
-                map.addMarker(markerOptions)
+                    map.addMarker(markerOptions)
+                }
             }
         }
 
         if (showHikes) {
             hikes.forEach { hike ->
-                val markerOptions = MarkerOptions()
-                    .position(LatLng(hike.coordinates.latitude, hike.coordinates.longitude))
-                    .title(hike.title)
-                    .snippet(hike.description)
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)) // Hike marker in green
+                hike.coordinates?.let { coordinates ->
+                    val markerOptions = MarkerOptions()
+                        .position(LatLng(coordinates.latitude, coordinates.longitude))
+                        .title(hike.title)
+                        .snippet(hike.description)
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)) // Hike marker in green
 
-                map.addMarker(markerOptions)
+                    map.addMarker(markerOptions)
+                }
             }
         }
 
         if (showBreeders) {
             breeders.forEach { breeder ->
-                val markerOptions = MarkerOptions()
-                    .position(LatLng(breeder.coordinates.latitude, breeder.coordinates.longitude))
-                    .title(breeder.name)
-                    .snippet(breeder.address)  // Simplified snippet to avoid issues
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))  // Breeder marker in blue
+                breeder.coordinates?.let { coordinates ->
+                    val markerOptions = MarkerOptions()
+                        .position(LatLng(coordinates.latitude, coordinates.longitude))
+                        .title(breeder.name ?: "Unknown Breeder")
+                        .snippet(breeder.address ?: "Address not available")  // Simplified snippet to avoid issues
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))  // Breeder marker in blue
 
-                map.addMarker(markerOptions)?.let {
-                    Log.d("MapViewModel", "Added breeder marker for: ${breeder.name}")
-                } ?: run {
-                    Log.e("MapViewModel", "Failed to add breeder marker for: ${breeder.name}")
+                    map.addMarker(markerOptions)?.let {
+                        Log.d("MapViewModel", "Added breeder marker for: ${breeder.name}")
+                    } ?: run {
+                        Log.e("MapViewModel", "Failed to add breeder marker for: ${breeder.name}")
+                    }
                 }
             }
         }
-
-
-
     }
+
 
     fun updateVisibleItems(visibleRegion: LatLngBounds) {
         val itemsInBounds = mutableListOf<Any>()
 
         if (showKennels) {
             val kennelsInBounds = kennels.filter {
-                visibleRegion.contains(LatLng(it.coordinates.latitude, it.coordinates.longitude))
+                it.coordinates?.let { geoPoint ->
+                    visibleRegion.contains(LatLng(geoPoint.latitude, geoPoint.longitude))
+                } ?: false
             }
             itemsInBounds.addAll(kennelsInBounds)
             Log.d("MapViewModel", "Kennels in bounds: $kennelsInBounds")
@@ -256,7 +262,9 @@ class MapViewModel : ViewModel() {
 
         if (showHikes) {
             val hikesInBounds = hikes.filter {
-                visibleRegion.contains(LatLng(it.coordinates.latitude, it.coordinates.longitude))
+                it.coordinates?.let { geoPoint ->
+                    visibleRegion.contains(LatLng(geoPoint.latitude, geoPoint.longitude))
+                } ?: false
             }
             itemsInBounds.addAll(hikesInBounds)
             Log.d("MapViewModel", "Hikes in bounds: $hikesInBounds")
@@ -264,7 +272,9 @@ class MapViewModel : ViewModel() {
 
         if (showBreeders) {
             val breedersInBounds = breeders.filter {
-                visibleRegion.contains(LatLng(it.coordinates.latitude, it.coordinates.longitude))
+                it.coordinates?.let { geoPoint ->
+                    visibleRegion.contains(LatLng(geoPoint.latitude, geoPoint.longitude))
+                } ?: false
             }
             itemsInBounds.addAll(breedersInBounds)
             Log.d("MapViewModel", "Breeders in bounds: $breedersInBounds")
@@ -282,19 +292,25 @@ class MapViewModel : ViewModel() {
 
             if (mapViewModel.showKennels) {
                 mapViewModel.kennels.forEach { kennel ->
-                    boundsBuilder.include(LatLng(kennel.coordinates.latitude, kennel.coordinates.longitude))
+                    kennel.coordinates?.let { coordinates ->
+                        boundsBuilder.include(LatLng(coordinates.latitude, coordinates.longitude))
+                    }
                 }
             }
 
             if (mapViewModel.showHikes) {
                 mapViewModel.hikes.forEach { hike ->
-                    boundsBuilder.include(LatLng(hike.coordinates.latitude, hike.coordinates.longitude))
+                    hike.coordinates?.let { coordinates ->
+                        boundsBuilder.include(LatLng(coordinates.latitude, coordinates.longitude))
+                    }
                 }
             }
 
             if (mapViewModel.showBreeders) {
                 mapViewModel.breeders.forEach { breeder ->
-                    boundsBuilder.include(LatLng(breeder.coordinates.latitude, breeder.coordinates.longitude))
+                    breeder.coordinates?.let { coordinates ->
+                        boundsBuilder.include(LatLng(coordinates.latitude, coordinates.longitude))
+                    }
                 }
             }
 

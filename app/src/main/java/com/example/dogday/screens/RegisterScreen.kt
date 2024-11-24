@@ -158,13 +158,18 @@ fun RegisterScreen(navController: NavController, registerViewModel: RegisterView
                         )
                     )
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                    registerError?.let { error ->
+                        Text(
+                            text = error,
+                            color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier
+                                .padding(top = 8.dp)
+                                .widthIn(max = 300.dp)
+                                .align(Alignment.Start)
+                        )
+                    }
 
-                    Text(
-                        text = "Already have an account? Click on Login.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
-                    )
+                    Spacer(modifier = Modifier.height(16.dp))
 
                     Row(
                         modifier = Modifier
@@ -194,19 +199,6 @@ fun RegisterScreen(navController: NavController, registerViewModel: RegisterView
                             Text("Register")
                         }
                     }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    registerError?.let { error ->
-                        Text(
-                            text = error,
-                            color = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.padding(top = 8.dp)
-                        )
-                        LaunchedEffect(Unit) {
-                            registerViewModel.clearRegisterError()
-                        }
-                    }
                 }
 
                 // Dog image on the right side
@@ -217,7 +209,7 @@ fun RegisterScreen(navController: NavController, registerViewModel: RegisterView
                     contentScale = ContentScale.Fit
                 )
             }
-        }else {
+        } else {
             // Layout for portrait orientation
             Column(
                 modifier = Modifier
@@ -249,7 +241,8 @@ fun RegisterScreen(navController: NavController, registerViewModel: RegisterView
                     label = { Text("Email", color = Color.Black) },
                     modifier = Modifier
                         .widthIn(max = 300.dp)
-                        .padding(horizontal = 8.dp),
+                        .padding(horizontal = 8.dp)
+                        .focusRequester(focusRequesterEmail),
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = InputBackgroundLight,
                         unfocusedContainerColor = InputBackgroundLight,
@@ -258,7 +251,16 @@ fun RegisterScreen(navController: NavController, registerViewModel: RegisterView
                         focusedTextColor = Color.Black,
                         unfocusedTextColor = Color.Black
                     ),
-                    shape = MaterialTheme.shapes.small
+                    shape = MaterialTheme.shapes.small,
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Email,
+                        imeAction = ImeAction.Next
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onNext = {
+                            focusRequesterPassword.requestFocus()
+                        }
+                    )
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -270,7 +272,8 @@ fun RegisterScreen(navController: NavController, registerViewModel: RegisterView
                     visualTransformation = PasswordVisualTransformation(),
                     modifier = Modifier
                         .widthIn(max = 300.dp)
-                        .padding(horizontal = 8.dp),
+                        .padding(horizontal = 8.dp)
+                        .focusRequester(focusRequesterPassword),
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = InputBackgroundLight,
                         unfocusedContainerColor = InputBackgroundLight,
@@ -279,16 +282,30 @@ fun RegisterScreen(navController: NavController, registerViewModel: RegisterView
                         focusedTextColor = Color.Black,
                         unfocusedTextColor = Color.Black
                     ),
-                    shape = MaterialTheme.shapes.small
+                    shape = MaterialTheme.shapes.small,
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            focusManager.clearFocus()
+                            registerViewModel.registerUser()
+                        }
+                    )
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                registerError?.let { error ->
+                    Text(
+                        text = error,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier
+                            .padding(top = 8.dp)
+                            .widthIn(max = 300.dp)
+                            .align(Alignment.Start)
+                    )
+                }
 
-                Text(
-                    text = "Already have an account? Click on Login.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
-                )
+                Spacer(modifier = Modifier.height(16.dp))
 
                 Row(
                     modifier = Modifier
@@ -308,7 +325,7 @@ fun RegisterScreen(navController: NavController, registerViewModel: RegisterView
                     }
 
                     Button(
-                        onClick = {registerViewModel.registerUser()},
+                        onClick = { registerViewModel.registerUser() },
                         Modifier
                             .weight(1f)
                             .padding(horizontal = 8.dp),
@@ -316,19 +333,6 @@ fun RegisterScreen(navController: NavController, registerViewModel: RegisterView
                         contentPadding = PaddingValues(vertical = 8.dp)
                     ) {
                         Text("Register")
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                registerError?.let { error ->
-                    Text(
-                        text = error,
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.padding(top = 8.dp)
-                    )
-                    LaunchedEffect(Unit) {
-                        registerViewModel.clearRegisterError()
                     }
                 }
 
@@ -341,5 +345,6 @@ fun RegisterScreen(navController: NavController, registerViewModel: RegisterView
             }
         }
     }
-
 }
+
+

@@ -41,7 +41,7 @@ class CustomMapMarker(
                 // Load image for Kennel using Coil
                 val imageLoader = ImageLoader(inflater.context)
                 val request = ImageRequest.Builder(inflater.context)
-                    .data(data.imageUrl)
+                    .data(data.photoReference)
                     .size(50, 50)
                     .target(
                         onStart = {

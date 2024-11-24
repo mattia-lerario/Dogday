@@ -159,6 +159,19 @@ fun LoginScreen(
                 Text("Login", fontWeight = FontWeight.Bold)
             }
 
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Add the Register button
+            Button(
+                onClick = { navController.navigate("register") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = ButtonColorLight)
+            ) {
+                Text("Register", fontWeight = FontWeight.Bold)
+            }
+
             loginError?.let { error ->
                 Text(
                     text = error,
@@ -169,5 +182,6 @@ fun LoginScreen(
         }
     }
 }
+
 
 

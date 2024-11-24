@@ -66,7 +66,7 @@ class MainActivity : ComponentActivity() {
         FirebaseApp.initializeApp(this)
         // Initialize Google Places SDK
         if (!Places.isInitialized()) {
-            Places.initialize(applicationContext, "YOUR_API_KEY")
+            Places.initialize(applicationContext, "AIzaSyC6Krt10uCwyajM12ZMC9e8yUIdnTo6whY")
         }
         // Initialize Firebase Analytics
         analytics = Firebase.analytics

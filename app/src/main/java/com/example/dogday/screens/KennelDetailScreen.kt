@@ -19,9 +19,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.dogday.viewmodel.KennelDetailViewModel
-
+private const val API_KEY = "AIzaSyC6Krt10uCwyajM12ZMC9e8yUIdnTo6whY"
 @Composable
 fun KennelDetailScreen(kennelId: String?) {
+
+
     val viewModel: KennelDetailViewModel = viewModel()
 
     // Fetch the kennel details using the kennelId
@@ -39,15 +41,17 @@ fun KennelDetailScreen(kennelId: String?) {
                 .padding(16.dp)
                 .fillMaxWidth()
         ) {
-            AsyncImage(
-                model = kennel?.imageUrl,
-                contentDescription = kennel?.name,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-                    .clip(RoundedCornerShape(16.dp)),
-                contentScale = ContentScale.Crop
-            )
+            kennel?.photoReference?.let { photoReference ->
+                AsyncImage(
+                    model = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=$photoReference&key=$API_KEY",
+                    contentDescription = kennel?.name,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .clip(RoundedCornerShape(16.dp)),
+                    contentScale = ContentScale.Crop
+                )
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -59,10 +63,10 @@ fun KennelDetailScreen(kennelId: String?) {
 
             DetailItem(label = "Address", value = kennel?.address)
             DetailItem(label = "Contact", value = kennel?.contactInfo)
-            DetailItem(label = "Owner Name", value = kennel?.ownerName)
-            DetailItem(label = "Description", value = kennel?.description)
-
-            Spacer(modifier = Modifier.height(16.dp))
+            DetailItem(label = "Business Status", value = kennel?.businessStatus)
+            DetailItem(label = "Currently Open", value = kennel?.openingHours?.let { if (it) "Yes" else "No" })
+            DetailItem(label = "Rating", value = kennel?.rating?.toString())
+            DetailItem(label = "User Ratings", value = kennel?.userRatingsTotal?.toString())
         }
     } else {
         Text(
@@ -73,20 +77,3 @@ fun KennelDetailScreen(kennelId: String?) {
     }
 }
 
-@Composable
-fun DetailItem(label: String, value: String?) {
-    if (!value.isNullOrEmpty()) {
-        Column(modifier = Modifier.padding(vertical = 4.dp)) {
-            Text(
-                text = "$label:",
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.primary
-            )
-            Text(
-                text = value,
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(start = 8.dp)
-            )
-        }
-    }
-}

@@ -42,7 +42,7 @@ class KennelRepository {
         val collectionRef = firestore.collection("kennelsDB")
 
         kennels.forEach { kennel ->
-            val documentRef = collectionRef.document(kennel.id)
+            val documentRef = collectionRef.document()
             documentRef.set(kennel)
                 .addOnSuccessListener {
                     Log.d("Firestore", "Successfully uploaded kennel: ${kennel.name}")
