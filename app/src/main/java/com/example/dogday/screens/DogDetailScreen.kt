@@ -39,6 +39,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.DatePicker
@@ -61,9 +63,12 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.ImeAction
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 
@@ -170,6 +175,11 @@ fun EditDogScreen(
     val coroutineScope = rememberCoroutineScope()
     val viewModel: DogListViewModel = viewModel()
 
+    val focusDogName = remember { FocusRequester() }
+    val focusDogNickName = remember { FocusRequester() }
+    val focusDogBreed = remember { FocusRequester() }
+    val focusDogBreeder = remember { FocusRequester() }
+    val focusDogBirthday = remember { FocusRequester() }
 
     var uploadingImage by remember { mutableStateOf(false) }
 
@@ -194,7 +204,17 @@ fun EditDogScreen(
             value = dogName,
             onValueChange = { dogName = it },
             label = { Text("Dog Name") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .focusRequester(focusDogName),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Next
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = {
+                    focusDogNickName.requestFocus()
+                }
+            )
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -203,7 +223,17 @@ fun EditDogScreen(
             value = dogNickName,
             onValueChange = { dogNickName = it },
             label = { Text("Dog Nick Name") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .focusRequester(focusDogNickName),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Next
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = {
+                    focusDogBreed.requestFocus()
+                }
+            )
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -212,7 +242,17 @@ fun EditDogScreen(
             value = dogBreed,
             onValueChange = { dogBreed = it },
             label = { Text("Dog Breed") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .focusRequester(focusDogBreed),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Next
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = {
+                    focusDogBreeder.requestFocus()
+                }
+            )
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -221,8 +261,20 @@ fun EditDogScreen(
             value = dogBreeder,
             onValueChange = { dogBreeder = it },
             label = { Text("Dog Breeder") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .focusRequester(focusDogBreeder),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Next
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = {
+                    focusDogBirthday.requestFocus()
+                }
+            )
         )
+
+
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -239,7 +291,9 @@ fun EditDogScreen(
                     )
                 }
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .focusRequester(focusDogBirthday),
         )
         if (showDatePicker) {
             DatePickerDialog(
