@@ -92,7 +92,6 @@ dependencies {
     implementation(libs.firebase.storage.ktx)
     implementation(libs.support.annotations)
     implementation ("io.coil-kt:coil-compose:1.3.2")
-    testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -102,6 +101,13 @@ dependencies {
     implementation ("androidx.compose.material:material-icons-extended:1.5.1")
     implementation ("androidx.compose.material3:material3:1.2.0")
 
+    //testing dependencies
+    testImplementation(libs.junit)
+    testImplementation ("io.mockk:mockk:1.13.2")
+    testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+    testImplementation ("androidx.arch.core:core-testing:2.1.0")
+    testImplementation ("org.mockito:mockito-core:5.2.0")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
 
 
 }

@@ -1,5 +1,3 @@
-// AddDogViewModel.kt
-
 package com.example.dogday.viewmodel
 
 import android.graphics.Bitmap
@@ -8,13 +6,16 @@ import com.example.dogday.FirestoreInteractions
 import com.example.dogday.models.Dog
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.io.ByteArrayOutputStream
 
-class AddDogViewModel: ViewModel() {
-    private val firestoreInteractions = FirestoreInteractions()
-    private val storage = FirebaseStorage.getInstance()
+class AddDogViewModel(
+    private val firestoreInteractions: FirestoreInteractions = FirestoreInteractions(),
+    private val firebaseStorage: FirebaseStorage = FirebaseStorage.getInstance(),
+    private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
+) : ViewModel() {
 
     private val _dogName = MutableStateFlow("")
     val dogName: StateFlow<String> = _dogName
@@ -75,51 +76,39 @@ class AddDogViewModel: ViewModel() {
         }
     }
 
-    fun requestCameraPermission(onResult: (Boolean) -> Unit) {
-        onResult(true) // Simuler tillatelse. I praksis håndteres dette i AddDogScreen
-    }
-
-    //fun captureImage(launcher: (Unit?) -> Unit) {
-        //launcher(null) // Starter kamera
-    //}
-
     fun saveDogData() {
         if (_dogName.value.isNotEmpty() && _dogBreed.value.isNotEmpty() && _dogImageBitmap.value != null) {
             _uploadingImage.value = true
 
-            val storageRef = storage.reference.child("dog_images/${_dogName.value}_${System.currentTimeMillis()}.jpg")
+            val storageRef: StorageReference = firebaseStorage.reference.child("dog_images/${_dogName.value}_${System.currentTimeMillis()}.jpg")
             val baos = ByteArrayOutputStream()
 
             _dogImageBitmap.value?.let { bitmap ->
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
                 val data = baos.toByteArray()
 
-            //_dogImageBitmap.value?.compress(Bitmap.CompressFormat.JPEG, 100, baos)
-            //val data = baos.toByteArray()
+                storageRef.putBytes(data)
+                    .addOnSuccessListener {
+                        storageRef.downloadUrl.addOnSuccessListener { uri ->
+                            val uid = firebaseAuth.currentUser?.uid
+                            val dog = Dog(
+                                name = _dogName.value,
+                                nickName = _dogNickName.value,
+                                breed = _dogBreed.value,
+                                birthday = _dogBirthday.value,
+                                breeder = _dogBreeder.value,
+                                imageUrl = uri.toString()
+                            )
 
-            storageRef.putBytes(data)
-                .addOnSuccessListener {
-                    storageRef.downloadUrl.addOnSuccessListener { uri ->
-                        val uid = FirebaseAuth.getInstance().currentUser?.uid
-                        val dog = Dog(
-                            name = _dogName.value,
-                            nickName = _dogNickName.value,
-                            breed = _dogBreed.value,
-                            birthday = _dogBirthday.value,
-                            breeder = _dogBreeder.value,
-                            imageUrl = uri.toString()
-                        )
-
-                        if (uid != null) {
-                            firestoreInteractions.addDogToUser(uid, dog)
-                            //dogListViewModel.fetchDogs()
-                            _saveSuccess.value = true
+                            if (uid != null) {
+                                firestoreInteractions.addDogToUser(uid, dog)
+                                _saveSuccess.value = true
+                            }
                         }
+                    }.addOnFailureListener {
+                        _uploadingImage.value = false
                     }
-                }.addOnFailureListener {
-                    _uploadingImage.value = false
-
-            }   }
+            }
         }
     }
 }
