@@ -1,21 +1,65 @@
 package com.example.dogday.api
 
+import android.content.Context
+import androidx.work.Constraints
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.Worker
+import androidx.work.WorkerParameters
 import com.example.dogday.models.Breeder
 import com.example.dogday.models.Kennel
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONObject
 import java.io.IOException
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 object SearchPlaces {
 
-    private const val API_KEY = "AIzaSyC6Krt10uCwyajM12ZMC9e8yUIdnTo6whY"
+    private const val API_KEY = "YOUR_API_KEY_HERE"
 
-    // Function for searching kennels
-    fun searchKennelsByKeyword(onSuccess: (List<Kennel>) -> Unit, onFailure: (Exception) -> Unit) {
-        val url = "https://maps.googleapis.com/maps/api/place/textsearch/json?" +
-                "query=dog+kennel+in+Norway&key=$API_KEY"
+    // Function to upload kennels to Firebase
+    private fun uploadKennelsToFirebase(kennels: List<Kennel>, onComplete: () -> Unit) {
+        val db = FirebaseFirestore.getInstance()
+        val batch = db.batch()
+        for (kennel in kennels) {
+            val docRef = db.collection("kennels").document(kennel.id)
+            batch.set(docRef, kennel)
+        }
+        batch.commit().addOnCompleteListener { onComplete() }
+    }
+
+    // Function to upload breeders to Firebase
+    private fun uploadBreedersToFirebase(breeders: List<Breeder>, onComplete: () -> Unit) {
+        val db = FirebaseFirestore.getInstance()
+        val batch = db.batch()
+        for (breeder in breeders) {
+            val docRef = db.collection("breeders").document(breeder.id)
+            batch.set(docRef, breeder)
+        }
+        batch.commit().addOnCompleteListener { onComplete() }
+    }
+
+    // Modified function for searching kennels with pagination
+    fun searchKennelsByKeyword(
+        kennelsList: MutableList<Kennel> = mutableListOf(),
+        pageToken: String? = null,
+        onSuccess: () -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        val urlBuilder = StringBuilder("https://maps.googleapis.com/maps/api/place/textsearch/json?")
+        urlBuilder.append("query=dog+kennel+in+Norway")
+        urlBuilder.append("&key=$API_KEY")
+        if (pageToken != null) {
+            urlBuilder.append("&pagetoken=$pageToken")
+        }
+        val url = urlBuilder.toString()
 
         val client = OkHttpClient()
         val request = Request.Builder().url(url).build()
@@ -29,7 +73,6 @@ object SearchPlaces {
                 response.body?.let { responseBody ->
                     val json = JSONObject(responseBody.string())
                     val results = json.getJSONArray("results")
-                    val kennels = mutableListOf<Kennel>()
 
                     for (i in 0 until results.length()) {
                         val place = results.getJSONObject(i)
@@ -53,7 +96,7 @@ object SearchPlaces {
                             name = name,
                             address = address,
                             coordinates = GeoPoint(lat, lng),
-                            contactInfo = null, // Update this if more details are fetched
+                            contactInfo = null,
                             businessStatus = businessStatus,
                             openingHours = openingHours,
                             rating = rating,
@@ -62,18 +105,40 @@ object SearchPlaces {
                             iconUrl = iconUrl,
                             types = types
                         )
-                        kennels.add(kennel)
+                        kennelsList.add(kennel)
                     }
-                    onSuccess(kennels)
+
+                    if (json.has("next_page_token")) {
+                        val nextPageToken = json.getString("next_page_token")
+                        // Schedule the next call after a short delay
+                        val scheduler = Executors.newSingleThreadScheduledExecutor()
+                        scheduler.schedule({
+                            searchKennelsByKeyword(kennelsList, nextPageToken, onSuccess, onFailure)
+                            scheduler.shutdown()
+                        }, 2, TimeUnit.SECONDS)
+                    } else {
+                        // No more pages, upload to Firebase
+                        uploadKennelsToFirebase(kennelsList) { onSuccess() }
+                    }
                 } ?: onFailure(Exception("Empty response body"))
             }
         })
     }
 
-    // Function for searching breeders
-    fun searchBreedersByKeyword(onSuccess: (List<Breeder>) -> Unit, onFailure: (Exception) -> Unit) {
-        val url = "https://maps.googleapis.com/maps/api/place/textsearch/json?" +
-                "query=dog+breeder+in+Norway&key=$API_KEY"
+    // Modified function for searching breeders with pagination
+    fun searchBreedersByKeyword(
+        breedersList: MutableList<Breeder> = mutableListOf(),
+        pageToken: String? = null,
+        onSuccess: () -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        val urlBuilder = StringBuilder("https://maps.googleapis.com/maps/api/place/textsearch/json?")
+        urlBuilder.append("query=dog+breeder+in+Norway")
+        urlBuilder.append("&key=$API_KEY")
+        if (pageToken != null) {
+            urlBuilder.append("&pagetoken=$pageToken")
+        }
+        val url = urlBuilder.toString()
 
         val client = OkHttpClient()
         val request = Request.Builder().url(url).build()
@@ -87,7 +152,6 @@ object SearchPlaces {
                 response.body?.let { responseBody ->
                     val json = JSONObject(responseBody.string())
                     val results = json.getJSONArray("results")
-                    val breeders = mutableListOf<Breeder>()
 
                     for (i in 0 until results.length()) {
                         val place = results.getJSONObject(i)
@@ -111,8 +175,8 @@ object SearchPlaces {
                             name = name,
                             address = address,
                             coordinates = GeoPoint(lat, lng),
-                            contactInfo = null, // Update this if more details are fetched
-                            dogBreeds = arrayListOf(), // Update this if more details are fetched
+                            contactInfo = null,
+                            dogBreeds = arrayListOf(),
                             businessStatus = businessStatus,
                             openingHours = openingHours,
                             rating = rating,
@@ -121,12 +185,83 @@ object SearchPlaces {
                             iconUrl = iconUrl,
                             types = types
                         )
-                        breeders.add(breeder)
+                        breedersList.add(breeder)
                     }
-                    onSuccess(breeders)
+
+                    if (json.has("next_page_token")) {
+                        val nextPageToken = json.getString("next_page_token")
+                        // Schedule the next call after a short delay
+                        val scheduler = Executors.newSingleThreadScheduledExecutor()
+                        scheduler.schedule({
+                            searchBreedersByKeyword(breedersList, nextPageToken, onSuccess, onFailure)
+                            scheduler.shutdown()
+                        }, 2, TimeUnit.SECONDS)
+                    } else {
+                        // No more pages, upload to Firebase
+                        uploadBreedersToFirebase(breedersList) { onSuccess() }
+                    }
                 } ?: onFailure(Exception("Empty response body"))
             }
         })
     }
+}
 
+class FetchAndUploadWorker(appContext: Context, workerParams: WorkerParameters) :
+    Worker(appContext, workerParams) {
+
+    override fun doWork(): Result {
+        val latch = CountDownLatch(2)
+        var kennelsSuccess = false
+        var breedersSuccess = false
+
+        SearchPlaces.searchKennelsByKeyword(
+            onSuccess = {
+                kennelsSuccess = true
+                latch.countDown()
+            },
+            onFailure = {
+                kennelsSuccess = false
+                latch.countDown()
+            }
+        )
+
+        SearchPlaces.searchBreedersByKeyword(
+            onSuccess = {
+                breedersSuccess = true
+                latch.countDown()
+            },
+            onFailure = {
+                breedersSuccess = false
+                latch.countDown()
+            }
+        )
+
+        try {
+            latch.await(15, TimeUnit.MINUTES)
+        } catch (e: InterruptedException) {
+            return Result.failure()
+        }
+
+        return if (kennelsSuccess && breedersSuccess) {
+            Result.success()
+        } else {
+            Result.retry()
+        }
+    }
+}
+
+fun scheduleFetchAndUploadWork(context: Context) {
+    val constraints = Constraints.Builder()
+        .setRequiredNetworkType(NetworkType.CONNECTED)
+        .build()
+
+    val workRequest = PeriodicWorkRequestBuilder<FetchAndUploadWorker>(24, TimeUnit.HOURS)
+        .setConstraints(constraints)
+        .build()
+
+    WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+        "FetchAndUploadWork",
+        ExistingPeriodicWorkPolicy.KEEP,
+        workRequest
+    )
 }

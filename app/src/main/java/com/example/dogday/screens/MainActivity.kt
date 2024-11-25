@@ -46,6 +46,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.dogday.R
+import com.example.dogday.api.scheduleFetchAndUploadWork
 import com.example.dogday.models.DogID
 import com.example.dogday.ui.theme.MyAppTest01Theme
 import com.google.android.libraries.places.api.Places
@@ -74,7 +75,8 @@ class MainActivity : ComponentActivity() {
         // Log an event to verify Firebase initialization
         analytics.logEvent(FirebaseAnalytics.Event.APP_OPEN, null)
         Log.d("MainActivity", "Firebase initialized successfully")
-
+        // Schedule the recurring work
+        scheduleFetchAndUploadWork(this)
         setContent {
             MyAppTest01Theme {
                 MainApp(context = applicationContext)
