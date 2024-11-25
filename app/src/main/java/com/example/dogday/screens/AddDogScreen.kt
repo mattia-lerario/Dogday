@@ -50,7 +50,13 @@ import java.util.Date
 import java.util.Locale
 import android.Manifest
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -105,6 +111,17 @@ fun AddDogScreen(
     val saveSuccess by addDogViewModel.saveSuccess.collectAsState()
     val dogImageBitmap by addDogViewModel.dogImageBitmap.collectAsState()
     val uploadingImage by addDogViewModel.uploadingImage.collectAsState()
+
+
+
+    val focusDogName = remember { FocusRequester() }
+    val focusDogNickName = remember { FocusRequester() }
+    val focusDogBreed = remember { FocusRequester() }
+    val focusDogBreeder = remember { FocusRequester() }
+    val focusDogBirthday = remember { FocusRequester() }
+
+
+
 
     val datePickerState = rememberDatePickerState()
 
@@ -169,7 +186,8 @@ fun AddDogScreen(
             label = { Text("Dog Name", color = Color.Black) },
             modifier = Modifier
                 .widthIn(max = 500.dp)
-                .padding(horizontal = 8.dp),
+                .padding(horizontal = 8.dp)
+                .focusRequester(focusDogName),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = InputBackgroundLight,
                 unfocusedContainerColor = InputBackgroundLight,
@@ -178,7 +196,15 @@ fun AddDogScreen(
                 focusedTextColor = Color.Black,
                 unfocusedTextColor = Color.Black
             ),
-            shape = MaterialTheme.shapes.small
+            shape = MaterialTheme.shapes.small,
+            keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Next
+                    ),
+            keyboardActions = KeyboardActions(
+                onNext = {
+                    focusDogNickName.requestFocus()
+                }
+            )
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -189,7 +215,8 @@ fun AddDogScreen(
             label = { Text("Dog Nick Name", color = Color.Black) },
             modifier = Modifier
                 .widthIn(max = 500.dp)
-                .padding(horizontal = 8.dp),
+                .padding(horizontal = 8.dp)
+                .focusRequester(focusDogNickName),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = InputBackgroundLight,
                 unfocusedContainerColor = InputBackgroundLight,
@@ -198,7 +225,15 @@ fun AddDogScreen(
                 focusedTextColor = Color.Black,
                 unfocusedTextColor = Color.Black
             ),
-            shape = MaterialTheme.shapes.small
+            shape = MaterialTheme.shapes.small,
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Next
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = {
+                    focusDogBreed.requestFocus()
+                }
+            )
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -209,7 +244,8 @@ fun AddDogScreen(
             label = { Text("Dog Breed", color = Color.Black) },
             modifier = Modifier
                 .widthIn(max = 500.dp)
-                .padding(horizontal = 8.dp),
+                .padding(horizontal = 8.dp)
+                .focusRequester(focusDogBreed),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = InputBackgroundLight,
                 unfocusedContainerColor = InputBackgroundLight,
@@ -218,7 +254,15 @@ fun AddDogScreen(
                 focusedTextColor = Color.Black,
                 unfocusedTextColor = Color.Black
             ),
-            shape = MaterialTheme.shapes.small
+            shape = MaterialTheme.shapes.small,
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Next
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = {
+                    focusDogBreeder.requestFocus()
+                }
+            )
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -229,7 +273,8 @@ fun AddDogScreen(
             label = { Text("Dog Breeder", color = Color.Black) },
             modifier = Modifier
                 .widthIn(max = 500.dp)
-                .padding(horizontal = 8.dp),
+                .padding(horizontal = 8.dp)
+                .focusRequester(focusDogBreeder),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = InputBackgroundLight,
                 unfocusedContainerColor = InputBackgroundLight,
@@ -238,7 +283,15 @@ fun AddDogScreen(
                 focusedTextColor = Color.Black,
                 unfocusedTextColor = Color.Black
             ),
-            shape = MaterialTheme.shapes.small
+            shape = MaterialTheme.shapes.small,
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Next
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = {
+                    focusDogBirthday.requestFocus()
+                }
+            )
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -266,7 +319,8 @@ fun AddDogScreen(
                 modifier = Modifier
                     .widthIn(max = 500.dp)
                     .fillMaxWidth(0.75f)
-                    .height(64.dp),
+                    .height(64.dp)
+                    .focusRequester(focusDogBirthday),
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = BackgroundColorLight,
                     unfocusedContainerColor = BackgroundColorLight,
