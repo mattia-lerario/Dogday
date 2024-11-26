@@ -35,8 +35,8 @@ class BreederRepository {
         val collectionRef = firestore.collection("breeders")
 
         breeders.forEach { breeder ->
-            val documentRef = collectionRef.document()  // Generate Firestore ID here
-            val breederWithId = breeder.copy(id = documentRef.id) // Update the breeder object with Firestore-generated ID
+            val documentRef = collectionRef.document()
+            val breederWithId = breeder.copy(id = documentRef.id)
             documentRef.set(breederWithId)
                 .addOnSuccessListener {
                     Log.d("Firestore", "Successfully uploaded breeder: ${breederWithId.name}")

@@ -20,7 +20,6 @@ class FirestoreInteractions {
     }
 
     fun addDogToUser(uid: String, dog: Dog) {
-        // Reference to the user's document
         db.collection("ddcollection").document(uid).update(
             "dogs.${dog.dogId}", dog
         ).addOnSuccessListener {

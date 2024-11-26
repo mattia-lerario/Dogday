@@ -61,7 +61,7 @@ fun HomeScreen(navController: NavHostController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(5.dp) // Padding for the edges of the screen
+            .padding(5.dp)
     ) {
         Column(
             modifier = Modifier

@@ -71,7 +71,6 @@ fun MapScreen(navController: NavHostController) {
         }
     }
 
-    // Permission handling
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
@@ -122,7 +121,6 @@ fun MapScreen(navController: NavHostController) {
             modifier = Modifier.padding(8.dp),
             horizontalArrangement = Arrangement.spacedBy(5.dp)
         ) {
-            // Toggle buttons for kennels, hikes, breeders
             val toggleButtons = listOf(
                 "Kennels" to mapViewModel.showKennels,
                 "Hikes" to mapViewModel.showHikes,
@@ -182,7 +180,6 @@ fun MapScreen(navController: NavHostController) {
                 modifier = Modifier.fillMaxSize()
             )
 
-            // FloatingActionButton for adding hike
             FloatingActionButton(
                 onClick = { showAddHikeDialog = true },
                 modifier = Modifier
@@ -197,14 +194,12 @@ fun MapScreen(navController: NavHostController) {
                 )
             }
 
-            // Update the map with markers when googleMap or other parameters change
             LaunchedEffect(googleMap, mapViewModel.kennels, mapViewModel.hikes, mapViewModel.breeders, mapViewModel.showKennels, mapViewModel.showHikes, mapViewModel.showBreeders) {
                 googleMap?.let {
                     mapViewModel.updateMapWithMarkers(it)
                 }
             }
 
-            // Display the ItemSlider at the bottom
             ItemSlider(
                 visibleItems = mapViewModel.visibleItems,
                 navController = navController,
@@ -215,7 +210,6 @@ fun MapScreen(navController: NavHostController) {
         }
     }
 
-    // Add Hike Dialog
     if (showAddHikeDialog) {
         AlertDialog(
             onDismissRequest = { showAddHikeDialog = false },

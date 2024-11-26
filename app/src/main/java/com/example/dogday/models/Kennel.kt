@@ -16,7 +16,7 @@ data class Kennel(
     val iconUrl: String?,
     val types: List<String>?
 ){
-    // No-argument constructor for Firebase deserialization
+
     constructor() : this(
         id = "",
         name = "",

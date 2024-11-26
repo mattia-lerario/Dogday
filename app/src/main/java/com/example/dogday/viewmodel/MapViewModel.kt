@@ -57,7 +57,6 @@ class MapViewModel : ViewModel() {
 
     var hasLocationPermission by mutableStateOf(false)
 
-    // Error message state to display in the UI if needed
     var errorMessage by mutableStateOf<String?>(null)
         private set
 
@@ -94,17 +93,15 @@ class MapViewModel : ViewModel() {
         showBreeders = show
         fetchBreeders()
     }
-    // Function to open the add hike dialog
     fun openAddHikeDialog() {
         showAddHikeDialog = true
     }
 
-    // Function to close the add hike dialog
     fun closeAddHikeDialog() {
         showAddHikeDialog = false
     }
 
-    // Functions to update hike properties
+
     fun onHikeTitleChange(newTitle: String) {
         hikeTitle = newTitle
     }
@@ -121,12 +118,12 @@ class MapViewModel : ViewModel() {
         hikeCoordinates = newCoordinates
     }
 
-    // Function to handle the image selection from the image picker
+
     fun onHikeImageSelected(imageUrl: String) {
         hikeImageUrl = imageUrl
     }
 
-    // Function to add the new hike to Firestore
+
     fun addNewHike() {
         val newHike = HikeData(
             id = "",
@@ -146,9 +143,9 @@ class MapViewModel : ViewModel() {
             kennelRepository.fetchKennels(
                 onSuccess = { fetchedKennels ->
                     kennels = fetchedKennels
-                    errorMessage = null // Clear error message on successful fetch
+                    errorMessage = null
                 },
-                onFailure = { _ -> // Use _ for unused parameters
+                onFailure = { _ ->
                     Log.e("MapViewModel", "Error fetching kennels")
                     errorMessage = "Failed to load kennels. Please try again."
                 }
@@ -163,9 +160,9 @@ class MapViewModel : ViewModel() {
             hikeRepository.fetchHikeLocations(
                 onSuccess = { fetchedHikes ->
                     hikes = fetchedHikes
-                    errorMessage = null // Clear error message on successful fetch
+                    errorMessage = null
                 },
-                onFailure = { _ -> // Use _ for unused parameters
+                onFailure = { _ ->
                     Log.e("MapViewModel", "Error fetching hikes")
                     errorMessage = "Failed to load hikes. Please try again."
                 }
@@ -368,7 +365,7 @@ class MapViewModel : ViewModel() {
         hikeRepository.addHike(
             hike,
             onSuccess = {
-                hikes = hikes + hike // Update the state to include the new hike
+                hikes = hikes + hike
             },
             onFailure = { exception ->
                 Log.e("MapViewModel", "Error adding hike: ${exception.message}")

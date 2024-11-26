@@ -11,5 +11,4 @@ data class User(
     val birthday: Long = 0L,
     val dogs: Map<String, Dog> = emptyMap()
 ) {
-    // No-argument constructor is automatically generated because of default values
 }

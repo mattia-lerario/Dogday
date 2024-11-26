@@ -17,6 +17,5 @@ data class Breeder(
     val iconUrl: String?,
     val types: List<String>?
 ){
-    // No-argument constructor required for Firebase
     constructor() : this("", "", "", null, null, emptyList(), null, null, null, null, null, null, null)
 }

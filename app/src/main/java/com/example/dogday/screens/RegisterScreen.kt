@@ -70,7 +70,7 @@ fun RegisterScreen(navController: NavController, registerViewModel: RegisterView
         val landscapeMode = maxWidth > maxHeight
 
         if (landscapeMode) {
-            // Layout for landscape orientation
+
             Row(
                 modifier = Modifier
                     .fillMaxSize()
@@ -78,7 +78,6 @@ fun RegisterScreen(navController: NavController, registerViewModel: RegisterView
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                // Logo on the left side
                 Image(
                     painter = painterResource(R.drawable.dogday_logo),
                     contentDescription = "DogDay Logo",
@@ -86,7 +85,6 @@ fun RegisterScreen(navController: NavController, registerViewModel: RegisterView
                     contentScale = ContentScale.Fit
                 )
 
-                // Inputs, buttons, and error message centered in the middle
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
@@ -203,7 +201,6 @@ fun RegisterScreen(navController: NavController, registerViewModel: RegisterView
                     }
                 }
 
-                // Dog image on the right side
                 Image(
                     painter = painterResource(R.drawable.dog_cartoon),
                     contentDescription = "Dog Image",
@@ -212,7 +209,6 @@ fun RegisterScreen(navController: NavController, registerViewModel: RegisterView
                 )
             }
         } else {
-            // Layout for portrait orientation
             Column(
                 modifier = Modifier
                     .fillMaxSize()

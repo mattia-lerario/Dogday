@@ -34,7 +34,6 @@ class AddDogViewModelTest {
 
     @Before
     fun setUp() {
-        // Mock FirebaseAuth
         val fakeFirebaseUser = mock<FirebaseUser> {
             on { uid } doReturn "mockUserId"
         }
@@ -42,7 +41,6 @@ class AddDogViewModelTest {
             on { currentUser } doReturn fakeFirebaseUser
         }
 
-        // Mock FirebaseStorage
         val fakeTaskUri: Task<Uri> = mock {
             on { addOnSuccessListener(any()) } doAnswer { invocation ->
                 val listener = invocation.getArgument<OnSuccessListener<Uri>>(0)
@@ -70,10 +68,8 @@ class AddDogViewModelTest {
             on { reference } doReturn fakeStorageReference
         }
 
-        // Mock FirestoreInteractions
         fakeFirestoreInteractions = mock()
 
-        // Initialize ViewModel
         viewModel = AddDogViewModel(
             firestoreInteractions = fakeFirestoreInteractions,
             firebaseStorage = fakeFirebaseStorage,
@@ -98,16 +94,13 @@ class AddDogViewModelTest {
 
     @Test
     fun `saveDogData uploads image and calls FirestoreInteractions`() = runTest {
-        // Arrange
         val testBitmap: Bitmap = mock()
         viewModel.onDogImageCaptured(testBitmap)
         viewModel.onDogNameChange("TestDog")
         viewModel.onDogBreedChange("TestBreed")
 
-        // Act
         viewModel.saveDogData()
 
-        // Assert
         verify(fakeFirestoreInteractions).addDogToUser(eq("mockUserId"), check {
             assertEquals("TestDog", it.name)
             assertEquals("TestBreed", it.breed)

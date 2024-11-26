@@ -92,11 +92,11 @@ fun DogX(navController: NavHostController, dog: Dog){
             }
 
             AsyncImage(
-                model = dog.imageUrl ?: R.drawable.dog_cartoon, // Bruk standardbilde hvis URL er null
+                model = dog.imageUrl ?: R.drawable.dog_cartoon,
                 contentDescription = "Dog",
                 contentScale = ContentScale.Crop,
-                placeholder = painterResource(id = R.drawable.dog_cartoon), // Mens laster vises standard-bilde
-                error = painterResource(id = R.drawable.dog_cartoon), // Ved feil: Standardbilde
+                placeholder = painterResource(id = R.drawable.dog_cartoon),
+                error = painterResource(id = R.drawable.dog_cartoon),
                 modifier = Modifier
                     .size(100.dp)
                     .clip(CircleShape)

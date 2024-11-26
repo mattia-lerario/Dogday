@@ -3,7 +3,7 @@ import java.util.UUID
 
 
 data class Dog(
-    val dogId: String = UUID.randomUUID().toString(),  // Generate a random UID
+    val dogId: String = UUID.randomUUID().toString(),
     val name: String,
     val nickName: String = "",
     val breed: String,

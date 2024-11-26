@@ -13,11 +13,9 @@ class NewUserViewModel : ViewModel() {
 
     private val firestoreInteractions = FirestoreInteractions()
 
-    // User session variables
     private val email = UserSession.email ?: ""
     private val uid = UserSession.uid ?: ""
 
-    // Mutable states for the screen
     var firstName = mutableStateOf("")
     var lastName = mutableStateOf("")
     var phoneNumber = mutableStateOf("")
@@ -25,7 +23,6 @@ class NewUserViewModel : ViewModel() {
     var showDatePicker = mutableStateOf(false)
     var saveSuccess = mutableStateOf(false)
 
-    // Function to save user data to Firestore
     fun saveUserData() {
         if (firstName.value.isNotEmpty() && phoneNumber.value.isNotEmpty()) {
             val user = User(

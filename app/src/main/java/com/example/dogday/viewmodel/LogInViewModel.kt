@@ -45,7 +45,6 @@ class LogInViewModel : ViewModel() {
                         _loginSuccess.value = true
                         logLoginEvent()
 
-                        // Save login state
                         val sharedPreferences = context.getSharedPreferences("dogday_preferences", Context.MODE_PRIVATE)
                         sharedPreferences.edit().putBoolean("isLoggedIn", true).apply()
                     } else {
@@ -66,19 +65,15 @@ class LogInViewModel : ViewModel() {
         _loginError.value = null
     }
 
-    // Function to reset login success state
     fun resetLoginSuccess() {
         _loginSuccess.value = false
     }
     fun logoutUser(context: Context) {
-        // Sign out the user from Firebase
         Firebase.auth.signOut()
 
-        // Clear the login state in SharedPreferences
         val sharedPreferences = context.getSharedPreferences("dogday_preferences", Context.MODE_PRIVATE)
         sharedPreferences.edit().putBoolean("isLoggedIn", false).apply()
 
-        // Reset login state
         _loginSuccess.value = false
         _email.value = ""
         _password.value = ""

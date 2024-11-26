@@ -140,13 +140,10 @@ fun DogDetailUI(navController: NavController, dog: Dog, viewModel: DogListViewMo
             onDeleteNote = { noteToDelete -> viewModel.deleteVetNoteForDog(dog, noteToDelete) }
         )
 
-        // Spacer to separate the vet log section and the buttons below
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Add Vet Note Button
         Button(
             onClick = {
-                // Navigate to the VetNoteScreen for adding a new note
                 navController.navigate("addVetNote/${dog.dogId}")
             },
             modifier = Modifier

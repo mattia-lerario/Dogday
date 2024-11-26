@@ -70,9 +70,8 @@ fun SettingsScreen(navController: NavController, logInViewModel: LogInViewModel 
                     onClick = {
                         logInViewModel.logoutUser(context)
 
-                        // Navigate to Login screen and clear backstack
                         navController.navigate(DogScreen.Login.name) {
-                            popUpTo(0) // Clear all backstack to ensure a fresh start
+                            popUpTo(0)
                         }
                     },
                     containerColor = MaterialTheme.colorScheme.primary,

@@ -26,7 +26,6 @@ fun KennelDetailScreen(kennelId: String?) {
 
     val viewModel: KennelDetailViewModel = viewModel()
 
-    // Fetch the kennel details using the kennelId
     LaunchedEffect(kennelId) {
         if (kennelId != null) {
             viewModel.fetchKennelById(kennelId)

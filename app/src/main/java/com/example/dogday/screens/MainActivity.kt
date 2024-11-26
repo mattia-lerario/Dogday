@@ -57,7 +57,6 @@ import com.google.firebase.analytics.analytics
 import com.google.firebase.auth.FirebaseAuth
 
 private const val API_KEY = "AIzaSyC6Krt10uCwyajM12ZMC9e8yUIdnTo6whY"
-// Inside MainActivity.kt
 class MainActivity : ComponentActivity() {
     private lateinit var analytics: FirebaseAnalytics
 
@@ -66,14 +65,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         FirebaseApp.initializeApp(this)
-        // Initialize Google Places SDK
         if (!Places.isInitialized()) {
             Places.initialize(applicationContext,"$API_KEY")
         }
-        // Initialize Firebase Analytics
         analytics = Firebase.analytics
 
-        // Log an event to verify Firebase initialization
         analytics.logEvent(FirebaseAnalytics.Event.APP_OPEN, null)
         Log.d("MainActivity", "Firebase initialized successfully")
 
@@ -100,24 +96,19 @@ fun MainApp(context: Context) {
     val sharedPreferences = context.getSharedPreferences("dogday_preferences", Context.MODE_PRIVATE)
     val isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false)
 
-    // Check if user is authenticated and decide the initial screen
     LaunchedEffect(Unit) {
         if (firebaseAuth.currentUser != null && isLoggedIn) {
-            // Log the current user state
             Log.d("MainApp", "User already logged in, navigating to Home")
-            // User is authenticated, navigate to Home screen
             if (currentRoute == null || currentRoute == DogScreen.Login.name) {
                 navController.navigate(DogScreen.Home.name) {
-                    popUpTo(0) // Clear all backstack to prevent navigating back to login
+                    popUpTo(0)
                 }
             }
         } else {
-            // Log the current user state
             Log.d("MainApp", "User not logged in, navigating to Login")
-            // User is not authenticated, navigate to Login screen
             if (currentRoute != DogScreen.Login.name) {
                 navController.navigate(DogScreen.Login.name) {
-                    popUpTo(0) // Clear all backstack to ensure a fresh start
+                    popUpTo(0)
                 }
             }
         }
@@ -185,7 +176,7 @@ fun NavigationHost(navController: NavHostController, modifier: Modifier, context
 
     NavHost(navController = navController, startDestination = "login", modifier = modifier) {
         composable(DogScreen.Login.name) {
-            LoginScreen(navController, context)   // Pass context to LoginScreen here
+            LoginScreen(navController, context)
         }
         composable(DogScreen.Home.name) {
             HomeScreen(navController)

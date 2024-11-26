@@ -24,7 +24,6 @@ import com.example.dogday.viewmodel.HikeDetailViewModel
 fun HikeDetailScreen(hikeId: String?) {
     val viewModel: HikeDetailViewModel = viewModel()
 
-    // Fetch the hike details using the hikeId
     LaunchedEffect(hikeId) {
         if (hikeId != null) {
             viewModel.fetchHikeById(hikeId)
