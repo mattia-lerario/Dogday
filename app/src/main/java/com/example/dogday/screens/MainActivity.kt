@@ -76,8 +76,11 @@ class MainActivity : ComponentActivity() {
         // Log an event to verify Firebase initialization
         analytics.logEvent(FirebaseAnalytics.Event.APP_OPEN, null)
         Log.d("MainActivity", "Firebase initialized successfully")
-        // Schedule the recurring work
+
+
+        // Schedule the recurring work for fetching breeders and kennels lists
         scheduleFetchAndUploadWork(this)
+
         setContent {
             MyAppTest01Theme {
                 MainApp(context = applicationContext)

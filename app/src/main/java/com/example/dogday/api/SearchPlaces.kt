@@ -29,7 +29,7 @@ object SearchPlaces {
         val db = FirebaseFirestore.getInstance()
         val batch = db.batch()
         for (kennel in kennels) {
-            val docRef = db.collection("kennelsDB").document(kennel.id)
+            val docRef = db.collection("kennels").document(kennel.id)
             batch.set(docRef, kennel)
         }
         batch.commit().addOnCompleteListener { onComplete() }
@@ -40,13 +40,13 @@ object SearchPlaces {
         val db = FirebaseFirestore.getInstance()
         val batch = db.batch()
         for (breeder in breeders) {
-            val docRef = db.collection("BreedersDB").document(breeder.id)
+            val docRef = db.collection("breeders").document(breeder.id)
             batch.set(docRef, breeder)
         }
         batch.commit().addOnCompleteListener { onComplete() }
     }
 
-    // Modified function for searching kennels with pagination
+    //Function for searching kennels with pagination
     fun searchKennelsByKeyword(
         kennelsList: MutableList<Kennel> = mutableListOf(),
         pageToken: String? = null,
@@ -117,7 +117,7 @@ object SearchPlaces {
                             scheduler.shutdown()
                         }, 2, TimeUnit.SECONDS)
                     } else {
-                        // No more pages, upload to Firebase
+                        //upload to Firebase
                         uploadKennelsToFirebase(kennelsList) { onSuccess() }
                     }
                 } ?: onFailure(Exception("Empty response body"))
@@ -125,7 +125,7 @@ object SearchPlaces {
         })
     }
 
-    // Modified function for searching breeders with pagination
+    //Function for searching breeders with pagination
     fun searchBreedersByKeyword(
         breedersList: MutableList<Breeder> = mutableListOf(),
         pageToken: String? = null,
@@ -205,7 +205,8 @@ object SearchPlaces {
         })
     }
 }
-
+// Worker that searches for kennels and breeders using keywords, waits for both to complete, and then uploads data to Firebase.
+// It retries the work if either search fails, and runs as a scheduled task every 1 minute.
 class FetchAndUploadWorker(appContext: Context, workerParams: WorkerParameters) :
     Worker(appContext, workerParams) {
 

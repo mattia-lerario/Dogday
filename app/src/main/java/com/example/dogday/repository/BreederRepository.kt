@@ -8,7 +8,7 @@ class BreederRepository {
     private val firestore = FirebaseFirestore.getInstance()
 
     fun fetchBreeders(onSuccess: (List<Breeder>) -> Unit, onFailure: (Exception) -> Unit) {
-        val breederCollection = firestore.collection("BreedersDB")
+        val breederCollection = firestore.collection("breeders")
         breederCollection.get().addOnSuccessListener { result ->
             val breederList = result.documents.mapNotNull { document ->
                 val breeder = document.toObject(Breeder::class.java)
@@ -21,7 +21,7 @@ class BreederRepository {
     }
 
     fun getBreederById(breederId: String, onSuccess: (Breeder?) -> Unit, onFailure: (Exception) -> Unit) {
-        val breederDocument = firestore.collection("BreedersDB").document(breederId)
+        val breederDocument = firestore.collection("breeders").document(breederId)
         breederDocument.get().addOnSuccessListener { documentSnapshot ->
             val breeder = documentSnapshot.toObject(Breeder::class.java)?.copy(id = documentSnapshot.id)
             onSuccess(breeder)
@@ -32,7 +32,7 @@ class BreederRepository {
 
     fun uploadBreedersToFirestore(breeders: List<Breeder>) {
         val firestore = FirebaseFirestore.getInstance()
-        val collectionRef = firestore.collection("BreedersDB")
+        val collectionRef = firestore.collection("breeders")
 
         breeders.forEach { breeder ->
             val documentRef = collectionRef.document()  // Generate Firestore ID here

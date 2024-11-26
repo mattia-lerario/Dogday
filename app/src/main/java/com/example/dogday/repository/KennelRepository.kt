@@ -8,7 +8,7 @@ class KennelRepository {
     private val firestore = FirebaseFirestore.getInstance()
 
     fun fetchKennels(onSuccess: (List<Kennel>) -> Unit, onFailure: (Exception) -> Unit) {
-        val kennelCollection = firestore.collection("kennelsDB")
+        val kennelCollection = firestore.collection("kennels")
         kennelCollection.get().addOnSuccessListener { result ->
             val kennelList = result.documents.mapNotNull { document ->
                 val kennel = document.toObject(Kennel::class.java)
@@ -21,7 +21,7 @@ class KennelRepository {
     }
 
     fun getKennelById(kennelId: String, onSuccess: (Kennel?) -> Unit, onFailure: (Exception) -> Unit) {
-        val kennelDocument = firestore.collection("kennelsDB").document(kennelId)
+        val kennelDocument = firestore.collection("kennels").document(kennelId)
         kennelDocument.get().addOnSuccessListener { documentSnapshot ->
             if (documentSnapshot.exists()) {
                 val kennel = documentSnapshot.toObject(Kennel::class.java)?.copy(id = documentSnapshot.id)
@@ -39,7 +39,7 @@ class KennelRepository {
 
     fun uploadKennelsToFirestore(kennels: List<Kennel>) {
         val firestore = FirebaseFirestore.getInstance()
-        val collectionRef = firestore.collection("kennelsDB")
+        val collectionRef = firestore.collection("kennels")
 
         kennels.forEach { kennel ->
             val documentRef = collectionRef.document()
