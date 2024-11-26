@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
@@ -42,10 +44,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -104,6 +109,13 @@ fun NewUserScreen(navController: NavController, newUserViewModel: NewUserViewMod
     val showDatePicker by newUserViewModel.showDatePicker
     val saveSuccess by newUserViewModel.saveSuccess
 
+    val focusUserFirsName = remember { FocusRequester() }
+    val focusUserLastName = remember { FocusRequester() }
+    val focusUserNumber = remember { FocusRequester() }
+    val focusUserBirthday = remember { FocusRequester() }
+
+
+
     // Create datePickerState locally in the composable
     val datePickerState = rememberDatePickerState()
 
@@ -153,7 +165,8 @@ fun NewUserScreen(navController: NavController, newUserViewModel: NewUserViewMod
             label = { Text("First Name", color = Color.Black) },
             modifier = Modifier
                 .widthIn(max = 500.dp)
-                .padding(horizontal = 8.dp),
+                .padding(horizontal = 8.dp)
+                .focusRequester(focusUserFirsName),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = InputBackgroundLight,
                 unfocusedContainerColor = InputBackgroundLight,
@@ -163,7 +176,16 @@ fun NewUserScreen(navController: NavController, newUserViewModel: NewUserViewMod
                 unfocusedTextColor = Color.Black
 
             ),
-            shape = MaterialTheme.shapes.small
+            shape = MaterialTheme.shapes.small,
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Next
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = {
+                    focusUserLastName.requestFocus()
+                }
+            )
+
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -174,7 +196,8 @@ fun NewUserScreen(navController: NavController, newUserViewModel: NewUserViewMod
             label = { Text("Last Name", color = Color.Black) },
             modifier = Modifier
                 .widthIn(max = 500.dp)
-                .padding(horizontal = 8.dp),
+                .padding(horizontal = 8.dp)
+                .focusRequester(focusUserLastName),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = InputBackgroundLight,
                 unfocusedContainerColor = InputBackgroundLight,
@@ -183,7 +206,15 @@ fun NewUserScreen(navController: NavController, newUserViewModel: NewUserViewMod
                 focusedTextColor = Color.Black,
                 unfocusedTextColor = Color.Black
             ),
-            shape = MaterialTheme.shapes.small
+            shape = MaterialTheme.shapes.small,
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Next
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = {
+                    focusUserNumber.requestFocus()
+                }
+            )
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -194,7 +225,8 @@ fun NewUserScreen(navController: NavController, newUserViewModel: NewUserViewMod
             label = { Text("Phone Number", color = Color.Black) },
             modifier = Modifier
                 .widthIn(max = 500.dp)
-                .padding(horizontal = 8.dp),
+                .padding(horizontal = 8.dp)
+                .focusRequester(focusUserNumber),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = InputBackgroundLight,
                 unfocusedContainerColor = InputBackgroundLight,
@@ -203,7 +235,15 @@ fun NewUserScreen(navController: NavController, newUserViewModel: NewUserViewMod
                 focusedTextColor = Color.Black,
                 unfocusedTextColor = Color.Black
             ),
-            shape = MaterialTheme.shapes.small
+            shape = MaterialTheme.shapes.small,
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Next
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = {
+                    focusUserBirthday.requestFocus()
+                }
+            )
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -235,7 +275,8 @@ fun NewUserScreen(navController: NavController, newUserViewModel: NewUserViewMod
                 modifier = Modifier
                     .widthIn(max = 500.dp)
                     .fillMaxWidth(0.75f)
-                    .height(64.dp),
+                    .height(64.dp)
+                    .focusRequester(focusUserBirthday),
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = BackgroundColorLight,
                     unfocusedContainerColor = BackgroundColorLight,
