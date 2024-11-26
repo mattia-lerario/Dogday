@@ -11,7 +11,7 @@ import com.example.dogday.models.HikeData
 import com.example.dogday.models.Kennel
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.Marker
-
+//This was meant to be used for a custom map marker but did not work as expected and caused too many frame jumps so it is NOT IN USE
 class CustomMapMarker(
     private val inflater: LayoutInflater,
     private val map: GoogleMap

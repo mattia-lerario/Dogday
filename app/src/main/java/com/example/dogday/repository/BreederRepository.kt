@@ -6,7 +6,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 class BreederRepository {
     private val firestore = FirebaseFirestore.getInstance()
-
+    // Fetch breeders from DB.
     fun fetchBreeders(onSuccess: (List<Breeder>) -> Unit, onFailure: (Exception) -> Unit) {
         val breederCollection = firestore.collection("breeders")
         breederCollection.get().addOnSuccessListener { result ->
@@ -19,7 +19,7 @@ class BreederRepository {
             onFailure(exception)
         }
     }
-
+    //get specific Breeder by ID
     fun getBreederById(breederId: String, onSuccess: (Breeder?) -> Unit, onFailure: (Exception) -> Unit) {
         val breederDocument = firestore.collection("breeders").document(breederId)
         breederDocument.get().addOnSuccessListener { documentSnapshot ->
@@ -29,7 +29,7 @@ class BreederRepository {
             onFailure(exception)
         }
     }
-
+    //not in use as we are using the Search Places function instead
     fun uploadBreedersToFirestore(breeders: List<Breeder>) {
         val firestore = FirebaseFirestore.getInstance()
         val collectionRef = firestore.collection("breeders")

@@ -9,7 +9,7 @@ data class User(
     val lastName: String = "",
     val phoneNumber: String = "",
     val birthday: Long = 0L,
-    val dogs: Map<String, Dog> = emptyMap() // Assuming dogs is a map of Dog objects
+    val dogs: Map<String, Dog> = emptyMap()
 ) {
     // No-argument constructor is automatically generated because of default values
 }

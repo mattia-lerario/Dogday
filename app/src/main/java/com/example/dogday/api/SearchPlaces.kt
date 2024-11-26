@@ -73,7 +73,7 @@ object SearchPlaces {
                 response.body?.let { responseBody ->
                     val json = JSONObject(responseBody.string())
                     val results = json.getJSONArray("results")
-
+                    //We take the values we need and add them to our Kennel Objects
                     for (i in 0 until results.length()) {
                         val place = results.getJSONObject(i)
                         val id = place.optString("place_id")
@@ -125,7 +125,7 @@ object SearchPlaces {
         })
     }
 
-    //Function for searching breeders with pagination
+    //Function for fetching breeders with pagination token
     fun searchBreedersByKeyword(
         breedersList: MutableList<Breeder> = mutableListOf(),
         pageToken: String? = null,
@@ -152,7 +152,7 @@ object SearchPlaces {
                 response.body?.let { responseBody ->
                     val json = JSONObject(responseBody.string())
                     val results = json.getJSONArray("results")
-
+                    //We take the values we need and add them to our Breeder Objects
                     for (i in 0 until results.length()) {
                         val place = results.getJSONObject(i)
                         val id = place.optString("place_id")
@@ -206,7 +206,7 @@ object SearchPlaces {
     }
 }
 // Worker that searches for kennels and breeders using keywords, waits for both to complete, and then uploads data to Firebase.
-// It retries the work if either search fails, and runs as a scheduled task every 1 minute.
+
 class FetchAndUploadWorker(appContext: Context, workerParams: WorkerParameters) :
     Worker(appContext, workerParams) {
 
@@ -250,7 +250,7 @@ class FetchAndUploadWorker(appContext: Context, workerParams: WorkerParameters) 
         }
     }
 }
-
+// It retries the work if either search fails, and runs as a scheduled task every 24 Hours.
 fun scheduleFetchAndUploadWork(context: Context) {
     val constraints = Constraints.Builder()
         .setRequiredNetworkType(NetworkType.CONNECTED)

@@ -6,7 +6,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 class KennelRepository {
     private val firestore = FirebaseFirestore.getInstance()
-
+    //Gets Kennels from ID
     fun fetchKennels(onSuccess: (List<Kennel>) -> Unit, onFailure: (Exception) -> Unit) {
         val kennelCollection = firestore.collection("kennels")
         kennelCollection.get().addOnSuccessListener { result ->
@@ -19,7 +19,7 @@ class KennelRepository {
             onFailure(exception)
         }
     }
-
+    //gets kennel by ID
     fun getKennelById(kennelId: String, onSuccess: (Kennel?) -> Unit, onFailure: (Exception) -> Unit) {
         val kennelDocument = firestore.collection("kennels").document(kennelId)
         kennelDocument.get().addOnSuccessListener { documentSnapshot ->
@@ -36,7 +36,7 @@ class KennelRepository {
             onFailure(exception)
         }
     }
-
+    //not in use as we are using the Search Places function instead
     fun uploadKennelsToFirestore(kennels: List<Kennel>) {
         val firestore = FirebaseFirestore.getInstance()
         val collectionRef = firestore.collection("kennels")

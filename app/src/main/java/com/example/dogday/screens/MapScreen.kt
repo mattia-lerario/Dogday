@@ -53,7 +53,7 @@ fun MapScreen(navController: NavHostController) {
     val context = LocalContext.current
     val mapViewModel: MapViewModel = viewModel()
 
-    // Remember the MapView with lifecycle support
+    // This Remembers the MapView with lifecycle support
     val mapView = rememberMapViewWithLifecycle()
     val fusedLocationProviderClient = remember {
         LocationServices.getFusedLocationProviderClient(context)
@@ -62,7 +62,7 @@ fun MapScreen(navController: NavHostController) {
     var googleMap by remember { mutableStateOf<GoogleMap?>(null) }
     var showAddHikeDialog by remember { mutableStateOf(false) }
 
-    // Define the launcher to pick images from the user's library
+    // Launcher to pick images from the user's library on add HIKE
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
@@ -80,7 +80,7 @@ fun MapScreen(navController: NavHostController) {
 
         googleMap?.isMyLocationEnabled = mapViewModel.hasLocationPermission
     }
-
+    //if user is new or device has not given permission it will ask for fine and coarse location.
     LaunchedEffect(Unit) {
         if (!mapViewModel.checkLocationPermission(context)) {
             permissionLauncher.launch(
@@ -92,7 +92,7 @@ fun MapScreen(navController: NavHostController) {
         }
     }
 
-    // Center the camera on the user's location or on the markers if available
+    // Center the camera on the user's location or on the markers if available (if testing Be sure to move your emulators location to Norway for better experience)
     LaunchedEffect(googleMap, mapViewModel.kennels, mapViewModel.hikes, mapViewModel.breeders) {
         googleMap?.let { map ->
             if (mapViewModel.hasLocationPermission) {
@@ -117,7 +117,7 @@ fun MapScreen(navController: NavHostController) {
             .fillMaxSize()
             .background(Color.Transparent)
     ) {
-        // Toggle Buttons Row
+        // Toggle Buttons Row for hikes, Kennels and Breeders
         Row(
             modifier = Modifier.padding(8.dp),
             horizontalArrangement = Arrangement.spacedBy(5.dp)
@@ -158,7 +158,7 @@ fun MapScreen(navController: NavHostController) {
         }
 
         Box(modifier = Modifier.fillMaxSize()) {
-            // Display the MapView using AndroidView
+            // Display the MapView
             AndroidView(
                 factory = {
                     mapView.apply {
@@ -262,6 +262,14 @@ fun MapScreen(navController: NavHostController) {
     }
 }
 
+/**
+ * Creates and manages a Google MapView with lifecycle awareness within a Compose environment.
+ *
+ * This Composable function remembers a MapView instance across recompositions, and automatically
+ * calls the appropriate lifecycle methods (onCreate, onStart, onResume, onPause, onStop, onDestroy)
+ * to ensure that the MapView is properly initialized, paused, resumed, and cleaned up in sync
+ * with the parent composable's lifecycle.
+ */
 @Composable
 fun rememberMapViewWithLifecycle(): MapView {
     val context = LocalContext.current

@@ -194,7 +194,11 @@ class MapViewModel : ViewModel() {
         }
     }
 
-
+    /**
+     * Adds markers for kennels, hikes, and breeders to the GoogleMap instance.
+     * Clears the map before adding new markers based on the visibility toggles for each type of item.
+     * Uses different colors for markers to differentiate the categories.
+     */
 
     fun updateMapWithMarkers(map: GoogleMap) {
         map.clear()
@@ -247,6 +251,10 @@ class MapViewModel : ViewModel() {
     }
 
 
+    /**
+     * Updates the list of visible items based on the current visible map region.
+     * Filters kennels, hikes, and breeders to see which ones fall within the given LatLngBounds.
+     */
     fun updateVisibleItems(visibleRegion: LatLngBounds) {
         val itemsInBounds = mutableListOf<Any>()
 
@@ -284,8 +292,10 @@ class MapViewModel : ViewModel() {
         Log.d("MapViewModel", "Visible items updated: $visibleItems")
     }
 
-
-
+    /**
+     * Centers the map on markers for kennels, hikes, or breeders, or uses a default location.
+     * Adjusts the camera position to fit all visible markers, with a fallback to a default zoomed position.
+     */
     fun centerMapOnMarkersOrDefault(googleMap: GoogleMap, mapViewModel: MapViewModel) {
         if (mapViewModel.kennels.isNotEmpty() || mapViewModel.hikes.isNotEmpty() || mapViewModel.breeders.isNotEmpty()) {
             val boundsBuilder = LatLngBounds.Builder()
@@ -331,8 +341,10 @@ class MapViewModel : ViewModel() {
     }
 
 
-
-
+    /**
+     * Checks if the app has the required location permissions.
+     * Updates the hasLocationPermission flag and returns whether the permission is granted.
+     */
     fun checkLocationPermission(context: Context): Boolean {
         val fineLocationPermission = ContextCompat.checkSelfPermission(
             context,
@@ -348,6 +360,10 @@ class MapViewModel : ViewModel() {
         return hasLocationPermission
     }
 
+
+    /**
+     * Adds a new hike to the repository and updates the state to include it in the hikes list.
+     */
     fun addHike(hike: HikeData) {
         hikeRepository.addHike(
             hike,
@@ -360,6 +376,9 @@ class MapViewModel : ViewModel() {
         )
     }
 
+    /**
+     * Toggles the visibility state of kennels, hikes, or breeders based on the provided label.
+     */
     fun toggleShowState(label: String) {
         when (label) {
             "Kennels" -> {
@@ -377,7 +396,11 @@ class MapViewModel : ViewModel() {
         }
     }
 
-
+    /**
+     * Converts a vector resource into a BitmapDescriptor to use as a custom marker icon on the map.
+     * Useful for using drawable resources as map markers.
+     * THIS FUNCTION IS NOT IN USE AS PART OF THE CUSTOM MAP MARKER FILES.
+     */
     fun bitmapDescriptorFromVector(context: Context, vectorResId: Int): BitmapDescriptor? {
         val vectorDrawable: Drawable? = ContextCompat.getDrawable(context, vectorResId)
         if (vectorDrawable == null) {

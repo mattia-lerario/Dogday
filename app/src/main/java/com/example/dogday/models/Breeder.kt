@@ -3,7 +3,7 @@ package com.example.dogday.models
 import com.google.firebase.firestore.GeoPoint
 
 data class Breeder(
-    val id: String,  // Make sure this is non-nullable
+    val id: String,
     val name: String?,
     val address: String?,
     val coordinates: GeoPoint?,
