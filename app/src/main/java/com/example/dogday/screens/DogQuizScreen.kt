@@ -80,7 +80,7 @@ fun DogQuizScreen(navController: NavController) {
         Spacer(modifier = Modifier.height(24.dp))
 
         Image(
-            painter = painterResource(R.drawable.dog_cartoon), // Add your logo drawable here
+            painter = painterResource(R.drawable.dog_cartoon),
             contentDescription = "DogDay Logo",
             modifier = Modifier.size(350.dp),
             contentScale = ContentScale.Fit

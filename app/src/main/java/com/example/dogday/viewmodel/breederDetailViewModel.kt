@@ -23,7 +23,7 @@ class BreederDetailViewModel : ViewModel() {
                     _breeder.value = fetchedBreeder
                 },
                 onFailure = {
-                    _breeder.value = null // Set to null on failure
+                    _breeder.value = null
                 }
             )
         }

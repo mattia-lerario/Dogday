@@ -83,13 +83,12 @@ fun YourDogLabel() {
             )
         }
 
-        // Legger til teksten "The owner" over formen
         Text(
             text = "Your Dog",
             color = Color.White,
             textAlign = TextAlign.Center,
-            fontWeight = FontWeight.Bold, // Setter teksten til fet
-            fontSize = 25.sp, // Juster størrelsen etter behov
+            fontWeight = FontWeight.Bold,
+            fontSize = 25.sp,
             modifier = Modifier.align(Alignment.Center)
         )
     }
@@ -133,7 +132,6 @@ fun AddDogScreen(
         }
     }
 
-    // Oppdater requestCameraPermissionLauncher til å starte kamera når tillatelse gis
     val requestCameraPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { granted ->
@@ -169,7 +167,7 @@ fun AddDogScreen(
                 verticalArrangement = Arrangement.spacedBy(0.dp)
             ) {
 
-                YourDogLabel() // Legger til OwnerLabel her
+                YourDogLabel()
             }
         }
 
@@ -351,7 +349,7 @@ fun AddDogScreen(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .verticalScroll(rememberScrollState()) // Scroll kun her
+                            .verticalScroll(rememberScrollState())
                     ) {
                         DatePicker(
                             state = datePickerState,

@@ -23,7 +23,6 @@ class KennelDetailViewModel : ViewModel() {
                     _kennel.value = fetchedKennel
                 },
                 onFailure = { _ ->
-                    // Handle error
                     _kennel.value = null
                 }
             )

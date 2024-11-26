@@ -24,12 +24,10 @@ class RegisterViewModel : ViewModel() {
     private val _registerSuccess = MutableStateFlow(false)
     val registerSuccess: StateFlow<Boolean> = _registerSuccess
 
-    // Simplified email change function without immediate validation
     fun onEmailChange(newEmail: String) {
         _email.value = newEmail
     }
 
-    // Simplified password change function without immediate validation
     fun onPasswordChange(newPassword: String) {
         _password.value = newPassword
     }

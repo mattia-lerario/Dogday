@@ -24,7 +24,6 @@ private const val API_KEY = "AIzaSyC6Krt10uCwyajM12ZMC9e8yUIdnTo6whY"
 fun BreederDetailScreen(breederId: String?) {
     val viewModel: BreederDetailViewModel = viewModel()
 
-    // Fetch the breeder details using the breederId
     LaunchedEffect(breederId) {
         if (breederId != null) {
             viewModel.fetchBreederById(breederId)

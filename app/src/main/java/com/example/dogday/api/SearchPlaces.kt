@@ -24,7 +24,6 @@ object SearchPlaces {
 
     private const val API_KEY = "AIzaSyC6Krt10uCwyajM12ZMC9e8yUIdnTo6whY"
 
-    // Function to upload kennels to Firebase
     private fun uploadKennelsToFirebase(kennels: List<Kennel>, onComplete: () -> Unit) {
         val db = FirebaseFirestore.getInstance()
         val batch = db.batch()
@@ -35,7 +34,6 @@ object SearchPlaces {
         batch.commit().addOnCompleteListener { onComplete() }
     }
 
-    // Function to upload breeders to Firebase
     private fun uploadBreedersToFirebase(breeders: List<Breeder>, onComplete: () -> Unit) {
         val db = FirebaseFirestore.getInstance()
         val batch = db.batch()
@@ -46,7 +44,6 @@ object SearchPlaces {
         batch.commit().addOnCompleteListener { onComplete() }
     }
 
-    //Function for searching kennels with pagination
     fun searchKennelsByKeyword(
         kennelsList: MutableList<Kennel> = mutableListOf(),
         pageToken: String? = null,
@@ -110,14 +107,12 @@ object SearchPlaces {
 
                     if (json.has("next_page_token")) {
                         val nextPageToken = json.getString("next_page_token")
-                        // Schedule the next call after a short delay
                         val scheduler = Executors.newSingleThreadScheduledExecutor()
                         scheduler.schedule({
                             searchKennelsByKeyword(kennelsList, nextPageToken, onSuccess, onFailure)
                             scheduler.shutdown()
                         }, 2, TimeUnit.SECONDS)
                     } else {
-                        //upload to Firebase
                         uploadKennelsToFirebase(kennelsList) { onSuccess() }
                     }
                 } ?: onFailure(Exception("Empty response body"))
@@ -125,7 +120,6 @@ object SearchPlaces {
         })
     }
 
-    //Function for searching breeders with pagination
     fun searchBreedersByKeyword(
         breedersList: MutableList<Breeder> = mutableListOf(),
         pageToken: String? = null,
@@ -190,14 +184,12 @@ object SearchPlaces {
 
                     if (json.has("next_page_token")) {
                         val nextPageToken = json.getString("next_page_token")
-                        // Schedule the next call after a short delay
                         val scheduler = Executors.newSingleThreadScheduledExecutor()
                         scheduler.schedule({
                             searchBreedersByKeyword(breedersList, nextPageToken, onSuccess, onFailure)
                             scheduler.shutdown()
                         }, 2, TimeUnit.SECONDS)
                     } else {
-                        // No more pages, upload to Firebase
                         uploadBreedersToFirebase(breedersList) { onSuccess() }
                     }
                 } ?: onFailure(Exception("Empty response body"))
@@ -205,8 +197,7 @@ object SearchPlaces {
         })
     }
 }
-// Worker that searches for kennels and breeders using keywords, waits for both to complete, and then uploads data to Firebase.
-// It retries the work if either search fails, and runs as a scheduled task every 1 minute.
+
 class FetchAndUploadWorker(appContext: Context, workerParams: WorkerParameters) :
     Worker(appContext, workerParams) {
 

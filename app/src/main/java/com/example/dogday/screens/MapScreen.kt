@@ -62,7 +62,6 @@ fun MapScreen(navController: NavHostController) {
     var googleMap by remember { mutableStateOf<GoogleMap?>(null) }
     var showAddHikeDialog by remember { mutableStateOf(false) }
 
-    // Define the launcher to pick images from the user's library
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
@@ -71,7 +70,6 @@ fun MapScreen(navController: NavHostController) {
         }
     }
 
-    // Permission handling
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
@@ -92,7 +90,6 @@ fun MapScreen(navController: NavHostController) {
         }
     }
 
-    // Center the camera on the user's location or on the markers if available
     LaunchedEffect(googleMap, mapViewModel.kennels, mapViewModel.hikes, mapViewModel.breeders) {
         googleMap?.let { map ->
             if (mapViewModel.hasLocationPermission) {
@@ -117,12 +114,10 @@ fun MapScreen(navController: NavHostController) {
             .fillMaxSize()
             .background(Color.Transparent)
     ) {
-        // Toggle Buttons Row
         Row(
             modifier = Modifier.padding(8.dp),
             horizontalArrangement = Arrangement.spacedBy(5.dp)
         ) {
-            // Toggle buttons for kennels, hikes, breeders
             val toggleButtons = listOf(
                 "Kennels" to mapViewModel.showKennels,
                 "Hikes" to mapViewModel.showHikes,
@@ -158,7 +153,6 @@ fun MapScreen(navController: NavHostController) {
         }
 
         Box(modifier = Modifier.fillMaxSize()) {
-            // Display the MapView using AndroidView
             AndroidView(
                 factory = {
                     mapView.apply {
@@ -182,7 +176,6 @@ fun MapScreen(navController: NavHostController) {
                 modifier = Modifier.fillMaxSize()
             )
 
-            // FloatingActionButton for adding hike
             FloatingActionButton(
                 onClick = { showAddHikeDialog = true },
                 modifier = Modifier
@@ -197,14 +190,12 @@ fun MapScreen(navController: NavHostController) {
                 )
             }
 
-            // Update the map with markers when googleMap or other parameters change
             LaunchedEffect(googleMap, mapViewModel.kennels, mapViewModel.hikes, mapViewModel.breeders, mapViewModel.showKennels, mapViewModel.showHikes, mapViewModel.showBreeders) {
                 googleMap?.let {
                     mapViewModel.updateMapWithMarkers(it)
                 }
             }
 
-            // Display the ItemSlider at the bottom
             ItemSlider(
                 visibleItems = mapViewModel.visibleItems,
                 navController = navController,
@@ -215,7 +206,6 @@ fun MapScreen(navController: NavHostController) {
         }
     }
 
-    // Add Hike Dialog
     if (showAddHikeDialog) {
         AlertDialog(
             onDismissRequest = { showAddHikeDialog = false },

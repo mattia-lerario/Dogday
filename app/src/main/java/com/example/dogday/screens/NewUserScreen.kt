@@ -268,7 +268,7 @@ fun NewUserScreen(navController: NavController, newUserViewModel: NewUserViewMod
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .verticalScroll(rememberScrollState()) // Scroll kun her
+                            .verticalScroll(rememberScrollState())
                     ) {
                         DatePicker(
                             state = datePickerState,

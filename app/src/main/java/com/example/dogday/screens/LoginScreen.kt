@@ -60,7 +60,6 @@ fun LoginScreen(
     val loginError by logInViewModel.loginError.collectAsState()
     val loginSuccess by logInViewModel.loginSuccess.collectAsState()
 
-    // To move between input fields and login on password enter
     val focusRequesterEmail = FocusRequester()
     val focusRequesterPassword = FocusRequester()
     val focusManager = LocalFocusManager.current
@@ -70,7 +69,7 @@ fun LoginScreen(
             navController.navigate("home") {
                 popUpTo("login") { inclusive = true }
             }
-            logInViewModel.resetLoginSuccess() // Reset loginSuccess after navigation
+            logInViewModel.resetLoginSuccess()
         }
     }
 
@@ -80,16 +79,14 @@ fun LoginScreen(
         val isLandscape = maxWidth > maxHeight
 
         if (isLandscape) {
-            // Layout for landscape orientation
             Row(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(16.dp)
-                    .verticalScroll(rememberScrollState()), // Enable scrolling in landscape
+                    .verticalScroll(rememberScrollState()),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                // Logo on the left side
                 Image(
                     painter = painterResource(R.drawable.dogday_logo),
                     contentDescription = "DogDay Logo",
@@ -97,7 +94,6 @@ fun LoginScreen(
                     contentScale = ContentScale.Fit
                 )
 
-                // Inputs, buttons, and error message centered in the middle
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
@@ -218,7 +214,7 @@ fun LoginScreen(
                 verticalArrangement = Arrangement.Center,
                 modifier = Modifier
                     .fillMaxSize()
-                    .verticalScroll(rememberScrollState()) // Enable scrolling in portrait mode as well
+                    .verticalScroll(rememberScrollState())
             ) {
                 Image(
                     painter = painterResource(R.drawable.dogday_logo),
@@ -326,7 +322,6 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Add the dog image at the bottom
                 Image(
                     painter = painterResource(R.drawable.dog_cartoon),
                     contentDescription = "Dog Image",

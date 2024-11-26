@@ -41,7 +41,6 @@ class DogQuizViewModelTest {
 
     @Test
     fun `fetchDogRecommendations updates state with repository data`() = testScope.runTest {
-        // Arrange
         val expectedRecommendations = mapOf(
             DogID.GOLDEN_RETRIEVER to DogRecommendation(
                 breed = "Golden Retriever",
@@ -57,11 +56,9 @@ class DogQuizViewModelTest {
 
         whenever(mockRepository.fetchDogRecommendations()).thenReturn(expectedRecommendations)
 
-        // Act
-        viewModel = DogQuizViewModel(mockRepository) // This triggers fetch
+        viewModel = DogQuizViewModel(mockRepository)
         testDispatcher.scheduler.advanceUntilIdle()
 
-        // Assert
         assertEquals(expectedRecommendations, viewModel.dogRecommendations.value)
     }
 }

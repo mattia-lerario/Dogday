@@ -8,7 +8,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 fun seedDogRecommendations(firestore: FirebaseFirestore) {
-    // Define a map with all 27 DogRecommendations mapped to specific DogIDs
     val dogRecommendations = mapOf(
         DogID.BULLDOG to DogRecommendation("Bulldog", "A calm and relaxed dog for small spaces.", "https://example.com/bulldog.jpg"),
         DogID.PUG to DogRecommendation("Pug", "Small, affectionate dog perfect for low activity.", "https://example.com/pug.jpg"),
@@ -47,13 +46,10 @@ fun seedDogRecommendations(firestore: FirebaseFirestore) {
         DogID.BORDER_COLLIE to DogRecommendation("Border Collie", "Highly energetic and intelligent; thrives in large homes.", "https://example.com/border_collie.jpg")
     )
 
-    // Use a coroutine to add each document to Firestore
     CoroutineScope(Dispatchers.IO).launch {
         for ((dogID, recommendation) in dogRecommendations) {
-            // Use the uppercase DogID as the document ID in Firestore
             val documentID = dogID.name // Document ID in uppercase
 
-            // Add each recommendation to Firestore
             firestore.collection("dogRecommendations").document(documentID).set(
                 mapOf(
                     "id" to documentID,
