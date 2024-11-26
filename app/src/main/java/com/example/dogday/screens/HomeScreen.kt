@@ -97,7 +97,7 @@ fun HomeScreen(navController: NavHostController) {
                 onClickNext = { /*TODO*/ },
                 onClickPrev = { /*TODO*/ },
                 onClick = { clickedDate -> println("Clicked date: $clickedDate") },
-                startFromSunday = true
+                startFromSunday = false
             )
 
 
