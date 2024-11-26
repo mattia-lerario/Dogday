@@ -29,7 +29,7 @@ object SearchPlaces {
         val db = FirebaseFirestore.getInstance()
         val batch = db.batch()
         for (kennel in kennels) {
-            val docRef = db.collection("kennels").document(kennel.id)
+            val docRef = db.collection("kennelsDB").document(kennel.id)
             batch.set(docRef, kennel)
         }
         batch.commit().addOnCompleteListener { onComplete() }
@@ -40,7 +40,7 @@ object SearchPlaces {
         val db = FirebaseFirestore.getInstance()
         val batch = db.batch()
         for (breeder in breeders) {
-            val docRef = db.collection("breeders").document(breeder.id)
+            val docRef = db.collection("BreedersDB").document(breeder.id)
             batch.set(docRef, breeder)
         }
         batch.commit().addOnCompleteListener { onComplete() }
