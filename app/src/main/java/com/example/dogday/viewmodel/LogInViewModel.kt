@@ -70,4 +70,17 @@ class LogInViewModel : ViewModel() {
     fun resetLoginSuccess() {
         _loginSuccess.value = false
     }
+    fun logoutUser(context: Context) {
+        // Sign out the user from Firebase
+        Firebase.auth.signOut()
+
+        // Clear the login state in SharedPreferences
+        val sharedPreferences = context.getSharedPreferences("dogday_preferences", Context.MODE_PRIVATE)
+        sharedPreferences.edit().putBoolean("isLoggedIn", false).apply()
+
+        // Reset login state
+        _loginSuccess.value = false
+        _email.value = ""
+        _password.value = ""
+    }
 }

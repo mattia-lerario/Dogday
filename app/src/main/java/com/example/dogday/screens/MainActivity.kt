@@ -56,10 +56,11 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.analytics
 import com.google.firebase.auth.FirebaseAuth
 
-
+private const val API_KEY = "AIzaSyC6Krt10uCwyajM12ZMC9e8yUIdnTo6whY"
 // Inside MainActivity.kt
 class MainActivity : ComponentActivity() {
     private lateinit var analytics: FirebaseAnalytics
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,7 +68,7 @@ class MainActivity : ComponentActivity() {
         FirebaseApp.initializeApp(this)
         // Initialize Google Places SDK
         if (!Places.isInitialized()) {
-            Places.initialize(applicationContext, "AIzaSyC6Krt10uCwyajM12ZMC9e8yUIdnTo6whY")
+            Places.initialize(applicationContext,"$API_KEY")
         }
         // Initialize Firebase Analytics
         analytics = Firebase.analytics

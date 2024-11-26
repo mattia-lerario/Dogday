@@ -38,6 +38,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -165,7 +166,8 @@ fun RegisterScreen(navController: NavController, registerViewModel: RegisterView
                             modifier = Modifier
                                 .padding(top = 8.dp)
                                 .widthIn(max = 300.dp)
-                                .align(Alignment.Start)
+                                .align(Alignment.CenterHorizontally),
+                            textAlign = TextAlign.Center
                         )
                     }
 

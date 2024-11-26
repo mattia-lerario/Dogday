@@ -24,27 +24,29 @@ class RegisterViewModel : ViewModel() {
     private val _registerSuccess = MutableStateFlow(false)
     val registerSuccess: StateFlow<Boolean> = _registerSuccess
 
+    // Simplified email change function without immediate validation
     fun onEmailChange(newEmail: String) {
-        if (isValidEmail(newEmail)) {
-            _email.value = newEmail
-            _registerError.value = null
-        } else {
-            _registerError.value = "Invalid email format"
-        }
+        _email.value = newEmail
     }
 
+    // Simplified password change function without immediate validation
     fun onPasswordChange(newPassword: String) {
-        if (newPassword.contains("\\s".toRegex())) {
-            _registerError.value = "Password cannot contain spaces or tabs"
-        } else {
-            _password.value = newPassword
-            _registerError.value = null
-        }
+        _password.value = newPassword
     }
 
     fun registerUser() {
         if (_email.value.isBlank() || _password.value.isBlank()) {
             _registerError.value = "Email and password must not be empty"
+            return
+        }
+
+        if (!isValidEmail(_email.value)) {
+            _registerError.value = "Invalid email format"
+            return
+        }
+
+        if (_password.value.contains("\\s".toRegex())) {
+            _registerError.value = "Password cannot contain spaces or tabs"
             return
         }
 
@@ -74,3 +76,4 @@ class RegisterViewModel : ViewModel() {
         return emailPattern.matcher(email).matches()
     }
 }
+
