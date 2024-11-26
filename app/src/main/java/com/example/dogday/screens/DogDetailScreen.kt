@@ -424,7 +424,7 @@ fun VetLogNotes(
     var showDialog by remember { mutableStateOf(false) }
 
     if (dog.vetLog.isEmpty()) {
-        Text(text = "No events recorded! Press + to add one!")
+        Text(text = "No events recorded! Add one!")
     } else {
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(8.dp),
