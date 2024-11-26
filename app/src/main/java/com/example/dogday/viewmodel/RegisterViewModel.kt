@@ -24,19 +24,29 @@ class RegisterViewModel : ViewModel() {
     private val _registerSuccess = MutableStateFlow(false)
     val registerSuccess: StateFlow<Boolean> = _registerSuccess
 
-    fun onEmailChange(newEmail: String){
-        _email.value = newEmail
+    fun onEmailChange(newEmail: String) {
+        if (isValidEmail(newEmail)) {
+            _email.value = newEmail
+            _registerError.value = null
+        } else {
+            _registerError.value = "Invalid email format"
+        }
     }
 
-    fun onPasswordChange(newPassword: String){
-        _password.value = newPassword
+    fun onPasswordChange(newPassword: String) {
+        if (newPassword.contains("\\s".toRegex())) {
+            _registerError.value = "Password cannot contain spaces or tabs"
+        } else {
+            _password.value = newPassword
+            _registerError.value = null
+        }
     }
 
     fun registerUser() {
         if (_email.value.isBlank() || _password.value.isBlank()) {
             _registerError.value = "Email and password must not be empty"
             return
-    }
+        }
 
         viewModelScope.launch {
             Firebase.auth.createUserWithEmailAndPassword(_email.value, _password.value)
@@ -55,24 +65,6 @@ class RegisterViewModel : ViewModel() {
 
     fun clearRegisterError() {
         _registerError.value = null
-    }
-
-    fun RegisterViewModel.onEmailChange(newEmail: String) {
-        if (isValidEmail(newEmail)) {
-            _email.value = newEmail
-            _registerError.value = null
-        } else {
-            _registerError.value = "Invalid email format"
-        }
-    }
-
-    fun RegisterViewModel.onPasswordChange(newPassword: String) {
-        if (newPassword.contains("\\s".toRegex())) {
-            _registerError.value = "Password cannot contain spaces or tabs"
-        } else {
-            _password.value = newPassword
-            _registerError.value = null
-        }
     }
 
     private fun isValidEmail(email: String): Boolean {

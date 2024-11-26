@@ -21,7 +21,7 @@ class HikeDetailViewModel : ViewModel() {
                 onSuccess = { fetchedHike ->
                     _hike.value = fetchedHike
                 },
-                onFailure = { exception ->
+                onFailure = { _ ->
                     // Handle error, e.g., log it or show a message
                     _hike.value = null
                 }

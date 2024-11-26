@@ -51,7 +51,6 @@ import com.google.android.gms.maps.model.LatLng
 @Composable
 fun MapScreen(navController: NavHostController) {
     val context = LocalContext.current
-    val lifecycleOwner = LocalLifecycleOwner.current
     val mapViewModel: MapViewModel = viewModel()
 
     // Remember the MapView with lifecycle support
@@ -201,7 +200,7 @@ fun MapScreen(navController: NavHostController) {
             // Update the map with markers when googleMap or other parameters change
             LaunchedEffect(googleMap, mapViewModel.kennels, mapViewModel.hikes, mapViewModel.breeders, mapViewModel.showKennels, mapViewModel.showHikes, mapViewModel.showBreeders) {
                 googleMap?.let {
-                    mapViewModel.updateMapWithMarkers(it, context)
+                    mapViewModel.updateMapWithMarkers(it)
                 }
             }
 

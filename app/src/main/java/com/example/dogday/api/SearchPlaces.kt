@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit
 
 object SearchPlaces {
 
-    private const val API_KEY = "YOUR_API_KEY_HERE"
+    private const val API_KEY = "AIzaSyC6Krt10uCwyajM12ZMC9e8yUIdnTo6whY"
 
     // Function to upload kennels to Firebase
     private fun uploadKennelsToFirebase(kennels: List<Kennel>, onComplete: () -> Unit) {
@@ -81,12 +81,12 @@ object SearchPlaces {
                         val address = place.optString("formatted_address")
                         val lat = place.getJSONObject("geometry").getJSONObject("location").getDouble("lat")
                         val lng = place.getJSONObject("geometry").getJSONObject("location").getDouble("lng")
-                        val businessStatus = place.optString("business_status", null)
+                        val businessStatus = place.optString("business_status")?: ""
                         val openingHours = place.optJSONObject("opening_hours")?.optBoolean("open_now")
                         val rating = place.optDouble("rating", -1.0).takeIf { it >= 0 }
                         val userRatingsTotal = place.optInt("user_ratings_total", -1).takeIf { it >= 0 }
                         val photoReference = place.optJSONArray("photos")?.optJSONObject(0)?.optString("photo_reference")
-                        val iconUrl = place.optString("icon", null)
+                        val iconUrl = place.optString("icon")?: ""
                         val types = place.optJSONArray("types")?.let { jsonArray ->
                             List(jsonArray.length()) { index -> jsonArray.optString(index) }
                         }
@@ -160,12 +160,12 @@ object SearchPlaces {
                         val address = place.optString("formatted_address")
                         val lat = place.getJSONObject("geometry").getJSONObject("location").getDouble("lat")
                         val lng = place.getJSONObject("geometry").getJSONObject("location").getDouble("lng")
-                        val businessStatus = place.optString("business_status", null)
+                        val businessStatus = place.optString("business_status")?: ""
                         val openingHours = place.optJSONObject("opening_hours")?.optBoolean("open_now")
                         val rating = place.optDouble("rating", -1.0).takeIf { it >= 0 }
                         val userRatingsTotal = place.optInt("user_ratings_total", -1).takeIf { it >= 0 }
                         val photoReference = place.optJSONArray("photos")?.optJSONObject(0)?.optString("photo_reference")
-                        val iconUrl = place.optString("icon", null)
+                        val iconUrl = place.optString("icon")?: ""
                         val types = place.optJSONArray("types")?.let { jsonArray ->
                             List(jsonArray.length()) { index -> jsonArray.optString(index) }
                         }

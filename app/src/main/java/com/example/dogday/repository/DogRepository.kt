@@ -2,7 +2,6 @@ package com.example.dogday.repository
 
 import android.graphics.Bitmap
 import com.example.dogday.models.Dog
-import com.example.dogday.models.DogID
 import com.example.dogday.models.VetNote
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -33,10 +32,15 @@ class DogRepository {
                             val breeder = dogInfo?.get("breeder") as? String
                             val imageUrl = dogInfo?.get("imageUrl") as? String
 
-                            val vetLog = (dogInfo?.get("vetLog") as? List<Map<*, *>>)?.mapNotNull { vetNoteData ->
-                                val note = vetNoteData["note"] as? String
-                                note?.let { VetNote(note = it) }
+                            val vetLog = (dogInfo?.get("vetLog") as? List<*>)?.mapNotNull { item ->
+                                if (item is Map<*, *>) {
+                                    val note = item["note"] as? String
+                                    note?.let { VetNote(note = it) }
+                                } else {
+                                    null
+                                }
                             } ?: emptyList()
+
 
                             if (dogId != null && name != null && breed != null) {
                                 Dog(
@@ -87,10 +91,15 @@ class DogRepository {
                             val breeder = dogData["breeder"] as? String
                             val imageUrl = dogData["imageUrl"] as? String
 
-                            val vetLog = (dogData["vetLog"] as? List<Map<*, *>>)?.mapNotNull { vetNoteData ->
-                                val note = vetNoteData["note"] as? String
-                                note?.let { VetNote(note = it) }
+                            val vetLog = (dogData["vetLog"] as? List<*>)?.mapNotNull { item ->
+                                if (item is Map<*, *>) {
+                                    val note = item["note"] as? String
+                                    note?.let { VetNote(note = it) }
+                                } else {
+                                    null
+                                }
                             } ?: emptyList()
+
 
                             val dog = Dog(
                                 dogId = dogId,

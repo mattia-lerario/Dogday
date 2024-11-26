@@ -17,13 +17,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.dogday.repository.BreederRepository
-import com.example.dogday.repository.KennelRepository
 
 @Composable
 fun SettingsScreen(navController: NavController) {
-    val kennelRepository = KennelRepository()
-    val breederRepository = BreederRepository()
+
 
     Column(
         modifier = Modifier

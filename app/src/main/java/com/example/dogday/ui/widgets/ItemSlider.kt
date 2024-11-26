@@ -1,6 +1,5 @@
 package com.example.dogday.ui.widgets
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,9 +15,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.AbsoluteRoundedCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.StarHalf
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarBorder
-import androidx.compose.material.icons.filled.StarHalf
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -41,6 +40,7 @@ import com.example.dogday.R
 import com.example.dogday.models.Breeder
 import com.example.dogday.models.HikeData
 import com.example.dogday.models.Kennel
+
 private val API_KEY = "AIzaSyC6Krt10uCwyajM12ZMC9e8yUIdnTo6whY"
 @Composable
 fun ItemSlider(
@@ -134,10 +134,8 @@ fun BreederSliderItem(breeder: Breeder, navController: NavHostController) {
             .width(250.dp)
             .height(100.dp)
             .clickable {
-                breeder.id?.let { id ->
+                breeder.id.let { id ->
                     navController.navigate("breeder_detail/$id")
-                } ?: run {
-                    Log.e("BreederSliderItem", "Breeder ID is null")
                 }
             },
         shape = RoundedCornerShape(12.dp),
@@ -207,7 +205,7 @@ fun RatingStars(rating: Double) {
         }
         if (halfStar) {
             Icon(
-                imageVector = Icons.Filled.StarHalf,
+                imageVector = Icons.AutoMirrored.Filled.StarHalf,
                 contentDescription = "Half Star",
                 tint = Color(0xFFFFD700),
                 modifier = Modifier.size(16.dp)

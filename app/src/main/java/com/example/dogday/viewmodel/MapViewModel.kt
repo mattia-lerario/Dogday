@@ -196,7 +196,7 @@ class MapViewModel : ViewModel() {
 
 
 
-    fun updateMapWithMarkers(map: GoogleMap, context: Context) {
+    fun updateMapWithMarkers(map: GoogleMap) {
         map.clear()
 
         if (showKennels) {
@@ -215,7 +215,7 @@ class MapViewModel : ViewModel() {
 
         if (showHikes) {
             hikes.forEach { hike ->
-                hike.coordinates?.let { coordinates ->
+                hike.coordinates.let { coordinates ->
                     val markerOptions = MarkerOptions()
                         .position(LatLng(coordinates.latitude, coordinates.longitude))
                         .title(hike.title)
@@ -262,9 +262,9 @@ class MapViewModel : ViewModel() {
 
         if (showHikes) {
             val hikesInBounds = hikes.filter {
-                it.coordinates?.let { geoPoint ->
+                it.coordinates.let { geoPoint ->
                     visibleRegion.contains(LatLng(geoPoint.latitude, geoPoint.longitude))
-                } ?: false
+                }
             }
             itemsInBounds.addAll(hikesInBounds)
             Log.d("MapViewModel", "Hikes in bounds: $hikesInBounds")
@@ -300,7 +300,7 @@ class MapViewModel : ViewModel() {
 
             if (mapViewModel.showHikes) {
                 mapViewModel.hikes.forEach { hike ->
-                    hike.coordinates?.let { coordinates ->
+                    hike.coordinates.let { coordinates ->
                         boundsBuilder.include(LatLng(coordinates.latitude, coordinates.longitude))
                     }
                 }

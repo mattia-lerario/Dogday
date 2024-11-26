@@ -18,7 +18,8 @@ class DogRecommendationRepository(private val firestore: FirebaseFirestore) {
                 val description = document.getString("description") ?: ""
                 val imageUrl = document.getString("imageUrl") ?: ""
 
-                val dogID = DogID.valueOf(id.replace("-", "_").toUpperCase())
+                val dogID = DogID.valueOf(id.replace("-", "_").uppercase()
+                )
                 val dogRecommendation = DogRecommendation(breed, description, imageUrl)
                 dogRecommendations[dogID] = dogRecommendation
             }
