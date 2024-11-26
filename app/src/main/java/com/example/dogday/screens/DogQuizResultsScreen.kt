@@ -31,23 +31,14 @@ fun DogQuizResultsScreen(
     navController: NavController,
     dogID: String
 ) {
-    // Initialize Firestore and Repository
     val firestore = FirebaseFirestore.getInstance()
     val repository = DogRecommendationRepository(firestore)
-
-    // Directly initialize DogQuizViewModel with remember
     val viewModel = remember { DogQuizViewModel(repository) }
-
-    // Collect state from the ViewModel
     val dogRecommendations by viewModel.dogRecommendations.collectAsState()
 
-    // Log to check if dogID and dogRecommendations are populated correctly
-
-    // Retrieve the recommended dog based on the dogID
     val recommendedDog: DogRecommendation? = dogRecommendations[DogID.valueOf(dogID)]
 
     if (recommendedDog == null) {
-        // Show a loading or error state if data is null
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -63,7 +54,6 @@ fun DogQuizResultsScreen(
             )
         }
     } else {
-        // Display the recommended dog
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -130,7 +120,6 @@ fun DogQuizResultsScreen(
             ) {
                 Text("Go Home", style = MaterialTheme.typography.bodyLarge)
             }
-
 
         }
     }

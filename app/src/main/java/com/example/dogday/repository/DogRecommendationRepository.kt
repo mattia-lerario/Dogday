@@ -30,7 +30,6 @@ class DogRecommendationRepository(private val firestore: FirebaseFirestore) {
         return dogRecommendations
     }
 
-    // Fetch all dog recommendations as a list
     suspend fun fetchAllDogs(): List<DogRecommendation> {
         val dogList = mutableListOf<DogRecommendation>()
         try {
@@ -49,7 +48,6 @@ class DogRecommendationRepository(private val firestore: FirebaseFirestore) {
         return dogList
     }
 
-    // Fetch a single dog recommendation by its Firestore document ID
     suspend fun fetchDogByBreed(breed: String): DogRecommendation? {
         return try {
             val snapshot = firestore.collection("dogRecommendations")
